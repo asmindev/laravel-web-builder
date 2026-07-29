@@ -140,9 +140,20 @@ export function FileTree({
 
     return (
         <div className="space-y-1 text-sm select-none">
-            {/* ── ROOT GROUP — always visible ── */}
+            {/* ── ROOT GROUP — always visible, also a drop target ── */}
             <div key="_root_">
-                <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
+                <div
+                    role="button"
+                    tabIndex={0}
+                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
+                    onDragLeave={() => setDragOver(null)}
+                    onDrop={(e) => onDropToFolder(e, '/')}
+                    className={cn(
+                        'flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
+                        dragging && 'rounded-md hover:bg-accent/50',
+                        dragOver === '/' && 'rounded-md bg-primary/10 ring-1 ring-primary',
+                    )}
+                >
                     <Folder className="size-3" />
                     root
                 </div>
