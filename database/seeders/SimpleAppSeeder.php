@@ -107,15 +107,25 @@ p { color: #6b7280; margin-bottom: 1.5rem; }
     <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
-    <div class="container">
-        <span class="badge">Running on Express</span>
-        <h1>Welcome to Simple App</h1>
-        <p>This page is served by Express via Node Engine.<br>The API responds at <code>/api/info</code>.</p>
-        <div class="status">&#10003; Server is online</div>
-        <div class="api-link">
-            <a href="/api/info" target="_blank">View API response &rarr;</a>
+    <div class="container" id="app">
+        <span class="badge">Loading...</span>
+        <h1>Welcome</h1>
+        <div id="content">
+            <p>Fetching data from API...</p>
         </div>
+        <div class="status">&#10003; Connected</div>
     </div>
+    <script>
+        fetch(\'/api/info\')
+            .then(r => r.json())
+            .then(data => {
+                document.querySelector(\'.badge\').textContent = data.name;
+                document.querySelector(\'#content\').innerHTML = `<p>Server uptime: <strong>${Math.round(data.uptime)}s</strong></p><p>Version: <strong>${data.version}</strong></p>`;
+            })
+            .catch(() => {
+                document.querySelector(\'#content\').innerHTML = \'<p style="color:red">Failed to load API</p>\';
+            });
+    </script>
 </body>
 </html>',
             ],
@@ -123,15 +133,13 @@ p { color: #6b7280; margin-bottom: 1.5rem; }
                 'path' => 'app.js',
                 'mime_type' => 'application/javascript',
                 'content' => "const express = require('express');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/assets', express.static('assets'));
-
-app.get('/api/hello', (_req, res) => {
-    res.json({ message: 'Hello from Express!' });
-});
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/info', (_req, res) => {
     res.json({
@@ -141,21 +149,20 @@ app.get('/api/info', (_req, res) => {
     });
 });
 
+app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://127.0.0.1:\${PORT}`);
 });
 
 module.exports = app;",
             ],
-            [
-                'path' => 'api/hello.js',
-                'mime_type' => 'application/javascript',
-                'content' => "module.exports = (req, res) => {\n    res.json({ message: 'Hello from API route!' });\n};",
-            ],
         ]);
 
         echo "Simple App seeded: {$project->name} ({$project->slug})\n";
-        echo "  Folders: assets, public, api\n";
-        echo "  Files: assets/style.css, public/index.html, app.js, api/hello.js\n";
+        echo "  Folders: assets, public\n";
+        echo "  Files: assets/style.css, public/index.html, app.js\n";
     }
 }
