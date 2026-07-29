@@ -20,6 +20,9 @@ class SimpleAppSeeder extends Seeder
             ]);
         }
 
+        // Hapus project lama dengan slug yang sama biar bisa re-seed
+        Project::where('slug', 'simple-app')->delete();
+
         $project = Project::create([
             'user_id' => $user->id,
             'name' => 'Simple App',
