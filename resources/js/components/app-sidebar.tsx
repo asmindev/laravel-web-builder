@@ -12,7 +12,8 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
-import { PageProps, Project } from '@/types';
+import { PageProps } from '@/types';
+import { Project } from '@/types/project';
 import { Link, usePage } from '@inertiajs/react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

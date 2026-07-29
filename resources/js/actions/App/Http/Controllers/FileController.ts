@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 export const index = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 index.url = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ index.url = (args: { project: string | { slug: string } } | [project: string | {
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 index.get = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ index.get = (args: { project: string | { slug: string } } | [project: string | {
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 index.head = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ index.head = (args: { project: string | { slug: string } } | [project: string | 
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 const indexForm = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const indexForm = (args: { project: string | { slug: string } } | [project: stri
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 indexForm.get = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ indexForm.get = (args: { project: string | { slug: string } } | [project: string
 
 /**
 * @see \App\Http\Controllers\FileController::index
-* @see app/Http/Controllers/FileController.php:14
+* @see app/Http/Controllers/FileController.php:15
 * @route '/projects/{project}/files'
 */
 indexForm.head = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 export const show = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -121,7 +121,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 show.url = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions) => {
@@ -149,7 +149,7 @@ show.url = (args: { project: string | { slug: string }, path: string | number } 
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 show.get = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -159,7 +159,7 @@ show.get = (args: { project: string | { slug: string }, path: string | number } 
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 show.head = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -169,7 +169,7 @@ show.head = (args: { project: string | { slug: string }, path: string | number }
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 const showForm = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -179,7 +179,7 @@ const showForm = (args: { project: string | { slug: string }, path: string | num
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 showForm.get = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -189,7 +189,7 @@ showForm.get = (args: { project: string | { slug: string }, path: string | numbe
 
 /**
 * @see \App\Http\Controllers\FileController::show
-* @see app/Http/Controllers/FileController.php:23
+* @see app/Http/Controllers/FileController.php:24
 * @route '/projects/{project}/files/{path}'
 */
 showForm.head = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -206,7 +206,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\FileController::store
-* @see app/Http/Controllers/FileController.php:38
+* @see app/Http/Controllers/FileController.php:39
 * @route '/projects/{project}/files'
 */
 export const store = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -221,7 +221,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FileController::store
-* @see app/Http/Controllers/FileController.php:38
+* @see app/Http/Controllers/FileController.php:39
 * @route '/projects/{project}/files'
 */
 store.url = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions) => {
@@ -254,7 +254,7 @@ store.url = (args: { project: string | { slug: string } } | [project: string | {
 
 /**
 * @see \App\Http\Controllers\FileController::store
-* @see app/Http/Controllers/FileController.php:38
+* @see app/Http/Controllers/FileController.php:39
 * @route '/projects/{project}/files'
 */
 store.post = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -264,7 +264,7 @@ store.post = (args: { project: string | { slug: string } } | [project: string | 
 
 /**
 * @see \App\Http\Controllers\FileController::store
-* @see app/Http/Controllers/FileController.php:38
+* @see app/Http/Controllers/FileController.php:39
 * @route '/projects/{project}/files'
 */
 const storeForm = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -274,7 +274,7 @@ const storeForm = (args: { project: string | { slug: string } } | [project: stri
 
 /**
 * @see \App\Http\Controllers\FileController::store
-* @see app/Http/Controllers/FileController.php:38
+* @see app/Http/Controllers/FileController.php:39
 * @route '/projects/{project}/files'
 */
 storeForm.post = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -286,7 +286,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FileController::destroy
-* @see app/Http/Controllers/FileController.php:60
+* @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
 */
 export const destroy = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -301,7 +301,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\FileController::destroy
-* @see app/Http/Controllers/FileController.php:60
+* @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
 */
 destroy.url = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions) => {
@@ -329,7 +329,7 @@ destroy.url = (args: { project: string | { slug: string }, path: string | number
 
 /**
 * @see \App\Http\Controllers\FileController::destroy
-* @see app/Http/Controllers/FileController.php:60
+* @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
 */
 destroy.delete = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -339,7 +339,7 @@ destroy.delete = (args: { project: string | { slug: string }, path: string | num
 
 /**
 * @see \App\Http\Controllers\FileController::destroy
-* @see app/Http/Controllers/FileController.php:60
+* @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
 */
 const destroyForm = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -354,7 +354,7 @@ const destroyForm = (args: { project: string | { slug: string }, path: string | 
 
 /**
 * @see \App\Http\Controllers\FileController::destroy
-* @see app/Http/Controllers/FileController.php:60
+* @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
 */
 destroyForm.delete = (args: { project: string | { slug: string }, path: string | number } | [project: string | { slug: string }, path: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

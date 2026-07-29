@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Services\FileService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -35,7 +36,7 @@ class FileController extends Controller
         return response()->json($file);
     }
 
-    public function store(Request $request, Project $project): JsonResponse
+    public function store(Request $request, Project $project): RedirectResponse
     {
         if ($project->user_id !== auth()->id()) {
             abort(403);
@@ -47,17 +48,17 @@ class FileController extends Controller
             'mime_type' => 'nullable|string|max:100',
         ]);
 
-        $file = $this->fileService->upsert(
+        $this->fileService->upsert(
             $project->id,
             $validated['path'],
             $validated['content'] ?? '',
             $validated['mime_type'] ?? null,
         );
 
-        return response()->json($file);
+        return redirect()->back();
     }
 
-    public function destroy(Project $project, string $path): JsonResponse
+    public function destroy(Project $project, string $path): RedirectResponse
     {
         if ($project->user_id !== auth()->id()) {
             abort(403);
@@ -65,6 +66,6 @@ class FileController extends Controller
 
         $this->fileService->delete($project->id, $path);
 
-        return response()->json(['message' => 'File deleted.']);
+        return redirect()->back();
     }
 }

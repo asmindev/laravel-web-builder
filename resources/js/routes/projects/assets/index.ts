@@ -186,10 +186,10 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\AssetController::destroy
-* @see app/Http/Controllers/AssetController.php:38
+* @see app/Http/Controllers/AssetController.php:0
 * @route '/projects/{project}/assets/{asset}'
 */
-export const destroy = (args: { project: string | { slug: string }, asset: string | number } | [project: string | { slug: string }, asset: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { project: string | number | { slug: string | number }, asset: string | number } | [project: string | number | { slug: string | number }, asset: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -201,10 +201,10 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\AssetController::destroy
-* @see app/Http/Controllers/AssetController.php:38
+* @see app/Http/Controllers/AssetController.php:0
 * @route '/projects/{project}/assets/{asset}'
 */
-destroy.url = (args: { project: string | { slug: string }, asset: string | number } | [project: string | { slug: string }, asset: string | number ], options?: RouteQueryOptions) => {
+destroy.url = (args: { project: string | number | { slug: string | number }, asset: string | number } | [project: string | number | { slug: string | number }, asset: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
             project: args[0],
@@ -229,20 +229,20 @@ destroy.url = (args: { project: string | { slug: string }, asset: string | numbe
 
 /**
 * @see \App\Http\Controllers\AssetController::destroy
-* @see app/Http/Controllers/AssetController.php:38
+* @see app/Http/Controllers/AssetController.php:0
 * @route '/projects/{project}/assets/{asset}'
 */
-destroy.delete = (args: { project: string | { slug: string }, asset: string | number } | [project: string | { slug: string }, asset: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { project: string | number | { slug: string | number }, asset: string | number } | [project: string | number | { slug: string | number }, asset: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
 /**
 * @see \App\Http\Controllers\AssetController::destroy
-* @see app/Http/Controllers/AssetController.php:38
+* @see app/Http/Controllers/AssetController.php:0
 * @route '/projects/{project}/assets/{asset}'
 */
-const destroyForm = (args: { project: string | { slug: string }, asset: string | number } | [project: string | { slug: string }, asset: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const destroyForm = (args: { project: string | number | { slug: string | number }, asset: string | number } | [project: string | number | { slug: string | number }, asset: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',
@@ -254,10 +254,10 @@ const destroyForm = (args: { project: string | { slug: string }, asset: string |
 
 /**
 * @see \App\Http\Controllers\AssetController::destroy
-* @see app/Http/Controllers/AssetController.php:38
+* @see app/Http/Controllers/AssetController.php:0
 * @route '/projects/{project}/assets/{asset}'
 */
-destroyForm.delete = (args: { project: string | { slug: string }, asset: string | number } | [project: string | { slug: string }, asset: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+destroyForm.delete = (args: { project: string | number | { slug: string | number }, asset: string | number } | [project: string | number | { slug: string | number }, asset: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: destroy.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'DELETE',

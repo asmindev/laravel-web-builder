@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link } from '@inertiajs/react';
-import { Project } from '@/types';
+import { Project } from '@/types/project';
 import { useState, useMemo } from 'react';
 import {
     Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen,

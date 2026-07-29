@@ -2,7 +2,7 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Head, Link } from '@inertiajs/react';
-import { Project } from '@/types';
+import { Project } from '@/types/project';
 import { useEffect, useState, useCallback } from 'react';
 import { ArrowLeft, ExternalLink, Loader2, RefreshCw, Server } from 'lucide-react';
 
