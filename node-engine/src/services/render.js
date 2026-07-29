@@ -82,7 +82,7 @@ class RenderService {
             exports: {},
             __dirname: '/',
             __filename: '/app.js',
-            process: { env: { PORT: '3000' }, exit: () => {} },
+            process: { env: { PORT: '3000' }, exit: () => {}, uptime: () => 42 },
             setTimeout: undefined,
             setInterval: undefined,
         };
