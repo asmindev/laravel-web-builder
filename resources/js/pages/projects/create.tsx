@@ -5,13 +5,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FileCode, Layout, BookOpen, Palette, Terminal } from 'lucide-react';
+import { Layout, Terminal } from 'lucide-react';
 
 const templates = [
-    { id: 'blank', icon: FileCode, name: 'Blank', description: 'Start from scratch' },
     { id: 'landing', icon: Layout, name: 'Landing Page', description: 'A simple landing page layout' },
-    { id: 'blog', icon: BookOpen, name: 'Blog', description: 'Blog post template' },
-    { id: 'portfolio', icon: Palette, name: 'Portfolio', description: 'Portfolio showcase' },
     { id: 'node-backend', icon: Terminal, name: 'Node.js Backend', description: 'Express API with routes' },
 ];
 
