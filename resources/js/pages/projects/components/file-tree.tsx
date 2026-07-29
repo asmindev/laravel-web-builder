@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Folder, FileCode, Trash2, Copy, Pencil, ArrowRight, Plus } from 'lucide-react';
 import {
@@ -8,6 +8,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import { cn } from '@/lib/utils';
 import { EXT_ICONS, getExt } from '@/lib/file-utils';
 import { getFileGroup } from '../helpers/file-operations';
 import type { ProjectFile } from '@/types/project';
@@ -31,7 +32,9 @@ export function FileTree({
     files, activeFile, onSelect, onDelete, onDuplicate, onRename, onMove,
     onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolder, onDeleteFolder,
 }: FileTreeProps) {
-    const draggedRef = useRef<string | null>(null);
+    // Ref for instant synchronous reads during drag events; state for re-render/visuals
+    const draggedPathRef = useRef<string | null>(null);
+    const [draggedPath, setDraggedPath] = useState<string | null>(null);
     const [dragOverPath, setDragOverPath] = useState<string | null>(null);
 
     const groups: Record<string, ProjectFile[]> = {};
@@ -43,24 +46,26 @@ export function FileTree({
     });
 
     const handleDragStart = (path: string) => {
-        draggedRef.current = path;
+        draggedPathRef.current = path;
+        setDraggedPath(path);
     };
 
     const handleDragEnd = () => {
-        draggedRef.current = null;
+        draggedPathRef.current = null;
+        setDraggedPath(null);
         setDragOverPath(null);
     };
 
     const handleDragOverFile = (e: React.DragEvent, targetPath: string) => {
         e.preventDefault();
-        const sourcePath = draggedRef.current;
-        if (!sourcePath || sourcePath === targetPath) return;
-        setDragOverPath(targetPath);
         e.dataTransfer.dropEffect = 'move';
+        const source = draggedPathRef.current;
+        if (!source || source === targetPath) return;
+        setDragOverPath(targetPath);
     };
 
     const handleDropOnFile = (targetPath: string, dirFiles: ProjectFile[], dir: string) => {
-        const sourcePath = draggedRef.current;
+        const sourcePath = draggedPathRef.current;
         if (!sourcePath || sourcePath === targetPath) {
             setDragOverPath(null);
             return;
@@ -87,7 +92,7 @@ export function FileTree({
     };
 
     const handleDropOnFolderHeader = (dir: string) => {
-        const sourcePath = draggedRef.current;
+        const sourcePath = draggedPathRef.current;
         if (sourcePath) {
             onDropOnFolder(sourcePath, dir);
         }
@@ -96,16 +101,16 @@ export function FileTree({
 
     const renderFile = (file: ProjectFile, dir: string) => {
         const depth = dir === '/' ? 0 : file.path.split('/').length - 1;
-        const isRoot = dir === '/';
 
         const content = (
             <button
                 onClick={() => onSelect(file.path)}
-                className={`flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm transition-colors ${
+                className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm transition-colors',
                     activeFile === file.path
                         ? 'bg-accent text-accent-foreground'
-                        : 'hover:bg-accent/50'
-                }`}
+                        : 'hover:bg-accent/50',
+                )}
                 style={{ paddingLeft: `${12 + depth * 12}px` }}
             >
                 <FileCode className={`size-3.5 ${EXT_ICONS[getExt(file.path)] || ''}`} />
@@ -117,7 +122,7 @@ export function FileTree({
             <div
                 onDragOver={(e) => handleDragOverFile(e, file.path)}
                 onDrop={() => handleDropOnFile(file.path, groups[dir], dir)}
-                className={`rounded-md ${draggedRef.current === file.path ? 'opacity-50' : ''}`}
+                className={cn('rounded-md', draggedPath === file.path && 'opacity-50')}
             >
                 <ContextMenu>
                     <ContextMenuTrigger asChild>
@@ -149,25 +154,14 @@ export function FileTree({
             </div>
         );
 
-        if (isRoot) return (
-            <motion.div
-                key={file.path}
-                layout="position"
-                className={`relative rounded-md transition-colors ${
-                    dragOverPath === file.path ? 'border-t border-primary' : ''
-                }`}
-            >
-                {item}
-            </motion.div>
-        );
-
         return (
             <motion.div
                 key={file.path}
                 layout="position"
-                className={`relative rounded-md transition-colors ${
-                    dragOverPath === file.path ? 'border-t border-primary' : ''
-                }`}
+                className={cn(
+                    'relative rounded-md transition-colors',
+                    dragOverPath === file.path && 'border-t border-primary',
+                )}
             >
                 <div
                     draggable
@@ -195,7 +189,10 @@ export function FileTree({
                         <ContextMenu>
                             <ContextMenuTrigger asChild>
                                 <div
-                                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }}
+                                    onDragOver={(e) => {
+                                        e.preventDefault();
+                                        e.dataTransfer.dropEffect = 'move';
+                                    }}
                                     onDrop={() => handleDropOnFolderHeader(dir)}
                                     className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground"
                                 >
