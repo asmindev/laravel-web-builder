@@ -163,7 +163,7 @@ export function FileTree({
                     onDragLeave={() => setDragOver(null)}
                     onDrop={(e) => onDropToFolder(e, '/')}
                     className={cn(
-                        'flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
+                        'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
                         dragging && 'rounded-md hover:bg-accent/50',
                         dragOver === '/' && 'rounded-md bg-primary/10 ring-1 ring-primary',
                     )}
@@ -190,7 +190,7 @@ export function FileTree({
                                     onDragLeave={() => setDragOver(null)}
                                     onDrop={(e) => onDropToFolder(e, folder.name)}
                                     className={cn(
-                                        'flex items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
+                                        'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
                                         dragging && 'rounded-md hover:bg-accent/50',
                                         dragOver === folder.name && 'rounded-md bg-primary/10 ring-1 ring-primary',
                                     )}
