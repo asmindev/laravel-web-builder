@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { useProjectFiles } from './hooks/use-project-files';
 import { mapLanguage } from '@/lib/file-utils';
 import { TopBar } from './components/top-bar';
+import { TabBar } from './components/tab-bar';
 import { RenameDialog } from './components/rename-dialog';
 import { MoveDialog } from './components/move-dialog';
 import { EditorSidebar } from './sections/editor-sidebar';
@@ -72,6 +73,12 @@ export default function ProjectShow({ project }: ShowProps) {
                 />
 
                 <div className="flex min-w-0 flex-1 flex-col">
+                    <TabBar
+                        openTabs={f.openTabs}
+                        activeFile={f.activeFile}
+                        onSelect={f.setActiveAndOpen}
+                        onClose={f.closeTab}
+                    />
                     <div className="relative min-w-0 flex-1 overflow-hidden">
                         <EditorPanel
                             activeFile={f.activeFile}
