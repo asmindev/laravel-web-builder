@@ -21,7 +21,7 @@ export function EditorPanel({ activeFile, content, language, onChange }: EditorP
     }
 
     return (
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden rounded-lg border border-border">
             <MonacoEditor
                 key={activeFile}
                 value={content}
