@@ -18,15 +18,20 @@ class RenderService {
     }
 
     async render(slug, projectData = null) {
-        const cached = this.cache.get(`project:${slug}`);
-        if (cached) return cached;
+        // Proxy dari Laravel selalu kirim data segar — skip cache
+        if (!projectData) {
+            const cached = this.cache.get(`project:${slug}`);
+            if (cached) return cached;
+        }
 
         const project = projectData || await this.api.fetchProject(slug);
         if (!project) throw new Error('NOT_FOUND');
         if (!project.published) throw new Error('NOT_PUBLISHED');
 
         const files = project.files || [];
-        const entry = files.find((f) => f.path === 'index.ejs') || files.find((f) => f.path === 'index.html') || files[0];
+        const entry = files.find((f) => f.path.endsWith('/index.ejs') || f.path === 'index.ejs')
+            || files.find((f) => f.path.endsWith('/index.html') || f.path === 'index.html')
+            || files[0];
         if (!entry) throw new Error('NO_ENTRY_FILE');
 
         const html = await this.sandboxRender(entry.content, project.config || {});
@@ -47,6 +52,13 @@ class RenderService {
         const files = project.files || [];
         const appFile = files.find((f) => f.path === 'app.js' || f.path === 'script.js');
         if (!appFile) return false;
+
+        // Strip slug prefix from URL so project's Express routes work
+        // e.g. /simple-app/api/info → /api/info
+        const prefix = '/' + slug;
+        if (req.url.startsWith(prefix + '/') || req.url === prefix) {
+            req.url = req.url.slice(prefix.length) || '/';
+        }
 
         const subApp = express();
 

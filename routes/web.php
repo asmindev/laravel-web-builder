@@ -9,7 +9,7 @@ use App\Http\Controllers\PublishController;
 use App\Http\Controllers\PreviewProxyController;
 use Illuminate\Support\Facades\Route;
 
-// Public preview via Node Engine proxy
+// Public preview via Node Engine proxy (also serves static files directly)
 Route::get('/app/{slug}/{path?}', PreviewProxyController::class)
     ->where('path', '.*')
     ->name('app.preview');

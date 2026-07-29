@@ -10,12 +10,24 @@ class PreviewProxyController extends Controller
 {
     public function __invoke(Request $request, string $slug, string $path = '')
     {
-        $engineUrl = config('app.node_engine_url', 'http://127.0.0.1:4000');
-
         $project = Project::where('slug', $slug)->published()->with('files')->first();
         if (!$project) {
             abort(404, 'Project not found');
         }
+
+        // Serve static files (CSS, JS, images) langsung dari DB tanpa proxy ke Node Engine
+        if (!empty($path)) {
+            $file = $project->files->firstWhere('path', $path);
+            if ($file && $file->content) {
+                return response($file->content, 200, [
+                    'Content-Type' => $file->mime_type ?? 'text/plain',
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                ]);
+            }
+            // File tidak ditemukan — fallthrough ke proxy (mungkin route Express)
+        }
+
+        $engineUrl = config('app.node_engine_url', 'http://127.0.0.1:4000');
 
         $target = rtrim("$engineUrl/$slug/$path", '/');
         if ($request->query()) {
@@ -27,9 +39,22 @@ class PreviewProxyController extends Controller
                 'X-Project-Data' => base64_encode($project->toJson()),
             ])->send($request->method(), $target);
 
-            return response()->stream(function () use ($response) {
-                echo $response->body();
-            }, $response->status(), ['Content-Type' => 'text/html; charset=utf-8']);
+            $body = $response->body();
+            $contentType = $response->header('Content-Type', 'text/html; charset=utf-8');
+
+            // Rewrite absolute asset paths (/assets/..., /public/...) agar work di proxy.
+            // User nulis /assets/style.css — preview jadi /app/slug/assets/style.css.
+            // Pas di-download/dijalankan lokal, file asli gak berubah, tetap /assets/style.css.
+            if (str_contains($contentType, 'text/html')) {
+                $prefix = '/app/' . $slug;
+                $body = preg_replace(
+                    '/(href|src|action)=(["\'])\/(assets|public|js|css|images?|fonts?)\//i',
+                    '$1=$2' . $prefix . '/$3/',
+                    $body
+                );
+            }
+
+            return response($body, $response->status(), ['Content-Type' => $contentType]);
         } catch (\Exception $e) {
             abort(502, 'Engine unavailable');
         }
