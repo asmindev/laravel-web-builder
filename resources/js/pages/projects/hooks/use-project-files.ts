@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, type KeyboardEvent } from 'react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
 import type { Project, ProjectFile } from '@/types/project';
-import { generateDuplicatePath, buildMovePath } from '../helpers/file-operations';
+import { generateDuplicatePath, buildMovePath, getFileGroup } from '../helpers/file-operations';
 
 export function useProjectFiles(project: Project) {
     const [activeFile, setActiveFile] = useState<string | null>(null);
@@ -269,6 +269,139 @@ export function useProjectFiles(project: Project) {
         });
     };
 
+    const handleReorder = (dir: string, reordered: ProjectFile[]) => {
+        setFiles((prev) => {
+            const others = prev.filter((f) => getFileGroup(f) !== dir);
+            return [...others, ...reordered];
+        });
+
+        const payload = reordered.map((f, i) => ({
+            path: f.path,
+            sort_order: i,
+        }));
+
+        router.post(route('projects.files.reorder', project.slug), { files: payload }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleDropOnFolder = (filePath: string, targetDir: string) => {
+        const source = files.find((f) => f.path === filePath);
+        if (!source) return;
+        const currentDir = getFileGroup(source);
+        if (currentDir === targetDir) return;
+
+        const newPath = targetDir === '/'
+            ? filePath.split('/').pop()!
+            : `${targetDir}/${filePath.split('/').pop()}`;
+
+        if (files.some((f) => f.path === newPath)) {
+            toast.error('File already exists at destination');
+            return;
+        }
+
+        router.post(route('projects.files.store', project.slug), {
+            path: newPath,
+            content: source.content,
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                router.delete(route('projects.files.destroy', [project.slug, filePath]), {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setFiles((prev) =>
+                            prev
+                                .filter((f) => f.path !== filePath)
+                                .concat({ ...source, path: newPath }),
+                        );
+                        setOpenTabs((prev) => prev.map((p) => (p === filePath ? newPath : p)));
+                        if (activeFile === filePath) setActiveAndOpen(newPath);
+                        toast.success('Moved');
+                    },
+                    onError: () => toast.error('Failed to move'),
+                });
+            },
+            onError: () => toast.error('Failed to move'),
+        });
+    };
+
+    const handleNewFileInFolder = (dir: string) => {
+        setNewFileName(dir === '/' ? '' : `${dir}/`);
+    };
+
+    const handleRenameFolder = (dir: string) => {
+        const newName = window.prompt('New folder name:', dir);
+        if (!newName || newName === dir) return;
+
+        const folderFiles = files.filter((f) => getFileGroup(f) === dir);
+        if (folderFiles.length === 0) return;
+
+        let completed = 0;
+        const total = folderFiles.length;
+        let hasError = false;
+
+        folderFiles.forEach((file) => {
+            const newPath = file.path.replace(dir, newName);
+            if (files.some((f) => f.path === newPath && f.id !== file.id)) {
+                toast.error(`File already exists: ${newPath}`);
+                hasError = true;
+                return;
+            }
+
+            router.post(route('projects.files.store', project.slug), {
+                path: newPath,
+                content: file.content,
+            }, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    router.delete(route('projects.files.destroy', [project.slug, file.path]), {
+                        preserveState: true,
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            completed++;
+                            if (completed === total && !hasError) {
+                                router.reload({ only: ['project'] });
+                                toast.success('Folder renamed');
+                            }
+                        },
+                    });
+                },
+                onError: () => { hasError = true; toast.error('Failed to rename folder'); },
+            });
+        });
+    };
+
+    const handleDeleteFolder = (dir: string) => {
+        const folderFiles = files.filter((f) => getFileGroup(f) === dir);
+        if (folderFiles.length === 0) return;
+
+        if (!window.confirm(`Delete folder "${dir}" and all ${folderFiles.length} files?`)) return;
+
+        let completed = 0;
+        folderFiles.forEach((file) => {
+            router.delete(route('projects.files.destroy', [project.slug, file.path]), {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    completed++;
+                    if (completed === folderFiles.length) {
+                        setFiles((prev) => prev.filter((f) => getFileGroup(f) !== dir));
+                        if (activeFile && getFileGroup(files.find((f) => f.path === activeFile)!) === dir) {
+                            const remaining = files.filter((f) => getFileGroup(f) !== dir);
+                            setActiveFile(remaining[0]?.path ?? null);
+                        }
+                        toast.success('Folder deleted');
+                    }
+                },
+                onError: () => toast.error('Failed to delete file'),
+            });
+        });
+    };
+
     const handleAssetUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -317,6 +450,11 @@ export function useProjectFiles(project: Project) {
         handleDuplicateFile,
         handleRenameFile,
         handleMoveFile,
+        handleReorder,
+        handleDropOnFolder,
+        handleNewFileInFolder,
+        handleRenameFolder,
+        handleDeleteFolder,
         handleAssetUpload,
     };
 }

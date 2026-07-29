@@ -285,6 +285,86 @@ storeForm.post = (args: { project: string | { slug: string } } | [project: strin
 store.form = storeForm
 
 /**
+* @see \App\Http\Controllers\FileController::reorder
+* @see app/Http/Controllers/FileController.php:72
+* @route '/projects/{project}/files/reorder'
+*/
+export const reorder = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: reorder.url(args, options),
+    method: 'post',
+})
+
+reorder.definition = {
+    methods: ["post"],
+    url: '/projects/{project}/files/reorder',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FileController::reorder
+* @see app/Http/Controllers/FileController.php:72
+* @route '/projects/{project}/files/reorder'
+*/
+reorder.url = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { project: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'slug' in args) {
+        args = { project: args.slug }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            project: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        project: typeof args.project === 'object'
+        ? args.project.slug
+        : args.project,
+    }
+
+    return reorder.definition.url
+            .replace('{project}', parsedArgs.project.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FileController::reorder
+* @see app/Http/Controllers/FileController.php:72
+* @route '/projects/{project}/files/reorder'
+*/
+reorder.post = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: reorder.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FileController::reorder
+* @see app/Http/Controllers/FileController.php:72
+* @route '/projects/{project}/files/reorder'
+*/
+const reorderForm = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: reorder.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FileController::reorder
+* @see app/Http/Controllers/FileController.php:72
+* @route '/projects/{project}/files/reorder'
+*/
+reorderForm.post = (args: { project: string | { slug: string } } | [project: string | { slug: string } ] | string | { slug: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: reorder.url(args, options),
+    method: 'post',
+})
+
+reorder.form = reorderForm
+
+/**
 * @see \App\Http\Controllers\FileController::destroy
 * @see app/Http/Controllers/FileController.php:61
 * @route '/projects/{project}/files/{path}'
@@ -369,6 +449,6 @@ destroyForm.delete = (args: { project: string | { slug: string }, path: string |
 
 destroy.form = destroyForm
 
-const FileController = { index, show, store, destroy }
+const FileController = { index, show, store, reorder, destroy }
 
 export default FileController

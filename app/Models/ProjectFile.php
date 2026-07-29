@@ -12,6 +12,7 @@ class ProjectFile extends Model
         'path',
         'content',
         'mime_type',
+        'sort_order',
     ];
 
     public function project(): BelongsTo

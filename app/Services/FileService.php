@@ -26,7 +26,10 @@ class FileService
 
     public function forProject(int $projectId)
     {
-        return ProjectFile::where('project_id', $projectId)->get();
+        return ProjectFile::where('project_id', $projectId)
+            ->orderBy('sort_order')
+            ->orderBy('path')
+            ->get();
     }
 
     public function find(int $projectId, string $path): ?ProjectFile
@@ -34,6 +37,15 @@ class FileService
         return ProjectFile::where('project_id', $projectId)
             ->where('path', $path)
             ->first();
+    }
+
+    public function reorder(int $projectId, array $files): void
+    {
+        foreach ($files as $item) {
+            ProjectFile::where('project_id', $projectId)
+                ->where('path', $item['path'])
+                ->update(['sort_order' => $item['sort_order']]);
+        }
     }
 
     private function guessMimeType(string $path): string

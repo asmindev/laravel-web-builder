@@ -68,4 +68,21 @@ class FileController extends Controller
 
         return redirect()->back();
     }
+
+    public function reorder(Request $request, Project $project): RedirectResponse
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'files' => 'required|array',
+            'files.*.path' => 'required|string|max:500',
+            'files.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        $this->fileService->reorder($project->id, $validated['files']);
+
+        return redirect()->back();
+    }
 }

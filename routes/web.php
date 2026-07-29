@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [FileController::class, 'index'])->name('index');
         Route::get('{path}', [FileController::class, 'show'])->name('show')->where('path', '.*');
         Route::post('/', [FileController::class, 'store'])->name('store');
+        Route::post('/reorder', [FileController::class, 'reorder'])->name('reorder');
         Route::delete('{path}', [FileController::class, 'destroy'])->name('destroy')->where('path', '.*');
     });
 

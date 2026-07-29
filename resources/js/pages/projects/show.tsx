@@ -47,6 +47,11 @@ export default function ProjectShow({ project }: ShowProps) {
                     onCreateFile={f.handleCreateFile}
                     onCreateFolder={f.handleCreateFolder}
                     onUploadAsset={f.handleAssetUpload}
+                    onReorder={f.handleReorder}
+                    onDropOnFolder={f.handleDropOnFolder}
+                    onNewFileInFolder={f.handleNewFileInFolder}
+                    onRenameFolder={f.handleRenameFolder}
+                    onDeleteFolder={f.handleDeleteFolder}
                 />
 
                 <RenameDialog

@@ -17,12 +17,18 @@ interface EditorSidebarProps {
     onCreateFile: () => void;
     onCreateFolder: () => void;
     onUploadAsset: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onReorder: (dir: string, reordered: ProjectFile[]) => void;
+    onDropOnFolder: (filePath: string, targetDir: string) => void;
+    onNewFileInFolder: (dir: string) => void;
+    onRenameFolder: (dir: string) => void;
+    onDeleteFolder: (dir: string) => void;
 }
 
 export function EditorSidebar({
     files, activeFile, newFileName, assets,
     onSelect, onDelete, onDuplicate, onRename, onMove,
     onChangeFileName, onCreateFile, onCreateFolder, onUploadAsset,
+    onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolder, onDeleteFolder,
 }: EditorSidebarProps) {
     return (
         <div className="w-56 shrink-0 border-r bg-muted/30 p-2 overflow-y-auto">
@@ -45,6 +51,11 @@ export function EditorSidebar({
                 onDuplicate={onDuplicate}
                 onRename={onRename}
                 onMove={onMove}
+                onReorder={onReorder}
+                onDropOnFolder={onDropOnFolder}
+                onNewFileInFolder={onNewFileInFolder}
+                onRenameFolder={onRenameFolder}
+                onDeleteFolder={onDeleteFolder}
             />
         </div>
     );
