@@ -155,19 +155,17 @@ export function FileTree({
     return (
         <div className="space-y-1 text-sm select-none">
             {/* ── ROOT ── */}
-            <div key="_root_">
-                <div
-                    role="button"
-                    tabIndex={0}
-                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
-                    onDragLeave={() => setDragOver(null)}
-                    onDrop={(e) => onDropToFolder(e, '/')}
-                    className={cn(
-                        'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
-                        dragging && 'rounded-md hover:bg-accent/50',
-                        dragOver === '/' && 'rounded-md bg-primary/10 ring-1 ring-primary',
-                    )}
-                >
+            <div
+                key="_root_"
+                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
+                onDragLeave={() => setDragOver(null)}
+                onDrop={(e) => onDropToFolder(e, '/')}
+                className={cn(dragging && dragOver !== '/' && 'opacity-50', 'transition-opacity')}
+            >
+                <div className={cn(
+                    'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground transition-colors',
+                    dragOver === '/' && 'rounded-md bg-primary/10 ring-1 ring-primary',
+                )}>
                     <Folder className="size-3" />
                     root
                 </div>
@@ -180,41 +178,21 @@ export function FileTree({
             {folders.map((folder) => {
                 const dirFiles = files.filter((f) => f.path.startsWith(folder.name + '/'));
                 return (
-                    <div key={folder.id}>
-                        <ContextMenu>
-                            <ContextMenuTrigger asChild>
-                                <div
-                                    role="button"
-                                    tabIndex={0}
-                                    onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(folder.name); }}
-                                    onDragLeave={() => setDragOver(null)}
-                                    onDrop={(e) => onDropToFolder(e, folder.name)}
-                                    className={cn(
-                                        'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium transition-colors text-muted-foreground',
-                                        dragging && 'rounded-md hover:bg-accent/50',
-                                        dragOver === folder.name && 'rounded-md bg-primary/10 ring-1 ring-primary',
-                                    )}
-                                >
-                                    <Folder className="size-3" />
-                                    {folder.name}
-                                </div>
-                            </ContextMenuTrigger>
-                            <ContextMenuContent>
-                                <ContextMenuItem onClick={() => onNewFileInFolder(folder.name)}>
-                                    <Plus className="size-3.5" /> New File
-                                </ContextMenuItem>
-                                <ContextMenuSeparator />
-                                <ContextMenuItem onClick={() => onRenameFolder(folder.id)}>
-                                    <Pencil className="size-3.5" /> Rename Folder
-                                </ContextMenuItem>
-                                <ContextMenuItem onClick={() => onDeleteFolder(folder.id)} variant="destructive">
-                                    <Trash2 className="size-3.5" /> Delete Folder
-                                </ContextMenuItem>
-                            </ContextMenuContent>
-                        </ContextMenu>
-                        <div className="space-y-0.5">
-                            {dirFiles.map((file) => renderFile(file, 1))}
+                    <div
+                        key={folder.id}
+                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(folder.name); }}
+                        onDragLeave={() => setDragOver(null)}
+                        onDrop={(e) => onDropToFolder(e, folder.name)}
+                        className={cn(dragging && dragOver !== folder.name && 'opacity-50', 'transition-opacity')}
+                    >
+                        <div className={cn(
+                            'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground transition-colors',
+                            dragOver === folder.name && 'rounded-md bg-primary/10 ring-1 ring-primary',
+                        )}>
+                            <Folder className="size-3" />
+                            {folder.name}
                         </div>
+                        {dirFiles.map((file) => renderFile(file, 1))}
                     </div>
                 );
             })}
