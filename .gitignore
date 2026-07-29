@@ -1,0 +1,17 @@
+/node_modules
+/node-engine/node_modules
+/vendor
+/.sass-cache
+/.phpunit.result.cache
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+.env
+.env.*
+!/.env.example
+Thumbs.db
+.DS_Store
+/public/hot
+/public/build
+/build
