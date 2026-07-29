@@ -34,6 +34,8 @@ export function FileTree({
     const dragSource = useRef<string | null>(null);
     const [dragOver, setDragOver] = useState<string | null>(null);
     const [dragging, setDragging] = useState<string | null>(null);
+    // Track folders that ever existed so they don't disappear when empty
+    const knownFoldersRef = useRef<Set<string>>(new Set());
 
     // Build groups but keep root separate so it never disappears
     const rootFiles = files.filter((f) => !f.path.includes('/'));
@@ -42,7 +44,11 @@ export function FileTree({
         const dir = getFileGroup(f);
         if (dir !== '/' && !subGroups[dir]) subGroups[dir] = [];
         if (dir !== '/') subGroups[dir].push(f);
+        // Remember every folder we've seen
+        if (dir !== '/') knownFoldersRef.current.add(dir);
     });
+    // Always render known folders, even when empty
+    const allFolders = [...new Set([...knownFoldersRef.current, ...Object.keys(subGroups)])];
 
     // ── Native HTML5 drag handlers ──
 
@@ -163,7 +169,9 @@ export function FileTree({
             </div>
 
             {/* ── SUB FOLDERS ── */}
-            {Object.entries(subGroups).map(([dir, dirFiles]) => (
+            {allFolders.map((dir) => {
+                const dirFiles = subGroups[dir] ?? [];
+                return (
                 <div key={dir}>
                     <div
                         role="button"
@@ -184,7 +192,8 @@ export function FileTree({
                         {dirFiles.map((file) => renderFile(file))}
                     </div>
                 </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
