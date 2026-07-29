@@ -42,19 +42,21 @@ class PreviewProxyController extends Controller
             $body = $response->body();
             $contentType = $response->header('Content-Type', 'text/html; charset=utf-8');
 
-            // Rewrite absolute asset paths (/assets/..., /public/...) agar work di proxy.
-            // User nulis /assets/style.css — preview jadi /app/slug/assets/style.css.
-            // Pas di-download/dijalankan lokal, file asli gak berubah, tetap /assets/style.css.
+            // Rewrite absolute paths di HTML/JS agar request sampe ke Node Engine.
+            // /assets/... → /app/slug/assets/..., /api/... → /app/slug/api/...
             if (str_contains($contentType, 'text/html')) {
                 $prefix = '/app/' . $slug;
                 $body = preg_replace(
-                    '/(href|src|action)=(["\'])\/(assets|public|js|css|images?|fonts?)\//i',
-                    '$1=$2' . $prefix . '/$3/',
+                    '#(?:(["\']))(/(?:assets|public|api)/)#i',
+                    '$1' . $prefix . '$2',
                     $body
                 );
             }
 
-            return response($body, $response->status(), ['Content-Type' => $contentType]);
+            $headers = ['Content-Type' => $contentType];
+            $headers['Access-Control-Allow-Origin'] = '*';
+
+            return response($body, $response->status(), $headers);
         } catch (\Exception $e) {
             abort(502, 'Engine unavailable');
         }
