@@ -3,6 +3,7 @@
 use App\Http\Controllers\AIController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FolderController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PublishController;
 use App\Http\Controllers\PreviewProxyController;
@@ -40,6 +41,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [FileController::class, 'store'])->name('store');
         Route::post('/reorder', [FileController::class, 'reorder'])->name('reorder');
         Route::delete('{path}', [FileController::class, 'destroy'])->name('destroy')->where('path', '.*');
+    });
+
+    // Folders
+    Route::prefix('projects/{project:slug}/folders')->name('projects.folders.')->group(function () {
+        Route::post('/', [FolderController::class, 'store'])->name('store');
+        Route::put('{folder}', [FolderController::class, 'update'])->name('update');
+        Route::delete('{folder}', [FolderController::class, 'destroy'])->name('destroy');
     });
 
     // Assets

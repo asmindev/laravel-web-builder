@@ -1,10 +1,11 @@
 import { FileCode } from 'lucide-react';
 import { FileTree } from '../components/file-tree';
 import { NewFileDialog } from '../components/new-file-dialog';
-import type { ProjectFile, ProjectAsset } from '@/types/project';
+import type { ProjectFile, ProjectFolder, ProjectAsset } from '@/types/project';
 
 interface EditorSidebarProps {
     files: ProjectFile[];
+    folders: ProjectFolder[];
     activeFile: string | null;
     newFileName: string;
     assets?: ProjectAsset[];
@@ -20,12 +21,12 @@ interface EditorSidebarProps {
     onReorder: (dir: string, reordered: ProjectFile[]) => void;
     onDropOnFolder: (filePath: string, targetDir: string) => void;
     onNewFileInFolder: (dir: string) => void;
-    onRenameFolder: (dir: string) => void;
-    onDeleteFolder: (dir: string) => void;
+    onRenameFolder: (folderId: number) => void;
+    onDeleteFolder: (folderId: number) => void;
 }
 
 export function EditorSidebar({
-    files, activeFile, newFileName, assets,
+    files, folders, activeFile, newFileName, assets,
     onSelect, onDelete, onDuplicate, onRename, onMove,
     onChangeFileName, onCreateFile, onCreateFolder, onUploadAsset,
     onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolder, onDeleteFolder,
@@ -45,6 +46,7 @@ export function EditorSidebar({
             </div>
             <FileTree
                 files={files}
+                folders={folders}
                 activeFile={activeFile}
                 onSelect={onSelect}
                 onDelete={onDelete}

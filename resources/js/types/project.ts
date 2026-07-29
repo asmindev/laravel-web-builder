@@ -13,6 +13,7 @@ export interface Project {
     files_count?: number;
     assets_count?: number;
     files?: ProjectFile[];
+    folders?: ProjectFolder[];
     assets?: ProjectAsset[];
 }
 
@@ -22,6 +23,16 @@ export interface ProjectFile {
     path: string;
     content: string | null;
     mime_type: string;
+    sort_order?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProjectFolder {
+    id: number;
+    project_id: number;
+    name: string;
+    sort_order: number;
     created_at: string;
     updated_at: string;
 }

@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, type KeyboardEvent } from 'react';
 import { router } from '@inertiajs/react';
 import { toast } from 'sonner';
-import type { Project, ProjectFile } from '@/types/project';
+import type { Project, ProjectFile, ProjectFolder } from '@/types/project';
 import { generateDuplicatePath, buildMovePath, getFileGroup } from '../helpers/file-operations';
 
 export function useProjectFiles(project: Project) {
     const [activeFile, setActiveFile] = useState<string | null>(null);
     const [files, setFiles] = useState<ProjectFile[]>(project.files || []);
+    const [folders, setFolders] = useState<ProjectFolder[]>(project.folders || []);
     const [content, setContent] = useState('');
     const [saving, setSaving] = useState(false);
     const [newFileName, setNewFileName] = useState('');
@@ -136,16 +137,13 @@ export function useProjectFiles(project: Project) {
     const handleCreateFolder = () => {
         if (!newFileName) return;
 
-        const path = newFileName.endsWith('/') ? `${newFileName}.gitkeep` : `${newFileName}/.gitkeep`;
-        router.post(route('projects.files.store', project.slug), {
-            path,
-            content: '',
-        }, {
+        const name = newFileName.replace(/\/$/, '').replace(/\.gitkeep$/, '');
+        router.post(route('projects.folders.store', project.slug), { name }, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
-                const updatedFiles = (page.props.project as Project)?.files ?? [];
-                setFiles(updatedFiles);
+                const updatedFolders = (page.props.project as Project)?.folders ?? [];
+                setFolders(updatedFolders);
                 setNewFileName('');
                 toast.success('Folder created');
             },
@@ -347,73 +345,59 @@ export function useProjectFiles(project: Project) {
         setNewFileName(dir === '/' ? '' : `${dir}/`);
     };
 
-    const handleRenameFolder = (dir: string) => {
-        const newName = window.prompt('New folder name:', dir);
-        if (!newName || newName === dir) return;
+    const handleRenameFolder = (folderId: number) => {
+        const folder = folders.find((f) => f.id === folderId);
+        if (!folder) return;
 
-        const folderFiles = files.filter((f) => getFileGroup(f) === dir);
-        if (folderFiles.length === 0) return;
+        const newName = window.prompt('New folder name:', folder.name);
+        if (!newName || newName === folder.name) return;
 
-        let completed = 0;
-        const total = folderFiles.length;
-        let hasError = false;
-
-        folderFiles.forEach((file) => {
-            const newPath = file.path.replace(dir, newName);
-            if (files.some((f) => f.path === newPath && f.id !== file.id)) {
-                toast.error(`File already exists: ${newPath}`);
-                hasError = true;
-                return;
-            }
-
-            router.post(route('projects.files.store', project.slug), {
-                path: newPath,
-                content: file.content,
-            }, {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    router.delete(route('projects.files.destroy', [project.slug, file.path]), {
-                        preserveState: true,
-                        preserveScroll: true,
-                        onSuccess: () => {
-                            completed++;
-                            if (completed === total && !hasError) {
-                                router.reload({ only: ['project'] });
-                                toast.success('Folder renamed');
-                            }
-                        },
-                    });
-                },
-                onError: () => { hasError = true; toast.error('Failed to rename folder'); },
-            });
+        const oldName = folder.name;
+        router.put(route('projects.folders.update', [project.slug, folderId]), { name: newName }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const updatedFolders = (page.props.project as Project)?.folders ?? [];
+                const updatedFiles = (page.props.project as Project)?.files ?? [];
+                setFolders(updatedFolders);
+                setFiles(updatedFiles);
+                setOpenTabs((prev) => prev.map((p) =>
+                    p.startsWith(oldName + '/')
+                        ? p.replace(oldName + '/', newName + '/')
+                        : p,
+                ));
+                if (activeFile?.startsWith(oldName + '/')) {
+                    setActiveFile(activeFile.replace(oldName + '/', newName + '/'));
+                }
+                toast.success('Folder renamed');
+            },
+            onError: () => toast.error('Failed to rename folder'),
         });
     };
 
-    const handleDeleteFolder = (dir: string) => {
-        const folderFiles = files.filter((f) => getFileGroup(f) === dir);
-        if (folderFiles.length === 0) return;
+    const handleDeleteFolder = (folderId: number) => {
+        const folder = folders.find((f) => f.id === folderId);
+        if (!folder) return;
 
-        if (!window.confirm(`Delete folder "${dir}" and all ${folderFiles.length} files?`)) return;
+        if (!window.confirm(`Delete folder "${folder.name}" and all files inside?`)) return;
 
-        let completed = 0;
-        folderFiles.forEach((file) => {
-            router.delete(route('projects.files.destroy', [project.slug, file.path]), {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: () => {
-                    completed++;
-                    if (completed === folderFiles.length) {
-                        setFiles((prev) => prev.filter((f) => getFileGroup(f) !== dir));
-                        if (activeFile && getFileGroup(files.find((f) => f.path === activeFile)!) === dir) {
-                            const remaining = files.filter((f) => getFileGroup(f) !== dir);
-                            setActiveFile(remaining[0]?.path ?? null);
-                        }
-                        toast.success('Folder deleted');
-                    }
-                },
-                onError: () => toast.error('Failed to delete file'),
-            });
+        router.delete(route('projects.folders.destroy', [project.slug, folderId]), {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const updatedFolders = (page.props.project as Project)?.folders ?? [];
+                const updatedFiles = (page.props.project as Project)?.files ?? [];
+                setFolders(updatedFolders);
+                setFiles(updatedFiles);
+                const prefix = folder.name + '/';
+                setOpenTabs((prev) => prev.filter((p) => !p.startsWith(prefix)));
+                if (activeFile?.startsWith(prefix)) {
+                    const remaining = updatedFiles;
+                    setActiveFile(remaining[0]?.path ?? null);
+                }
+                toast.success('Folder deleted');
+            },
+            onError: () => toast.error('Failed to delete folder'),
         });
     };
 
@@ -437,6 +421,7 @@ export function useProjectFiles(project: Project) {
         // state
         activeFile,
         files,
+        folders,
         content,
         saving,
         newFileName,

@@ -47,7 +47,7 @@ class ProjectController extends Controller
             return redirect()->route('projects.index')->with('error', 'Project not found.');
         }
 
-        $project->load('files', 'assets');
+        $project->load('files', 'assets', 'folders');
 
         return Inertia::render('projects/show', [
             'project' => $project,

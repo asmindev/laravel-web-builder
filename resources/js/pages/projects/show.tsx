@@ -29,6 +29,7 @@ export default function ProjectShow({ project }: ShowProps) {
             <div className="flex min-w-0 flex-1 overflow-hidden" style={{ height: 'calc(100vh - 8rem)' }}>
                 <EditorSidebar
                     files={f.files}
+                    folders={f.folders}
                     activeFile={f.activeFile}
                     newFileName={f.newFileName}
                     assets={project.assets}
