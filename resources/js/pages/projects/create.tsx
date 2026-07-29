@@ -5,13 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { FileCode, Layout, BookOpen, Palette, Terminal } from 'lucide-react';
 
 const templates = [
-    { id: 'blank', name: 'Blank', description: 'Start from scratch' },
-    { id: 'landing', name: 'Landing Page', description: 'A simple landing page layout' },
-    { id: 'blog', name: 'Blog', description: 'Blog post template' },
-    { id: 'portfolio', name: 'Portfolio', description: 'Portfolio showcase' },
-    { id: 'node-backend', name: 'Node.js Backend', description: 'Express API with routes' },
+    { id: 'blank', icon: FileCode, name: 'Blank', description: 'Start from scratch' },
+    { id: 'landing', icon: Layout, name: 'Landing Page', description: 'A simple landing page layout' },
+    { id: 'blog', icon: BookOpen, name: 'Blog', description: 'Blog post template' },
+    { id: 'portfolio', icon: Palette, name: 'Portfolio', description: 'Portfolio showcase' },
+    { id: 'node-backend', icon: Terminal, name: 'Node.js Backend', description: 'Express API with routes' },
 ];
 
 export default function CreateProject() {
@@ -79,6 +80,7 @@ export default function CreateProject() {
                                             data.template === tpl.id ? 'border-primary ring-1 ring-primary' : ''
                                         }`}
                                     >
+                                        <tpl.icon className="mb-2 size-5 text-muted-foreground" />
                                         <div className="font-medium">{tpl.name}</div>
                                         <div className="text-sm text-muted-foreground">{tpl.description}</div>
                                     </button>

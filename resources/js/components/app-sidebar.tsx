@@ -1,4 +1,4 @@
-import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings, Sparkles } from 'lucide-react';
+import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -30,11 +30,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: route('projects.index'),
             icon: FolderOpen,
         },
-        {
-            title: 'AI Generator',
-            url: '#',
-            icon: Sparkles,
-        },
+        // {
+        //     title: 'AI Generator',
+        //     url: '#',
+        //     icon: Sparkles,
+        // },
         {
             title: 'Settings',
             url: '#',
