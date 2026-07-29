@@ -16,7 +16,7 @@ export default function CreateProject() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         description: '',
-        template: 'blank',
+        template: 'landing',
     });
 
     const submit = (e: React.FormEvent) => {
@@ -28,14 +28,14 @@ export default function CreateProject() {
         <AdminLayout header={<h2 className="text-xl leading-tight font-semibold">Create Project</h2>}>
             <Head title="Create Project" />
 
-            <div className="mx-auto max-w-2xl">
-                <form onSubmit={submit} className="space-y-8">
+            <div className="mx-auto max-w-lg">
+                <form onSubmit={submit} className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Project Details</CardTitle>
-                            <CardDescription>Give your project a name and description.</CardDescription>
+                            <CardTitle className="text-lg">Create Project</CardTitle>
+                            <CardDescription>Name your project and pick a template.</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Project Name</Label>
                                 <Input
@@ -48,8 +48,9 @@ export default function CreateProject() {
                                 />
                                 {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                             </div>
+
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description (optional)</Label>
+                                <Label htmlFor="description">Description <span className="text-muted-foreground">(optional)</span></Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
@@ -58,36 +59,35 @@ export default function CreateProject() {
                                     rows={3}
                                 />
                             </div>
-                        </CardContent>
-                    </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Template</CardTitle>
-                            <CardDescription>Choose a starting template.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid gap-3 md:grid-cols-2">
-                                {templates.map((tpl) => (
-                                    <button
-                                        key={tpl.id}
-                                        type="button"
-                                        onClick={() => setData('template', tpl.id)}
-                                        className={`rounded-lg border p-4 text-left transition-colors hover:bg-accent ${
-                                            data.template === tpl.id ? 'border-primary ring-1 ring-primary' : ''
-                                        }`}
-                                    >
-                                        <tpl.icon className="mb-2 size-5 text-muted-foreground" />
-                                        <div className="font-medium">{tpl.name}</div>
-                                        <div className="text-sm text-muted-foreground">{tpl.description}</div>
-                                    </button>
-                                ))}
+                            <div className="space-y-3">
+                                <Label>Template</Label>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                    {templates.map((tpl) => (
+                                        <button
+                                            key={tpl.id}
+                                            type="button"
+                                            onClick={() => setData('template', tpl.id)}
+                                            className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors hover:bg-accent ${
+                                                data.template === tpl.id ? 'border-primary ring-1 ring-primary' : ''
+                                            }`}
+                                        >
+                                            <div className={`mt-0.5 rounded-md border p-1.5 ${data.template === tpl.id ? 'bg-primary text-primary-foreground' : ''}`}>
+                                                <tpl.icon className="size-4" />
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-medium">{tpl.name}</div>
+                                                <div className="text-xs text-muted-foreground">{tpl.description}</div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <div className="flex items-center gap-4">
-                        <Button type="submit" disabled={processing}>
+                    <div className="flex items-center gap-3">
+                        <Button type="submit" className="min-w-32" disabled={processing}>
                             {processing ? 'Creating...' : 'Create Project'}
                         </Button>
                         <Button variant="outline" asChild>
