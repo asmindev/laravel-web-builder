@@ -100,20 +100,17 @@ module.exports = app;",
         <div id="content">
             <p>Fetching data from API...</p>
         </div>
-        <div class="status">&#10003; Connected</div>
+        <div class="status">Connected</div>
     </div>
     <script>
-        fetch('/api/info')
-            .then(r => r.json())
-            .then(data => {
-                document.querySelector('.badge').textContent = data.name;
-                document.querySelector('#content').innerHTML = `
-                    <p>Server uptime: <strong>${Math.round(data.uptime)}s</strong></p>
-                    <p>Version: <strong>${data.version}</strong></p>
-                `;
+        fetch("/api/info")
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                document.querySelector(".badge").textContent = data.name;
+                document.querySelector("#content").innerHTML = "<p>Uptime: <strong>" + Math.round(data.uptime) + "s</strong></p><p>Version: <strong>" + data.version + "</strong></p>";
             })
-            .catch(() => {
-                document.querySelector('#content').innerHTML = '<p style="color:red">Failed to load API</p>';
+            .catch(function() {
+                document.querySelector("#content").innerHTML = \'<p style="color:red">Failed to load API</p>\';
             });
     </script>
 </body>
