@@ -15,13 +15,14 @@ interface EditorSidebarProps {
     onMove: (path: string) => void;
     onChangeFileName: (val: string) => void;
     onCreateFile: () => void;
+    onCreateFolder: () => void;
     onUploadAsset: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function EditorSidebar({
     files, activeFile, newFileName, assets,
     onSelect, onDelete, onDuplicate, onRename, onMove,
-    onChangeFileName, onCreateFile, onUploadAsset,
+    onChangeFileName, onCreateFile, onCreateFolder, onUploadAsset,
 }: EditorSidebarProps) {
     return (
         <div className="w-56 shrink-0 border-r bg-muted/30 p-2 overflow-y-auto">
@@ -31,6 +32,7 @@ export function EditorSidebar({
                     newFileName={newFileName}
                     onChangeFileName={onChangeFileName}
                     onCreateFile={onCreateFile}
+                    onCreateFolder={onCreateFolder}
                     onUploadAsset={onUploadAsset}
                     assets={assets}
                 />

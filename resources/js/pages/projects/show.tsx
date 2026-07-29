@@ -45,6 +45,7 @@ export default function ProjectShow({ project }: ShowProps) {
                     }}
                     onChangeFileName={f.setNewFileName}
                     onCreateFile={f.handleCreateFile}
+                    onCreateFolder={f.handleCreateFolder}
                     onUploadAsset={f.handleAssetUpload}
                 />
 

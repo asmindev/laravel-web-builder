@@ -133,6 +133,28 @@ export function useProjectFiles(project: Project) {
         });
     };
 
+    const handleCreateFolder = () => {
+        if (!newFileName) return;
+
+        const path = newFileName.endsWith('/') ? `${newFileName}.gitkeep` : `${newFileName}/.gitkeep`;
+        router.post(route('projects.files.store', project.slug), {
+            path,
+            content: '',
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                const updatedFiles = (page.props.project as Project)?.files ?? [];
+                setFiles(updatedFiles);
+                setNewFileName('');
+                toast.success('Folder created');
+            },
+            onError: () => {
+                toast.error('Failed to create folder');
+            },
+        });
+    };
+
     const handlePublish = () => {
         setPublishing(true);
         router.post(route('projects.publish', project.slug), undefined, {
@@ -290,6 +312,7 @@ export function useProjectFiles(project: Project) {
         handleSave,
         handleDeleteFile,
         handleCreateFile,
+        handleCreateFolder,
         handlePublish,
         handleDuplicateFile,
         handleRenameFile,

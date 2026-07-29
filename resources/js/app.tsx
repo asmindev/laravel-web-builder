@@ -4,6 +4,8 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
+import { TooltipProvider } from "@/components/ui/tooltip"
+
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -15,8 +17,10 @@ createInertiaApp({
 
         root.render(
             <>
+            <TooltipProvider>
                 <Toaster />
                 <App {...props} />
+            </TooltipProvider>
             </>,
         );
     },
