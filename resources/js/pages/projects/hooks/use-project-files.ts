@@ -270,8 +270,9 @@ export function useProjectFiles(project: Project) {
     };
 
     const handleReorder = (dir: string, reordered: ProjectFile[]) => {
-        setFiles((prev) => {
-            const others = prev.filter((f) => getFileGroup(f) !== dir);
+        const prev = files;
+        setFiles((prev2) => {
+            const others = prev2.filter((f) => getFileGroup(f) !== dir);
             return [...others, ...reordered];
         });
 
@@ -283,6 +284,10 @@ export function useProjectFiles(project: Project) {
         router.post(route('projects.files.reorder', project.slug), { files: payload }, {
             preserveState: true,
             preserveScroll: true,
+            onError: () => {
+                setFiles(prev);
+                toast.error('Failed to reorder');
+            },
         });
     };
 
@@ -301,30 +306,40 @@ export function useProjectFiles(project: Project) {
             return;
         }
 
+        // Optimistic update — move file locally first
+        const prev = files;
+        const movedFile = { ...source, path: newPath };
+        setFiles((prev2) =>
+            prev2
+                .filter((f) => f.path !== filePath)
+                .concat(movedFile),
+        );
+        setOpenTabs((prev2) => prev2.map((p) => (p === filePath ? newPath : p)));
+        if (activeFile === filePath) setActiveFile(newPath);
+
+        // Server: create new path + delete old path
         router.post(route('projects.files.store', project.slug), {
             path: newPath,
             content: source.content,
         }, {
             preserveState: true,
             preserveScroll: true,
+            onError: () => {
+                setFiles(prev);
+                setOpenTabs((prev2) => prev2.map((p) => (p === newPath ? filePath : p)));
+                if (activeFile === newPath) setActiveFile(filePath);
+                toast.error('Failed to move');
+            },
             onSuccess: () => {
                 router.delete(route('projects.files.destroy', [project.slug, filePath]), {
                     preserveState: true,
                     preserveScroll: true,
-                    onSuccess: () => {
-                        setFiles((prev) =>
-                            prev
-                                .filter((f) => f.path !== filePath)
-                                .concat({ ...source, path: newPath }),
-                        );
-                        setOpenTabs((prev) => prev.map((p) => (p === filePath ? newPath : p)));
-                        if (activeFile === filePath) setActiveAndOpen(newPath);
-                        toast.success('Moved');
+                    onError: () => {
+                        toast.error('Moved but old file could not be deleted');
+                        router.reload({ only: ['project'] });
                     },
-                    onError: () => toast.error('Failed to move'),
                 });
             },
-            onError: () => toast.error('Failed to move'),
         });
     };
 
