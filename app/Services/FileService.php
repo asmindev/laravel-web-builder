@@ -51,7 +51,7 @@ class FileService
     private function guessMimeType(string $path): string
     {
         return match (pathinfo($path, PATHINFO_EXTENSION)) {
-            'ejs', 'html' => 'text/html',
+            'html' => 'text/html',
             'css' => 'text/css',
             'js' => 'application/javascript',
             'json' => 'application/json',

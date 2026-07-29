@@ -105,7 +105,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
             </div>
 
             <Dialog open={showCreate} onOpenChange={setShowCreate}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md md:min-w-2/4">
                     <DialogHeader>
                         <DialogTitle>Create Project</DialogTitle>
                         <DialogDescription>Name your project and pick a template.</DialogDescription>

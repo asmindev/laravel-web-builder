@@ -75,18 +75,18 @@ class ProjectService
             ];
         } else {
             $defaults = [
-                'index.ejs' => [
+                'index.html' => [
                     'content' => '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= config.title %></title>
+    <title>My Site</title>
     <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
     <header>
-        <h1><%= config.title %></h1>
+        <h1>Welcome</h1>
     </header>
     <main>
         <p>Start editing this template!</p>
@@ -95,7 +95,7 @@ class ProjectService
 </html>',
                     'mime_type' => 'text/html',
                 ],
-                'style.css' => [
+                'assets/style.css' => [
                     'content' => "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nbody {\n  font-family: system-ui, sans-serif;\n  line-height: 1.6;\n  color: #333;\n  padding: 2rem;\n}\n\nheader h1 {\n  color: #2563eb;\n}",
                     'mime_type' => 'text/css',
                 ],

@@ -35,7 +35,7 @@ class AIService
 
     private function viaOpenAI(array $prompt): array
     {
-        $system = 'You are a web developer generating EJS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
+        $system = 'You are a web developer generating HTML/JS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
 
         try {
             $response = Http::withToken(config('services.openai.key'))
@@ -64,7 +64,7 @@ class AIService
 
     private function viaGemini(array $prompt): array
     {
-        $system = 'You are a web developer generating EJS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
+        $system = 'You are a web developer generating HTML/JS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
 
         try {
             $response = Http::withToken(config('services.gemini.key'))

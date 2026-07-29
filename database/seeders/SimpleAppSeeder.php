@@ -24,34 +24,21 @@ class SimpleAppSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Simple App',
             'slug' => 'simple-app',
-            'description' => 'A simple app with Express backend, CSS styling, and EJS templates.',
-            'template' => 'blank',
-            'config' => [
-                'title' => 'Simple App',
-                'heading' => 'Welcome to Simple App',
-            ],
+            'description' => 'A simple app with Express backend and CSS styling.',
+            'template' => 'landing',
             'published' => true,
             'published_at' => now(),
         ]);
 
-        // Create folders
-        ProjectFolder::create([
-            'project_id' => $project->id,
-            'name' => 'assets',
-            'sort_order' => 0,
-        ]);
+        ProjectFolder::create(['project_id' => $project->id, 'name' => 'assets', 'sort_order' => 0]);
+        ProjectFolder::create(['project_id' => $project->id, 'name' => 'public', 'sort_order' => 1]);
+        ProjectFolder::create(['project_id' => $project->id, 'name' => 'api', 'sort_order' => 2]);
 
-        ProjectFolder::create([
-            'project_id' => $project->id,
-            'name' => 'public',
-            'sort_order' => 1,
-        ]);
-
-        // Create files
         $project->files()->createMany([
             [
                 'path' => 'assets/style.css',
-                'content' => "* {
+                'mime_type' => 'text/css',
+                'content' => '* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -78,16 +65,8 @@ body {
   width: 90%;
 }
 
-h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #1a1a2e;
-}
-
-p {
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-}
+h1 { font-size: 2rem; margin-bottom: 0.5rem; color: #1a1a2e; }
+p { color: #6b7280; margin-bottom: 1.5rem; }
 
 .badge {
   display: inline-block;
@@ -100,11 +79,7 @@ p {
   margin-bottom: 1rem;
 }
 
-.status {
-  font-size: 0.9rem;
-  color: #10b981;
-  font-weight: 600;
-}
+.status { font-size: 0.9rem; color: #10b981; font-weight: 600; }
 
 .api-link {
   margin-top: 1.5rem;
@@ -118,26 +93,23 @@ p {
   font-size: 0.85rem;
   font-weight: 500;
 }
-
-.api-link a:hover {
-  text-decoration: underline;
-}",
-                'mime_type' => 'text/css',
+.api-link a:hover { text-decoration: underline; }',
             ],
             [
-                'path' => 'public/index.ejs',
+                'path' => 'public/index.html',
+                'mime_type' => 'text/html',
                 'content' => '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= config.title %></title>
+    <title>Simple App</title>
     <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
     <div class="container">
         <span class="badge">Running on Express</span>
-        <h1><%= config.heading %></h1>
+        <h1>Welcome to Simple App</h1>
         <p>This page is served by Express via Node Engine.<br>The API responds at <code>/api/info</code>.</p>
         <div class="status">&#10003; Server is online</div>
         <div class="api-link">
@@ -146,62 +118,44 @@ p {
     </div>
 </body>
 </html>',
-                'mime_type' => 'text/html',
             ],
             [
                 'path' => 'app.js',
+                'mime_type' => 'application/javascript',
                 'content' => "const express = require('express');
-const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static assets (CSS, images, etc.)
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.json());
+app.use('/assets', express.static('assets'));
 
-// API endpoint
+app.get('/api/hello', (_req, res) => {
+    res.json({ message: 'Hello from Express!' });
+});
+
 app.get('/api/info', (_req, res) => {
     res.json({
         name: 'Simple App',
         version: '1.0.0',
-        engine: 'node-engine',
         uptime: process.uptime(),
     });
 });
 
-// Serve homepage
-app.get('/', (_req, res) => {
-    const html = `<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>Simple App</title>
-    <link rel="stylesheet" href="/assets/style.css">
-</head>
-<body>
-    <div class=\"container\">
-        <span class=\"badge\">Running on Express</span>
-        <h1>Welcome to Simple App</h1>
-        <p>This page is served by Express via Node Engine.<br>The API responds at <code>/api/info</code>.</p>
-        <div class=\"status\">&#10003; Server is online</div>
-        <div class=\"api-link\">
-            <a href=\"/api/info\" target=\"_blank\">View API response &rarr;</a>
-        </div>
-    </div>
-</body>
-</html>`;
-    res.send(html);
+app.listen(PORT, () => {
+    console.log(`Server running on http://127.0.0.1:\${PORT}`);
 });
 
-app.listen(PORT, () => {
-    console.log(\`App running on http://127.0.0.1:\${PORT}\`);
-});",
+module.exports = app;",
+            ],
+            [
+                'path' => 'api/hello.js',
                 'mime_type' => 'application/javascript',
+                'content' => "module.exports = (req, res) => {\n    res.json({ message: 'Hello from API route!' });\n};",
             ],
         ]);
 
         echo "Simple App seeded: {$project->name} ({$project->slug})\n";
-        echo "  Folders: assets, public\n";
-        echo "  Files: assets/style.css, public/index.ejs, app.js\n";
+        echo "  Folders: assets, public, api\n";
+        echo "  Files: assets/style.css, public/index.html, app.js, api/hello.js\n";
     }
 }

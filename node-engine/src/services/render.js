@@ -1,12 +1,13 @@
-const ejs = require('ejs');
 const vm = require('node:vm');
 const express = require('express');
 
 const TIMEOUT_MS = 500;
 
 /**
- * Renders published EJS projects in a sandboxed Node.js vm context.
- * Flow: Cache check → API fetch → compile EJS → sandbox → return HTML → cache.
+ * Renders published HTML projects in a sandboxed Node.js vm context.
+ * Flow: Cache check → API fetch → return entry HTML → cache.
+ *
+ * Falls back to Express app sandbox for projects with app.js.
  *
  * ponytail: Replace vm with isolated-vm for stronger isolation once
  * isolated-vm becomes compatible with Node 26+.
@@ -29,20 +30,17 @@ class RenderService {
         if (!project.published) throw new Error('NOT_PUBLISHED');
 
         const files = project.files || [];
-        const entry = files.find((f) => f.path.endsWith('/index.ejs') || f.path === 'index.ejs')
-            || files.find((f) => f.path.endsWith('/index.html') || f.path === 'index.html')
+        const entry = files.find((f) => f.path.endsWith('/index.html') || f.path === 'index.html')
             || files[0];
         if (!entry) throw new Error('NO_ENTRY_FILE');
 
-        const html = await this.sandboxRender(entry.content, project.config || {});
-
-        this.cache.set(`project:${slug}`, html);
-        return html;
+        this.cache.set(`project:${slug}`, entry.content);
+        return entry.content;
     }
 
     /**
      * Try to execute the project as an Express app (via app.js or script.js).
-     * Returns true if handled, false to fallback to EJS rendering.
+     * Returns true if handled, false to fallback to HTML rendering.
      */
     async tryExpressApp(slug, req, res, projectData = null) {
         const project = projectData || await this.api.fetchProject(slug);
@@ -115,8 +113,6 @@ class RenderService {
             return false;
         }
 
-        const origUrl = req.url;
-
         return new Promise((resolve) => {
             let done = false;
             const finish = () => { if (!done) { done = true; resolve(true); } };
@@ -130,43 +126,6 @@ class RenderService {
                 fallback();
             });
         });
-    }
-
-    async sandboxRender(templateContent, config) {
-        const compiled = ejs.compile(templateContent, { client: true, strict: false });
-
-        const sandbox = {
-            config,
-            _: {},
-            dayjs: null,
-            console: { log: () => {} },
-            setTimeout: undefined,
-            setInterval: undefined,
-            require: undefined,
-            import: undefined,
-            __dirname: undefined,
-            __filename: undefined,
-            module: undefined,
-            exports: undefined,
-            process: undefined,
-            Buffer: undefined,
-            global: undefined,
-        };
-
-        const context = vm.createContext(sandbox);
-        const fnSrc = compiled.toString();
-
-        try {
-            const script = new vm.Script(
-                `(function() { const __template = (${fnSrc}); return __template(config); })()`,
-                { timeout: TIMEOUT_MS },
-            );
-            const result = script.runInContext(context, { timeout: TIMEOUT_MS });
-            return String(result ?? '');
-        } catch (err) {
-            console.error('Sandbox render failed:', err.message);
-            return '<html><body><p>Render error</p></body></html>';
-        }
     }
 }
 
