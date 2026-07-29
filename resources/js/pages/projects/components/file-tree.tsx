@@ -100,7 +100,10 @@ export function FileTree({
         return (
             <div
                 key={fp}
-                className={cn('rounded-md transition-all', isOver && 'bg-primary/10 ring-2 ring-primary ring-inset')}
+                className={cn(
+                    'rounded-md transition-all',
+                    isOver && 'bg-primary/10 ring-2 ring-primary ring-inset',
+                )}
             >
                 <ContextMenu>
                     <ContextMenuTrigger asChild>
@@ -119,8 +122,10 @@ export function FileTree({
                                 activeFile === fp && !isDragging
                                     ? 'bg-accent text-accent-foreground'
                                     : 'hover:bg-accent/50',
-                                isDragging && 'opacity-40',
+                                isDragging && 'opacity-40 ring-2 ring-dashed ring-foreground/30',
+                                dragging && !isDragging && 'hover:bg-accent/30',
                                 dragging ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
+                                isOver && 'ring-primary ring-2 ring-inset',
                             )}
                             style={{ paddingLeft: `${12 + depth * 12}px` }}
                         >
@@ -160,12 +165,12 @@ export function FileTree({
                 onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
                 onDragLeave={() => setDragOver(null)}
                 onDrop={(e) => onDropToFolder(e, '/')}
-                className={cn(dragging && dragOver !== '/' && 'opacity-50', 'transition-opacity')}
+                className={cn(
+                    'rounded-md transition-all',
+                    dragOver === '/' && 'bg-primary/15 ring-2 ring-primary/40',
+                )}
             >
-                <div className={cn(
-                    'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground transition-colors',
-                    dragOver === '/' && 'rounded-md bg-primary/10 ring-1 ring-primary',
-                )}>
+                <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
                     <Folder className="size-3" />
                     root
                 </div>
@@ -183,12 +188,12 @@ export function FileTree({
                         onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(folder.name); }}
                         onDragLeave={() => setDragOver(null)}
                         onDrop={(e) => onDropToFolder(e, folder.name)}
-                        className={cn(dragging && dragOver !== folder.name && 'opacity-50', 'transition-opacity')}
+                        className={cn(
+                            'rounded-md transition-all',
+                            dragOver === folder.name && 'bg-primary/15 ring-2 ring-primary/40',
+                        )}
                     >
-                        <div className={cn(
-                            'flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground transition-colors',
-                            dragOver === folder.name && 'rounded-md bg-primary/10 ring-1 ring-primary',
-                        )}>
+                        <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
                             <Folder className="size-3" />
                             {folder.name}
                         </div>
