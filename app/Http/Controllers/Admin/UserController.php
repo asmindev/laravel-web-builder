@@ -67,6 +67,41 @@ class UserController extends Controller
         ]);
     }
 
+    public function userProjects(User $user): Response
+    {
+        $projects = $user->projects()
+            ->withCount(['files', 'assets'])
+            ->latest()
+            ->get()
+            ->map(function ($project) {
+                return [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                    'slug' => $project->slug,
+                    'description' => $project->description,
+                    'published' => $project->published,
+                    'template' => $project->template,
+                    'files_count' => $project->files_count,
+                    'assets_count' => $project->assets_count,
+                    'created_at' => $project->created_at?->format('d M Y H:i'),
+                    'updated_at' => $project->updated_at?->format('d M Y H:i'),
+                ];
+            });
+
+        return Inertia::render('admin/users/projects', [
+            'targetUser' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'plan' => $user->plan ?? 'starter',
+                'plan_name' => $user->plan_name,
+                'project_limit' => $user->project_limit === 999999 ? 'Unlimited' : $user->project_limit,
+                'roles' => $user->getRoleNames(),
+            ],
+            'projects' => $projects,
+        ]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

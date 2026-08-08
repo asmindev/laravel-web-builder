@@ -276,17 +276,26 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                                                 {getPlanBadge(u.plan)}
                                             </td>
                                             <td className="p-4">
-                                                <div className="font-mono text-xs font-semibold">
+                                                <Link
+                                                    href={route('admin.users.projects', u.id)}
+                                                    className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold hover:text-[#2cb1bc] hover:underline transition-colors"
+                                                >
+                                                    <FolderOpen className="size-3.5 text-[#2cb1bc]" />
                                                     {u.projects_count} / {u.project_limit} Proyek
-                                                </div>
+                                                </Link>
                                             </td>
                                             <td className="p-4 text-xs text-muted-foreground">
                                                 {u.created_at}
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
+                                                    <Button variant="outline" size="sm" asChild className="h-8 gap-1 text-xs text-[#2cb1bc] border-[#2cb1bc]/40 hover:bg-[#2cb1bc]/10">
+                                                        <Link href={route('admin.users.projects', u.id)}>
+                                                            <FolderOpen className="size-3.5" /> Lihat Proyek ({u.projects_count})
+                                                        </Link>
+                                                    </Button>
                                                     <Button variant="outline" size="sm" onClick={() => openEditModal(u)} className="h-8 gap-1 text-xs">
-                                                        <Edit className="size-3.5" /> Edit Role &amp; Plan
+                                                        <Edit className="size-3.5" /> Edit
                                                     </Button>
                                                     <Button variant="destructive" size="icon-xs" onClick={() => setDeletingUser(u)} title="Hapus User">
                                                         <Trash2 className="size-3.5" />
