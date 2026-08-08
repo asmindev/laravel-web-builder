@@ -1,135 +1,261 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Bot, Cpu, Zap, Code2, Globe, ArrowRight, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowRight, Sparkles, Send, CheckCircle2 } from 'lucide-react';
 
 export default function Welcome({ auth }: { auth: any }) {
+    const [promptText, setPromptText] = useState("Sistem kasir toko kopi dengan laporan penjualan");
+
+    const samplePrompts = [
+        "Aplikasi Kasir Kopi",
+        "Toko Sepatu Online",
+        "Portofolio Fotografer"
+    ];
+
+    const steps = [
+        {
+            number: "01",
+            bgCard: "bg-[#fdf4ff] border-[#f5d0fe]",
+            numberColor: "text-[#c084fc]",
+            title: "Tulis Kebutuhan",
+            desc: "Cukup ketik ide atau fitur web yang kamu inginkan dalam bahasa sehari-hari. Tanpa perlu paham sintaks koding."
+        },
+        {
+            number: "02",
+            bgCard: "bg-[#f0fdf4] border-[#bbf7d0]",
+            numberColor: "text-[#34d399]",
+            title: "Proses Otomatis",
+            desc: "Engine AI langsung menyusun skema database, server Express.js, dan tampilan template EJS dalam hitungan detik."
+        },
+        {
+            number: "03",
+            bgCard: "bg-[#fff7ed] border-[#fed7aa]",
+            numberColor: "text-[#fb923c]",
+            title: "Langsung Gunakan",
+            desc: "Uji coba hasilnya secara real-time di sandbox, edit kode jika perlu, dan langsung publikasikan web app kamu."
+        }
+    ];
+
     const features = [
         {
-            icon: <Cpu className="w-6 h-6 text-indigo-400" />,
-            title: "Prompt-to-Code Instant",
-            description: "Tulis kebutuhan web app kamu dalam bahasa sehari-hari. Engine langsung bikin kode Express & React yang siap jalan."
+            cardBg: "bg-[#faf5ff]",
+            border: "border-[#e9d5ff] hover:border-[#c084fc]",
+            tag: "EXPRESS & EJS",
+            tagBg: "bg-[#f3e8ff] text-[#7e22ce] border-[#d8b4fe]",
+            title: "Generasi Express & EJS",
+            desc: "Menghasilkan kode Node.js, Express, dan EJS 100% lengkap tanpa placeholder. Langsung siap jalan dan dipublikasikan."
         },
         {
-            icon: <Zap className="w-6 h-6 text-violet-400" />,
+            cardBg: "bg-[#f0fdf4]",
+            border: "border-[#bbf7d0] hover:border-[#34d399]",
+            tag: "REAL-TIME SANDBOX",
+            tagBg: "bg-[#dcfce7] text-[#15803d] border-[#86efac]",
             title: "Live Node Sandbox",
-            description: "Langsung tes aplikasi di lingkungan Node Engine terisolasi. Cek database, API, dan tampilan secara real-time."
+            desc: "Aplikasi berjalan di lingkungan terisolasi Node Engine. Uji coba tampilan EJS dan sistem backend secara real-time."
         },
         {
-            icon: <Code2 className="w-6 h-6 text-emerald-400" />,
-            title: "Code Editor Terintegrasi",
-            description: "Bebas lihat dan ubah setiap baris kode dengan Monaco Editor. Tanpa lock-in, kode proyek 100% milik kamu."
+            cardBg: "bg-[#fff1f2]",
+            border: "border-[#fecdd3] hover:border-[#fb7185]",
+            tag: "MONACO EDITOR",
+            tagBg: "bg-[#ffe4e6] text-[#be123c] border-[#fda4af]",
+            title: "Editor Kode Terintegrasi",
+            desc: "Akses penuh untuk mengubah setiap baris kode server Express, template EJS, dan gaya CSS dengan Monaco Editor."
         },
         {
-            icon: <Globe className="w-6 h-6 text-amber-400" />,
-            title: "One-Click Deploy & Export",
-            description: "Langsung publish ke subdomain kustom atau unduh semua file proyek dalam format ZIP kapan saja."
+            cardBg: "bg-[#fffbe6]",
+            border: "border-[#fef08a] hover:border-[#facc15]",
+            tag: "ONE-CLICK DEPLOY",
+            tagBg: "bg-[#fef9c3] text-[#a16207] border-[#fde047]",
+            title: "Ekspor & Publikasi Instan",
+            desc: "Rilis ke subdomain kustom atau unduh seluruh bundle proyek Node.js (ZIP) untuk di-host di server kamu sendiri."
         }
     ];
 
     return (
-        <div className="min-h-screen bg-[#09090b] text-neutral-100 font-sans selection:bg-indigo-500/30 overflow-hidden relative">
-            <Head title="Nusantara Engine — Web Builder Generasi Baru" />
+        <div className="min-h-screen bg-[#fafafa] text-neutral-900 font-sans selection:bg-[#fef08a] selection:text-black flex flex-col justify-between relative overflow-hidden">
+            <Head title="Nusantara Engine — Instant Web App Builder" />
 
-            {/* Background radial glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-indigo-600/20 via-purple-600/10 to-transparent blur-3xl pointer-events-none rounded-full" />
-            <div className="absolute top-[400px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-violet-600/15 to-transparent blur-3xl pointer-events-none rounded-full" />
-
-            {/* Navbar */}
-            <header className="relative z-10 border-b border-white/5 backdrop-blur-md bg-black/20 sticky top-0">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3 font-semibold text-lg tracking-tight">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-[1px] shadow-lg shadow-indigo-500/20">
-                            <div className="w-full h-full bg-neutral-950 rounded-[11px] flex items-center justify-center">
-                                <Bot className="w-5 h-5 text-indigo-400" />
-                            </div>
-                        </div>
-                        <span className="bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent font-bold text-xl">
-                            Nusantara Engine
+            {/* Header Nav */}
+            <header className="px-8 py-6 border-b border-neutral-200/80 bg-white/90 backdrop-blur-xl sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    <div className="font-bold tracking-tight text-lg flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-[#34d399]" />
+                        <span className="font-extrabold tracking-tight text-neutral-900">
+                            NUSANTARA ENGINE
                         </span>
                     </div>
-
-                    <div className="flex items-center gap-4">
+                    <div>
                         {auth?.user ? (
-                            <Link href="/dashboard">
-                                <Button className="bg-white text-black hover:bg-neutral-200 font-medium rounded-full px-6 shadow-md transition-all">
-                                    Dashboard <ArrowRight className="w-4 h-4 ml-1.5" />
-                                </Button>
+                            <Link href="/dashboard" className="text-xs font-bold uppercase tracking-wider px-6 py-3 bg-neutral-900 text-white hover:bg-neutral-800 transition-all rounded-full shadow-md">
+                                Dashboard &rarr;
                             </Link>
                         ) : (
-                            <>
-                                <Link href="/login">
-                                    <Button variant="ghost" className="text-neutral-300 hover:text-white hover:bg-white/5 rounded-full px-5">
-                                        Masuk
-                                    </Button>
+                            <div className="flex items-center gap-6">
+                                <Link href="/login" className="text-xs font-semibold uppercase tracking-wider text-neutral-600 hover:text-neutral-900 transition-colors">
+                                    Masuk
                                 </Link>
-                                <Link href="/register">
-                                    <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium rounded-full px-6 shadow-lg shadow-indigo-500/25 transition-all">
-                                        Daftar Sekarang
-                                    </Button>
+                                <Link href="/register" className="text-xs font-bold uppercase tracking-wider px-6 py-3 bg-neutral-900 text-white hover:bg-neutral-800 transition-all rounded-full shadow-md">
+                                    Mulai Gratis
                                 </Link>
-                            </>
+                            </div>
                         )}
                     </div>
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <section className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-8 backdrop-blur-sm">
-                    <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
-                    <span>Web Builder Generasi Baru</span>
-                </div>
+            {/* Main Content */}
+            <main className="relative z-10">
+                {/* Asymmetric Non-AI-Slop Hero Banner */}
+                <section className="max-w-7xl mx-auto px-8 py-20 border-b border-neutral-200/80">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        {/* Left Side Copy */}
+                        <div className="lg:col-span-7 space-y-6 text-left">
+                            <h1 className="text-5xl sm:text-7xl font-black text-neutral-900 tracking-tight leading-[1.05]">
+                                Susun Website <br />
+                                Cuma Pakai <span className="bg-[#fef08a] px-3 py-1 rounded-lg text-neutral-900 border border-[#fde047]">Kalimat Biasa.</span>
+                            </h1>
 
-                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8 bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                    Bikin Aplikasi Web dari Teks, Tanpa Ribet.
-                </h1>
+                            <p className="text-neutral-600 text-lg sm:text-xl font-normal leading-relaxed max-w-xl">
+                                Nusantara Engine mengubah deskripsi ide kamu jadi aplikasi web Node.js &amp; EJS yang siap dipakai secara otomatis.
+                            </p>
 
-                <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-normal">
-                    Nusantara Engine bantu kamu bikin, tes, dan publish aplikasi Node.js full-stack dalam hitungan detik. Cukup ketik apa yang kamu mau.
-                </p>
-
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href={auth?.user ? "/dashboard" : "/register"}>
-                        <Button size="lg" className="w-full sm:w-auto h-13 px-8 text-base bg-white text-black hover:bg-neutral-200 rounded-full font-semibold shadow-xl shadow-white/10 transition-all hover:scale-105">
-                            {auth?.user ? "Buka Dashboard" : "Coba Gratis Sekarang"}
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                    </Link>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section className="relative z-10 max-w-6xl mx-auto px-6 py-20">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
-                        Didesain untuk Kerja Cepat
-                    </h2>
-                    <p className="text-neutral-400 max-w-xl mx-auto text-base">
-                        Semua yang kamu butuhkan untuk eksekusi ide web app tanpa setup berbelit-belit.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {features.map((item, idx) => (
-                        <div key={idx} className="group relative p-8 rounded-2xl bg-neutral-900/50 border border-white/5 hover:border-indigo-500/30 transition-all duration-300 backdrop-blur-sm hover:shadow-2xl hover:shadow-indigo-500/10">
-                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:border-indigo-500/30 transition-all">
-                                {item.icon}
+                            <div className="pt-2 flex items-center gap-4">
+                                <Link
+                                    href={auth?.user ? "/dashboard" : "/register"}
+                                    className="group inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-white font-bold text-sm uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-xl rounded-full"
+                                >
+                                    <span>{auth?.user ? "Buka Dashboard" : "Mulai Buat Web App"}</span>
+                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
                             </div>
-                            <h3 className="text-xl font-semibold mb-3 text-white group-hover:text-indigo-300 transition-colors">
-                                {item.title}
-                            </h3>
-                            <p className="text-neutral-400 text-sm leading-relaxed">
-                                {item.description}
+                        </div>
+
+                        {/* Right Side Interactive Try Widget (Visual, Human-crafted) */}
+                        <div className="lg:col-span-5 bg-white border border-neutral-300 p-6 rounded-2xl shadow-xl space-y-5">
+                            <div className="flex items-center justify-between text-xs font-mono text-neutral-500 border-b border-neutral-100 pb-3">
+                                <span className="font-bold text-neutral-800 uppercase tracking-wider flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-[#c084fc]" /> Coba Generator Simulator
+                                </span>
+                                <span className="text-[#16a34a] bg-[#dcfce7] px-2 py-0.5 rounded font-bold">READY</span>
+                            </div>
+
+                            {/* Preset Buttons */}
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Contoh Ide Prompt:</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {samplePrompts.map((p, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setPromptText(`Buatkan ${p.toLowerCase()} sederhana`)}
+                                            className="text-xs px-3 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium transition-all border border-neutral-200"
+                                        >
+                                            + {p}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Simulated Input Bar */}
+                            <div className="space-y-2 pt-1">
+                                <label className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Prompt Kamu:</label>
+                                <div className="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-300 bg-neutral-50">
+                                    <input
+                                        type="text"
+                                        value={promptText}
+                                        onChange={(e) => setPromptText(e.target.value)}
+                                        className="w-full bg-transparent border-none outline-none text-xs font-medium text-neutral-800"
+                                        placeholder="Ketik ide web kamu di sini..."
+                                    />
+                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors">
+                                        <Send className="w-3.5 h-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Simulated Output Status */}
+                            <div className="p-3.5 rounded-xl bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-between text-xs text-[#15803d]">
+                                <span className="flex items-center gap-2 font-medium">
+                                    <CheckCircle2 className="w-4 h-4 text-[#22c55e]" /> Siap digenerate ke Node.js &amp; EJS
+                                </span>
+                                <span className="font-mono text-[10px] font-bold">~0.4s</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Explanation Section / How it Works */}
+                <section className="py-24 border-b border-neutral-200/80 bg-white">
+                    <div className="max-w-7xl mx-auto px-8">
+                        <div className="text-xs font-mono text-neutral-400 font-bold uppercase tracking-wider mb-12">
+                            [ ALUR PROSES ]
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {steps.map((s, idx) => (
+                                <div key={idx} className={`p-8 rounded-2xl border transition-all duration-300 space-y-4 ${s.bgCard}`}>
+                                    <div className={`text-4xl font-black font-mono ${s.numberColor}`}>
+                                        {s.number}
+                                    </div>
+                                    <h3 className="text-xl font-bold uppercase tracking-tight text-neutral-900">
+                                        {s.title}
+                                    </h3>
+                                    <p className="text-neutral-600 text-sm font-normal leading-relaxed">
+                                        {s.desc}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Features Showcase Section */}
+                <section className="py-24 border-b border-neutral-200/80">
+                    <div className="max-w-7xl mx-auto px-8">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                            <div>
+                                <div className="text-xs font-mono text-neutral-400 font-bold uppercase tracking-wider mb-3">
+                                    [ FITUR UTAMA ]
+                                </div>
+                                <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-900">
+                                    Teknologi Pembuatan Web
+                                </h2>
+                            </div>
+                            <p className="text-neutral-600 text-sm max-w-md font-normal">
+                                Menggunakan stack Node.js, Express, dan EJS untuk aplikasi yang cepat, stabil, dan siap pakai.
                             </p>
                         </div>
-                    ))}
-                </div>
-            </section>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {features.map((f, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className={`p-8 rounded-2xl border ${f.cardBg} ${f.border} transition-all duration-300 space-y-4`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-2xl font-bold uppercase tracking-tight text-neutral-900">
+                                            {f.title}
+                                        </h3>
+                                        <span className={`text-[10px] font-mono px-3 py-1 border rounded-md font-bold tracking-wider ${f.tagBg}`}>
+                                            {f.tag}
+                                        </span>
+                                    </div>
+                                    <p className="text-neutral-600 text-sm font-normal leading-relaxed">{f.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            </main>
 
             {/* Footer */}
-            <footer className="relative z-10 border-t border-white/5 py-8 text-center text-sm text-neutral-500">
-                <p>&copy; {new Date().getFullYear()} Nusantara Engine.</p>
+            <footer className="px-8 py-10 border-t border-neutral-200/80 max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-neutral-500 uppercase tracking-wider relative z-10 bg-white">
+                <div>&copy; {new Date().getFullYear()} NUSANTARA ENGINE</div>
+                <div className="flex items-center gap-4 font-bold text-neutral-700">
+                    <span>NODE.JS</span>
+                    <span>•</span>
+                    <span>EXPRESS</span>
+                    <span>•</span>
+                    <span>EJS</span>
+                </div>
             </footer>
         </div>
     );
