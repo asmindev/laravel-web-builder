@@ -1,127 +1,92 @@
-# Laravel React Admin Boilerplate
+# Laravel AI Web Builder
 
-A modern, production-ready boilerplate for building web applications with Laravel 12, React 19, Inertia.js 2.0, and Shadcn UI.
+An intelligent, sandbox-based Web Application Builder powered by AI. This platform allows users to generate, edit, and instantly preview complete full-stack web applications (like Express.js APIs or Landing Pages) directly from text prompts. 
+
+Built with Laravel 12, React 19, Inertia.js 2.0, and an isolated Node.js Engine.
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat&logo=laravel)
 ![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat&logo=react)
-![Inertia](https://img.shields.io/badge/Inertia.js-2.0-9553E9?style=flat)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=flat&logo=tailwind-css)
+![Node.js](https://img.shields.io/badge/Node.js-Engine-339933?style=flat&logo=node.js)
+![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini-8E75B2?style=flat)
 
-## 🚀 Features
+## 🚀 Key Features
 
-- **Latest Stack**: Laravel 12, React 19, Inertia.js 2.0, Vite 6.
-- **UI Components**: [Shadcn UI](https://ui.shadcn.com) pre-configured with Tailwind CSS 4.
-- **Authentication**: Laravel Fortify (Headless Auth) integrated with Inertia.
-- **Routing**: [Ziggy](https://github.com/tighten/ziggy) globally configured for named routes in React.
-- **Typing**: TypeScript support with global type definitions for Inertia PageProps.
-- **Layout**: Ready-to-use Admin Layout with Shadcn Sidebar.
-- **Icons**: [Lucide React](https://lucide.dev) icons.
-- **Form Handling**: Native Inertia `useForm` (No React Hook Form).
-- **Notifications**: Flash messages integrated with `sonner`.
+- **AI-Powered Generation**: Integrates with Google Gemini AI to translate simple prompts (e.g. "Create a POS cashier app") into a robust Master Prompt that generates complete Express.js controllers, EJS views, and SQL schemas.
+- **Isolated Node.js Sandbox Engine**: Runs user-generated backend code securely within a Node.js `vm` context. Apps are spun up instantly without provisioning physical servers.
+- **MySQL-to-SQLite Transparent Shim**: AI is trained to write standard MySQL (including `ENUM`, `BEGIN TRANSACTION`, `FOR UPDATE`). Our custom database shim intercepts these queries and translates them into SQLite on the fly, allowing zero-config lightweight databases for every project.
+- **Dynamic Preview Proxy**: Laravel acts as a reverse proxy (`PreviewProxyController`), forwarding dynamic API and view requests to the Node Engine while serving static assets natively.
+- **Modern Dashboard UI**: Built with Shadcn UI, Tailwind CSS v4, and Lucide React. Includes features like dark mode, live previews, and file management.
+
+## 🏗 Architecture
+
+The system is split into two main components:
+1. **The Laravel Host (Core)**: Handles user authentication, project management, file storage (database-backed), prompt engineering, and UI serving via React + Inertia.
+2. **The Node Engine (Sandbox)**: A separate lightweight Express application that evaluates user-generated code in a `vm2`-style sandbox context, intercepting HTTP requests and simulating a MySQL database connection using `better-sqlite3`.
 
 ## 🛠 Installation
 
-1.  **Clone the repository**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/asmindev/laravel-web-builder.git
+   cd laravel-web-builder
+   ```
 
-    ```bash
-    git clone https://github.com/your-username/your-repo.git
-    cd your-repo
-    ```
+2. **Setup Laravel Backend**
+   ```bash
+   composer install
+   npm install
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-2.  **Install PHP dependencies**
+3. **Configure Environment Variables**
+   Update your `.env` file with your database credentials and Gemini API Key:
+   ```env
+   DB_CONNECTION=sqlite # Or mysql
+   GEMINI_API_KEY=your_google_gemini_key_here
+   NODE_ENGINE_URL=http://localhost:4000
+   ```
 
-    ```bash
-    composer install
-    ```
+4. **Run Database Migrations & Seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-3.  **Install Node.js dependencies**
+5. **Setup Node Engine**
+   ```bash
+   cd node-engine
+   npm install
+   cd ..
+   ```
 
-    ```bash
-    npm install
-    ```
+## 💻 Running the Application
 
-4.  **Environment Setup**
+You need to run three separate processes for the complete development environment:
 
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-
-5.  **Database Setup**
-    Configure your `.env` with your database credentials, then run:
-
-    ```bash
-    php artisan migrate
-    ```
-
-6.  **Run Development Server**
-
-    ```bash
-    npm run dev
-    ```
-
-    In a separate terminal:
-
-    ```bash
-    php artisan serve
-    ```
-
-## 🏗 Project Structure
-
-- **Resources**: Kebab-case naming convention enforced for all React files (`resources/js`).
-- **Layouts**: `admin-layout.tsx` handling Sidebar and Flash messages.
-- **Pages**: Located in `resources/js/pages`.
-- **Components**: Shadcn components in `resources/js/components/ui`.
-
-## 💡 Usage
-
-### Creating a New Page
-
-Create a file in `resources/js/pages/my-page.tsx`:
-
-```tsx
-import AdminLayout from '@/layouts/admin-layout';
-import { Head } from '@inertiajs/react';
-
-export default function MyPage() {
-    return (
-        <AdminLayout header={<h2>My Page</h2>}>
-            <Head title="My Page" />
-            <div className="p-4">Content goes here</div>
-        </AdminLayout>
-    );
-}
+**1. Laravel Server**
+```bash
+php artisan serve
 ```
 
-### Form Handling (Inertia)
-
-Use the `useForm` hook from `@inertiajs/react`:
-
-```tsx
-import { useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-export default function MyForm() {
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        email: '',
-    });
-
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('my-route.store'));
-    };
-
-    return (
-        <form onSubmit={submit}>
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} />
-            {errors.name && <div className="text-red-500">{errors.name}</div>}
-
-            <Button disabled={processing}>Submit</Button>
-        </form>
-    );
-}
+**2. Vite Asset Bundler (React/Inertia)**
+```bash
+npm run dev
 ```
+
+**3. Node Engine (Sandbox)**
+```bash
+cd node-engine
+npm run dev
+```
+
+The main application dashboard will be available at `http://localhost:8000`.
+
+## 🧠 AI Prompt Enhancer
+The platform includes a specialized `PromptEnhancer` that adds strict guardrails to user requests before they are sent to the AI. These guardrails ensure:
+- No placeholders or `// Add code here` comments are generated.
+- `process.on()` and other environment-breaking event listeners are forbidden.
+- DDL syntax is optimized to be SQLite-shim compatible (e.g. avoiding `CREATE DATABASE`).
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
