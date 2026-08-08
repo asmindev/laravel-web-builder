@@ -14,9 +14,14 @@ Route::any('/app/{slug}/{path?}', PreviewProxyController::class)
     ->where('path', '.*')
     ->name('app.preview');
 
+// Public Landing Page
+Route::get('/', function () {
+    return \Inertia\Inertia::render('welcome');
+})->name('home');
+
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/', function () {
+    Route::get('/dashboard', function () {
         $user = auth()->user();
         $projects = \App\Models\Project::where('user_id', $user->id)->get();
 
