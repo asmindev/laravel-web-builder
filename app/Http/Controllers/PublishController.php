@@ -72,7 +72,7 @@ class PublishController extends Controller
         $path = $this->exportService->exportAsZip($project);
 
         $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'project';
-        $timestamp = now()->format('Ymd_His');
+        $timestamp = now()->format('YmdHis');
         $filename = "{$safeName}_{$timestamp}.zip";
 
         return response()->download($path, $filename)->deleteFileAfterSend();
