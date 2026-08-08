@@ -108,10 +108,8 @@ export default function UserProjects({ targetUser, projects }: UserProjectsProps
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="space-y-1">
-                                                <CardTitle className="text-base">
-                                                    <a href={route('projects.show', p.slug)} className="hover:underline hover:text-[#2cb1bc] transition-colors">
-                                                        {p.name}
-                                                    </a>
+                                                <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                                    {p.name}
                                                 </CardTitle>
                                                 {p.description && (
                                                     <CardDescription className="line-clamp-2 text-xs">
@@ -135,25 +133,22 @@ export default function UserProjects({ targetUser, projects }: UserProjectsProps
                                             </span>
                                         </div>
 
-                                        {/* Action Buttons */}
+                                        {/* Action Buttons (Secret Mode: No Open Editor Link) */}
                                         <div className="flex flex-wrap items-center gap-2">
                                             <Button variant="outline" size="sm" asChild className="h-8 text-xs flex-1">
-                                                <a href={route('projects.show', p.slug)}>Open Editor</a>
-                                            </Button>
-                                            <Button variant="outline" size="sm" asChild className="h-8 text-xs">
-                                                <a href={route('projects.preview', p.slug)} title="Preview">
-                                                    <Eye className="size-3.5" />
+                                                <a href={route('projects.preview', p.slug)} title="Preview Project">
+                                                    <Eye className="size-3.5 mr-1" /> Preview
                                                 </a>
                                             </Button>
                                             <Button variant="outline" size="sm" asChild className="h-8 text-xs" title="Export ZIP (MySQL)">
                                                 <a href={route('projects.export-zip', p.slug)}>
-                                                    <Download className="size-3.5 text-[#2cb1bc]" />
+                                                    <Download className="size-3.5 text-[#2cb1bc] mr-1" /> Export ZIP
                                                 </a>
                                             </Button>
                                             {p.published && (
                                                 <Button size="sm" asChild className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white" title="View Live">
                                                     <a href={route('app.preview', [p.slug])} target="_blank" rel="noopener noreferrer">
-                                                        <Globe className="size-3.5" />
+                                                        <Globe className="size-3.5 mr-1" /> Live
                                                     </a>
                                                 </Button>
                                             )}
