@@ -7,31 +7,31 @@ export default function Welcome({ auth }: { auth: any }) {
     const features = [
         {
             icon: <Cpu className="w-6 h-6 text-indigo-400" />,
-            title: "AI Core Generation",
-            description: "Describe your web app idea in natural language and let Nusantara Engine generate complete Express & React code instantly."
+            title: "Generasi Kode AI Instan",
+            description: "Cukup jelaskan ide aplikasi web Anda dalam bahasa sehari-hari, Nusantara Engine akan menghasilkan kode Express & React secara utuh dan siap jalan."
         },
         {
             icon: <Zap className="w-6 h-6 text-violet-400" />,
-            title: "Real-time Node Sandbox",
-            description: "Experience live execution inside an isolated Node Engine. Test database queries, API routes, and views instantly."
+            title: "Sandbox Node Engine Real-time",
+            description: "Jalankan dan uji aplikasi langsung di dalam lingkungan terisolasi Node Engine. Cek kueri database, API, dan tampilan secara langsung."
         },
         {
             icon: <Code2 className="w-6 h-6 text-emerald-400" />,
-            title: "Full Code Control",
-            description: "Inspect and edit every single file directly with Monaco Editor. Pure flexibility with zero lock-in."
+            title: "Kendali Kode Sepenuhnya",
+            description: "Inspeksi dan ubah setiap baris kode secara langsung menggunakan Monaco Editor terintegrasi tanpa batasan atau kekangan sistem."
         },
         {
             icon: <Globe className="w-6 h-6 text-amber-400" />,
-            title: "Instant Publishing",
-            description: "Deploy your AI-built web applications to custom subdomains or export full zip bundles with a single click."
+            title: "Publikasi & Ekspor Instan",
+            description: "Rilis aplikasi web buatan AI ke subdomain kustom atau unduh seluruh bundle file zip proyek secara utuh hanya dalam satu klik."
         }
     ];
 
     return (
         <div className="min-h-screen bg-[#09090b] text-neutral-100 font-sans selection:bg-indigo-500/30 overflow-hidden relative">
-            <Head title="Nusantara Engine - AI Web Builder" />
+            <Head title="Nusantara Engine - Pembuat Aplikasi Web Berbasis AI" />
 
-            {/* Glowing background radial gradients */}
+            {/* Background radial glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-indigo-600/20 via-purple-600/10 to-transparent blur-3xl pointer-events-none rounded-full" />
             <div className="absolute top-[400px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-violet-600/15 to-transparent blur-3xl pointer-events-none rounded-full" />
 
@@ -60,12 +60,12 @@ export default function Welcome({ auth }: { auth: any }) {
                             <>
                                 <Link href="/login">
                                     <Button variant="ghost" className="text-neutral-300 hover:text-white hover:bg-white/5 rounded-full px-5">
-                                        Sign In
+                                        Masuk
                                     </Button>
                                 </Link>
                                 <Link href="/register">
                                     <Button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium rounded-full px-6 shadow-lg shadow-indigo-500/25 transition-all">
-                                        Get Started
+                                        Daftar Sekarang
                                     </Button>
                                 </Link>
                             </>
@@ -74,25 +74,25 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
             </header>
 
-            {/* Hero Section (Introduction) */}
+            {/* Hero Section */}
             <section className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-8 backdrop-blur-sm">
                     <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
-                    <span>Next-Generation AI Web Application Engine</span>
+                    <span>Mesin Generator Aplikasi Web Berbasis AI</span>
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8 bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                    Transform Concepts into Full-Stack Web Apps Instantly
+                    Ubah Ide Menjadi Aplikasi Web Full-Stack Secara Instan
                 </h1>
 
                 <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-normal">
-                    Nusantara Engine empowers developers and creators to design, build, and deploy full-stack Node.js applications using natural language prompts.
+                    Nusantara Engine membantu developer dan kreator membangun, menguji, dan mempublikasikan aplikasi web Node.js utuh hanya menggunakan instruksi bahasa alami.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href={auth?.user ? "/dashboard" : "/register"}>
                         <Button size="lg" className="w-full sm:w-auto h-13 px-8 text-base bg-white text-black hover:bg-neutral-200 rounded-full font-semibold shadow-xl shadow-white/10 transition-all hover:scale-105">
-                            {auth?.user ? "Go to Dashboard" : "Start Building Free"}
+                            {auth?.user ? "Buka Dashboard" : "Mulai Buat Gratis"}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </Link>
@@ -103,10 +103,10 @@ export default function Welcome({ auth }: { auth: any }) {
             <section className="relative z-10 max-w-6xl mx-auto px-6 py-20">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
-                        Engineered for High-Speed Development
+                        Dirancang untuk Kecepatan Pengembangan Maksimal
                     </h2>
                     <p className="text-neutral-400 max-w-xl mx-auto text-base">
-                        Everything you need to turn ideas into functional, production-ready web applications.
+                        Semua fitur yang Anda butuhkan untuk mengubah ide menjadi aplikasi web siap pakai dan produksi.
                     </p>
                 </div>
 
@@ -127,9 +127,9 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
             </section>
 
-            {/* Simple Footer */}
+            {/* Footer */}
             <footer className="relative z-10 border-t border-white/5 py-8 text-center text-sm text-neutral-500">
-                <p>&copy; {new Date().getFullYear()} Nusantara Engine. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} Nusantara Engine. Hak cipta dilindungi.</p>
             </footer>
         </div>
     );
