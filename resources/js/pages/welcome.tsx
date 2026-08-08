@@ -25,7 +25,11 @@ import {
     Linkedin
 } from 'lucide-react';
 
-export default function Welcome({ auth }: { auth: any }) {
+export default function Welcome({ auth, app_settings }: { auth: any; app_settings?: { app_name: string; admin_whatsapp: string } }) {
+    const appName = app_settings?.app_name || 'NUSANTARTECH';
+    const adminWhatsapp = app_settings?.admin_whatsapp || '6281234567890';
+    const cleanWaNumber = adminWhatsapp.replace(/[^0-9]/g, '');
+
     const [isDark, setIsDark] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [typingText, setTypingText] = useState('');
@@ -61,13 +65,13 @@ export default function Welcome({ auth }: { auth: any }) {
 
     const handleWhatsAppAgency = (e: React.FormEvent) => {
         e.preventDefault();
-        const text = `Halo Nusantartech, saya ${agencyName || 'User'} ingin berkonsultasi mengenai pembuatan ${agencyType}.`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        const text = `Halo ${appName}, saya ${agencyName || 'User'} ingin berkonsultasi mengenai pembuatan ${agencyType}.`;
+        window.open(`https://wa.me/${cleanWaNumber}?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     return (
         <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
-            <Head title="Nusantartech AI — Generate Website dengan Prompt" />
+            <Head title={`${appName} — Generate Website dengan Prompt`} />
 
             {/* Background Patterns */}
             <div className="fixed inset-0 bg-grid-light dark:bg-grid-dark bg-[length:32px_32px] sm:bg-[length:40px_40px] opacity-[0.4] dark:opacity-[0.04] pointer-events-none z-0 transition-opacity duration-500" />
@@ -80,10 +84,10 @@ export default function Welcome({ auth }: { auth: any }) {
                     {/* Logo Header */}
                     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
                         <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-white/10 dark:bg-black/40 border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0 p-1 flex items-center justify-center">
-                            <img src={logoUrl} alt="Nusantartech Logo" className="w-full h-full object-contain" />
+                            <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white">NUSANTARTECH</span>
+                            <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white uppercase">{appName}</span>
                             <span className="text-[8px] sm:text-[10px] font-mono text-[#2cb1bc] font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#2cb1bc] animate-pulse" /> AI Builder
                             </span>
@@ -465,7 +469,7 @@ export default function Welcome({ auth }: { auth: any }) {
                             </div>
                             <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tidak Punya Waktu Membuat Sendiri?</h3>
                             <p className="text-slate-600 dark:text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed">
-                                Selain platform AI Builder, Nusantartech juga memiliki <strong className="text-slate-900 dark:text-white">Tim Studio Agensi Internal</strong>. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.
+                                Selain platform AI Builder, {appName} juga memiliki <strong className="text-slate-900 dark:text-white">Tim Studio Agensi Internal</strong>. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.
                             </p>
                         </div>
                         <div className="md:w-2/5 w-full flex flex-col gap-4">
@@ -546,9 +550,9 @@ export default function Welcome({ auth }: { auth: any }) {
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-[#1e293b] bg-black flex items-center justify-center overflow-hidden shrink-0">
-                                <img src={logoUrl} alt="Logo Footer" className="w-full h-full object-cover" />
+                                <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-cover" />
                             </div>
-                            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg sm:text-xl">NUSANTARTECH</span>
+                            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg sm:text-xl uppercase">{appName}</span>
                         </div>
 
                         <div className="text-center md:text-right">
@@ -563,7 +567,7 @@ export default function Welcome({ auth }: { auth: any }) {
                                     <Linkedin className="w-5 h-5" />
                                 </a>
                             </div>
-                            <p className="text-slate-500 text-xs sm:text-sm">&copy; 2026 Nusantartech. All rights reserved.</p>
+                            <p className="text-slate-500 text-xs sm:text-sm">&copy; 2026 {appName}. All rights reserved.</p>
                         </div>
                     </div>
                 </div>
