@@ -13,7 +13,5 @@
 Thumbs.db
 .DS_Store
 /public/hot
-/public/build
-/build
 /resources/js/actions
 /resources/js/routes

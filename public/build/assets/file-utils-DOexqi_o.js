@@ -1,0 +1,1 @@
+const n={ejs:"text-orange-500",html:"text-orange-500",css:"text-blue-500",js:"text-yellow-500",json:"text-green-500"};function e(t){return t.split(".").pop()||""}function a(t){switch(e(t)){case"ejs":case"html":return"html";case"css":return"css";case"js":return"javascript";case"json":return"json";default:return"plaintext"}}export{n as E,e as g,a as m};
