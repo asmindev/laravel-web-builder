@@ -1,260 +1,560 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, Sparkles, Send, CheckCircle2 } from 'lucide-react';
+import {
+    Sparkles,
+    Terminal,
+    Wand2,
+    Cpu,
+    CheckCircle2,
+    Layers,
+    Code2,
+    Globe,
+    Users,
+    CreditCard,
+    Check,
+    Briefcase,
+    ArrowRight,
+    Moon,
+    Sun,
+    Menu,
+    X,
+    ChevronRight,
+    LayoutTemplate,
+    Twitter,
+    Github,
+    Linkedin
+} from 'lucide-react';
 
 export default function Welcome({ auth }: { auth: any }) {
-    const [promptText, setPromptText] = useState("Sistem kasir toko kopi dengan laporan penjualan");
+    const [isDark, setIsDark] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [typingText, setTypingText] = useState('');
+    const [agencyName, setAgencyName] = useState('');
+    const [agencyType, setAgencyType] = useState('Company Profile');
 
-    const samplePrompts = [
-        "Aplikasi Kasir Kopi",
-        "Toko Sepatu Online",
-        "Portofolio Fotografer"
-    ];
+    const fullText = "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
 
-    const steps = [
-        {
-            number: "01",
-            bgCard: "bg-[#fdf4ff] border-[#f5d0fe]",
-            numberColor: "text-[#c084fc]",
-            title: "Tulis Kebutuhan",
-            desc: "Cukup ketik ide atau fitur web yang kamu inginkan dalam bahasa sehari-hari. Tanpa perlu paham sintaks koding."
-        },
-        {
-            number: "02",
-            bgCard: "bg-[#f0fdf4] border-[#bbf7d0]",
-            numberColor: "text-[#34d399]",
-            title: "Proses Otomatis",
-            desc: "Engine AI langsung menyusun skema database, server Express.js, dan tampilan template EJS dalam hitungan detik."
-        },
-        {
-            number: "03",
-            bgCard: "bg-[#fff7ed] border-[#fed7aa]",
-            numberColor: "text-[#fb923c]",
-            title: "Langsung Gunakan",
-            desc: "Uji coba hasilnya secara real-time di sandbox, edit kode jika perlu, dan langsung publikasikan web app kamu."
+    // Typing effect simulation
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index < fullText.length) {
+                setTypingText(fullText.slice(0, index + 1));
+                index++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 35);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Toggle Dark Mode class on html element
+    useEffect(() => {
+        const root = document.documentElement;
+        if (isDark) {
+            root.classList.add('dark');
+        } else {
+            root.classList.remove('dark');
         }
-    ];
+    }, [isDark]);
 
-    const features = [
-        {
-            cardBg: "bg-[#faf5ff]",
-            border: "border-[#e9d5ff] hover:border-[#c084fc]",
-            tag: "EXPRESS & EJS",
-            tagBg: "bg-[#f3e8ff] text-[#7e22ce] border-[#d8b4fe]",
-            title: "Generasi Express & EJS",
-            desc: "Menghasilkan kode Node.js, Express, dan EJS 100% lengkap tanpa placeholder. Langsung siap jalan dan dipublikasikan."
-        },
-        {
-            cardBg: "bg-[#f0fdf4]",
-            border: "border-[#bbf7d0] hover:border-[#34d399]",
-            tag: "REAL-TIME SANDBOX",
-            tagBg: "bg-[#dcfce7] text-[#15803d] border-[#86efac]",
-            title: "Live Node Sandbox",
-            desc: "Aplikasi berjalan di lingkungan terisolasi Node Engine. Uji coba tampilan EJS dan sistem backend secara real-time."
-        },
-        {
-            cardBg: "bg-[#fff1f2]",
-            border: "border-[#fecdd3] hover:border-[#fb7185]",
-            tag: "MONACO EDITOR",
-            tagBg: "bg-[#ffe4e6] text-[#be123c] border-[#fda4af]",
-            title: "Editor Kode Terintegrasi",
-            desc: "Akses penuh untuk mengubah setiap baris kode server Express, template EJS, dan gaya CSS dengan Monaco Editor."
-        },
-        {
-            cardBg: "bg-[#fffbe6]",
-            border: "border-[#fef08a] hover:border-[#facc15]",
-            tag: "ONE-CLICK DEPLOY",
-            tagBg: "bg-[#fef9c3] text-[#a16207] border-[#fde047]",
-            title: "Ekspor & Publikasi Instan",
-            desc: "Rilis ke subdomain kustom atau unduh seluruh bundle proyek Node.js (ZIP) untuk di-host di server kamu sendiri."
-        }
-    ];
+    const handleWhatsAppAgency = (e: React.FormEvent) => {
+        e.preventDefault();
+        const text = `Halo Nusantartech, saya ${agencyName || 'User'} ingin berkonsultasi mengenai pembuatan ${agencyType}.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    };
 
     return (
-        <div className="min-h-screen bg-[#fafafa] text-neutral-900 font-sans selection:bg-[#fef08a] selection:text-black flex flex-col justify-between relative overflow-hidden">
-            <Head title="Nusantara Engine — Instant Web App Builder" />
+        <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
+            <Head title="Nusantartech AI — Generate Website dengan Prompt" />
 
-            {/* Header Nav */}
-            <header className="px-8 py-6 border-b border-neutral-200/80 bg-white/90 backdrop-blur-xl sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="font-bold tracking-tight text-lg flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-[#34d399]" />
-                        <span className="font-extrabold tracking-tight text-neutral-900">
-                            NUSANTARA ENGINE
-                        </span>
+            {/* Dynamic Background Patterns */}
+            <div className="fixed inset-0 bg-grid-light dark:bg-grid-dark bg-[length:32px_32px] sm:bg-[length:40px_40px] opacity-[0.4] dark:opacity-[0.04] pointer-events-none z-0 transition-opacity duration-500" />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] md:w-[800px] h-[300px] sm:h-[500px] bg-[#2cb1bc] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] sm:blur-[200px] opacity-[0.05] dark:opacity-[0.08] pointer-events-none z-0 transition-opacity duration-500" />
+
+            {/* Header / Navbar */}
+            <header className="fixed w-full top-0 z-50 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl transition-all duration-300 border-b border-slate-200/50 dark:border-white/5">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between">
+                    
+                    {/* Brand Logo */}
+                    <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
+                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all flex items-center justify-center shrink-0">
+                            <span className="font-mono font-black text-white text-xs sm:text-sm tracking-tighter">NT</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white">NUSANTARTECH</span>
+                            <span className="text-[8px] sm:text-[10px] font-mono text-[#2cb1bc] font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#2cb1bc] animate-pulse" /> AI Builder
+                            </span>
+                        </div>
+                    </Link>
+
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#fitur">Fitur AI</a>
+                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
+                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#harga">Langganan</a>
+                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#terms">Terms</a>
+                        <div className="h-4 w-px bg-slate-300 dark:bg-slate-800" />
+                        <a className="text-sm font-semibold text-[#ff8a5c] hover:text-[#e86a38] transition-colors flex items-center gap-1.5" href="#jasa">
+                            <LayoutTemplate className="w-4 h-4" /> Jasa Agensi
+                        </a>
+                    </nav>
+
+                    {/* Desktop Actions */}
+                    <div className="hidden md:flex items-center gap-3 lg:gap-4">
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-yellow-400 transition-all hover:scale-105 active:scale-95 focus:outline-none"
+                            aria-label="Toggle Dark Mode"
+                        >
+                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                        
+                        <Link
+                            href={auth?.user ? "/dashboard" : "/login"}
+                            className="text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 px-5 lg:px-6 py-2.5 rounded-full transition-all shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95"
+                        >
+                            {auth?.user ? "Masuk ke Dashboard" : "Masuk"}
+                        </Link>
                     </div>
-                    <div>
-                        {auth?.user ? (
-                            <Link href="/dashboard" className="text-xs font-bold uppercase tracking-wider px-6 py-3 bg-neutral-900 text-white hover:bg-neutral-800 transition-all rounded-full shadow-md">
-                                Dashboard &rarr;
-                            </Link>
-                        ) : (
-                            <div className="flex items-center gap-6">
-                                <Link href="/login" className="text-xs font-semibold uppercase tracking-wider text-neutral-600 hover:text-neutral-900 transition-colors">
-                                    Masuk
-                                </Link>
-                                <Link href="/register" className="text-xs font-bold uppercase tracking-wider px-6 py-3 bg-neutral-900 text-white hover:bg-neutral-800 transition-all rounded-full shadow-md">
-                                    Mulai Gratis
-                                </Link>
-                            </div>
-                        )}
+
+                    {/* Mobile Actions */}
+                    <div className="flex items-center gap-2 sm:gap-3 md:hidden">
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            className="p-2 sm:p-2.5 rounded-full bg-slate-100 active:bg-slate-200 dark:bg-slate-800 dark:active:bg-slate-700 text-slate-600 dark:text-yellow-400 transition-colors focus:outline-none"
+                        >
+                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="p-2 rounded-xl text-slate-900 dark:text-white focus:outline-none active:bg-slate-200 dark:active:bg-slate-800 transition-colors"
+                        >
+                            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Dropdown */}
+                {mobileMenuOpen && (
+                    <div className="absolute top-full left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 border-b border-slate-200/80 dark:border-slate-800 flex flex-col px-6 py-6 gap-4 md:hidden shadow-2xl backdrop-blur-2xl z-50">
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#fitur">
+                            <span>Fitur AI</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </a>
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#cara-kerja">
+                            <span>Cara Kerja</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </a>
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#harga">
+                            <span>Langganan</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </a>
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#terms">
+                            <span>Terms &amp; Conditions</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </a>
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-[#ff8a5c] py-1 flex items-center justify-between" href="#jasa">
+                            <span className="flex items-center gap-2"><LayoutTemplate className="w-4 h-4" /> Jasa Agensi (Kustom)</span>
+                            <ChevronRight className="w-4 h-4 text-[#ff8a5c]" />
+                        </a>
+                        <hr className="border-slate-200 dark:border-slate-800 my-1" />
+                        <Link href={auth?.user ? "/dashboard" : "/login"} className="text-center text-sm font-bold bg-slate-900 dark:bg-white text-white dark:text-black py-3.5 rounded-xl active:scale-95 transition-transform shadow-md">
+                            Masuk ke Dashboard
+                        </Link>
+                    </div>
+                )}
             </header>
 
-            {/* Main Content */}
-            <main className="relative z-10">
-                {/* Asymmetric Non-AI-Slop Hero Banner */}
-                <section className="max-w-7xl mx-auto px-8 py-20 border-b border-neutral-200/80">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        {/* Left Side Copy */}
-                        <div className="lg:col-span-7 space-y-6 text-left">
-                            <h1 className="text-5xl sm:text-7xl font-black text-neutral-900 tracking-tight leading-[1.05]">
-                                Susun Website <br />
-                                Cuma Pakai <span className="bg-[#fef08a] px-3 py-1 rounded-lg text-neutral-900 border border-[#fde047]">Kalimat Biasa.</span>
+            {/* Hero Section */}
+            <main className="relative pt-28 sm:pt-36 pb-16 lg:pt-48 lg:pb-32 z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                        
+                        {/* Hero Left Copy */}
+                        <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[10px] sm:text-xs font-mono font-bold text-[#2cb1bc] mb-1 backdrop-blur-md">
+                                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                                Engine Generasi Ke-3 Tersedia
+                            </div>
+                            
+                            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
+                                Ketik Idenya,<br />
+                                AI Kami Buat<br />
+                                <span className="bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] bg-clip-text text-transparent">Websitenya.</span>
                             </h1>
-
-                            <p className="text-neutral-600 text-lg sm:text-xl font-normal leading-relaxed max-w-xl">
-                                Nusantara Engine mengubah deskripsi ide kamu jadi aplikasi web Node.js &amp; EJS yang siap dipakai secara otomatis.
+                            
+                            <p className="text-slate-600 dark:text-gray-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.
                             </p>
-
-                            <div className="pt-2 flex items-center gap-4">
-                                <Link
-                                    href={auth?.user ? "/dashboard" : "/register"}
-                                    className="group inline-flex items-center gap-3 px-8 py-4 bg-neutral-900 text-white font-bold text-sm uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-xl rounded-full"
-                                >
-                                    <span>{auth?.user ? "Buka Dashboard" : "Mulai Buat Web App"}</span>
-                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Right Side Interactive Try Widget (Visual, Human-crafted) */}
-                        <div className="lg:col-span-5 bg-white border border-neutral-300 p-6 rounded-2xl shadow-xl space-y-5">
-                            <div className="flex items-center justify-between text-xs font-mono text-neutral-500 border-b border-neutral-100 pb-3">
-                                <span className="font-bold text-neutral-800 uppercase tracking-wider flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-[#c084fc]" /> Coba Generator Simulator
-                                </span>
-                                <span className="text-[#16a34a] bg-[#dcfce7] px-2 py-0.5 rounded font-bold">READY</span>
-                            </div>
-
-                            {/* Preset Buttons */}
-                            <div className="space-y-2">
-                                <label className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Contoh Ide Prompt:</label>
-                                <div className="flex flex-wrap gap-2">
-                                    {samplePrompts.map((p, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => setPromptText(`Buatkan ${p.toLowerCase()} sederhana`)}
-                                            className="text-xs px-3 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium transition-all border border-neutral-200"
-                                        >
-                                            + {p}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Simulated Input Bar */}
-                            <div className="space-y-2 pt-1">
-                                <label className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Prompt Kamu:</label>
-                                <div className="flex items-center gap-2 p-2.5 rounded-xl border border-neutral-300 bg-neutral-50">
-                                    <input
-                                        type="text"
-                                        value={promptText}
-                                        onChange={(e) => setPromptText(e.target.value)}
-                                        className="w-full bg-transparent border-none outline-none text-xs font-medium text-neutral-800"
-                                        placeholder="Ketik ide web kamu di sini..."
-                                    />
-                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="p-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors">
-                                        <Send className="w-3.5 h-3.5" />
+                            
+                            {/* AI Prompt Input Simulation */}
+                            <div className="pt-2 max-w-xl mx-auto lg:mx-0">
+                                <div className="bg-white dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712] border border-slate-200 dark:border-[#2cb1bc]/30 rounded-2xl p-2 flex items-center gap-2 sm:gap-3 shadow-xl">
+                                    <div className="pl-2.5 sm:pl-3 text-[#2cb1bc] shrink-0">
+                                        <Terminal className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    </div>
+                                    <div className="w-full text-left text-slate-800 dark:text-white text-xs sm:text-sm font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
+                                        <span>{typingText}</span>
+                                        <span className="animate-pulse text-[#2cb1bc] font-bold">|</span>
+                                    </div>
+                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] shrink-0">
+                                        <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </Link>
                                 </div>
-                            </div>
-
-                            {/* Simulated Output Status */}
-                            <div className="p-3.5 rounded-xl bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-between text-xs text-[#15803d]">
-                                <span className="flex items-center gap-2 font-medium">
-                                    <CheckCircle2 className="w-4 h-4 text-[#22c55e]" /> Siap digenerate ke Node.js &amp; EJS
-                                </span>
-                                <span className="font-mono text-[10px] font-bold">~0.4s</span>
+                                <div className="mt-3.5 flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono text-slate-500 dark:text-gray-500 justify-center lg:justify-start items-center">
+                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
+                                    <button onClick={() => setTypingText("Toko Sepatu Sneakers dengan keranjang belanja")} className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 transition-all bg-white/50 dark:bg-transparent">"Toko Sepatu Sneakers"</button>
+                                    <button onClick={() => setTypingText("Klinik Gigi Premium dengan janji temu online")} className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#2cb1bc] hover:text-[#2cb1bc] active:scale-95 transition-all bg-white/50 dark:bg-transparent">"Klinik Gigi Premium"</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
 
-                {/* Explanation Section / How it Works */}
-                <section className="py-24 border-b border-neutral-200/80 bg-white">
-                    <div className="max-w-7xl mx-auto px-8">
-                        <div className="text-xs font-mono text-neutral-400 font-bold uppercase tracking-wider mb-12">
-                            [ ALUR PROSES ]
-                        </div>
+                        {/* Hero Right Visual */}
+                        <div className="relative h-[320px] sm:h-[450px] lg:h-[520px] flex items-center justify-center mt-6 lg:mt-0">
+                            <div className="relative w-full max-w-[280px] sm:max-w-md aspect-square flex items-center justify-center">
+                                <div className="absolute w-32 h-32 sm:w-40 sm:h-40 bg-[#2cb1bc] rounded-full blur-[50px] sm:blur-[60px] opacity-40 animate-pulse" />
+                                <div className="absolute w-[78%] h-[78%] rounded-full border border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30 border-dashed animate-spin" style={{ animationDuration: '18s' }} />
+                                <div className="absolute w-[98%] h-[98%] rounded-full border border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20 border-dotted animate-spin" style={{ animationDuration: '22s', animationDirection: 'reverse' }}>
+                                    <div className="absolute top-0 left-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#ff8a5c] rounded-full shadow-[0_0_10px_#ff8a5c] -translate-x-1/2 -translate-y-1/2" />
+                                    <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-[#2cb1bc] rounded-full shadow-[0_0_10px_#2cb1bc] -translate-x-1/2 translate-y-1/2" />
+                                </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {steps.map((s, idx) => (
-                                <div key={idx} className={`p-8 rounded-2xl border transition-all duration-300 space-y-4 ${s.bgCard}`}>
-                                    <div className={`text-4xl font-black font-mono ${s.numberColor}`}>
-                                        {s.number}
+                                {/* Central Core Frame */}
+                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl z-20 bg-black flex items-center justify-center">
+                                    <div className="text-center space-y-1">
+                                        <div className="text-2xl sm:text-4xl font-black text-white tracking-widest font-mono">
+                                            AI<span className="text-[#2cb1bc]">CORE</span>
+                                        </div>
+                                        <div className="text-[10px] font-mono text-[#ff8a5c] tracking-widest uppercase">NODE &amp; EJS ENGINE</div>
                                     </div>
-                                    <h3 className="text-xl font-bold uppercase tracking-tight text-neutral-900">
-                                        {s.title}
-                                    </h3>
-                                    <p className="text-neutral-600 text-sm font-normal leading-relaxed">
-                                        {s.desc}
-                                    </p>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
 
-                {/* Features Showcase Section */}
-                <section className="py-24 border-b border-neutral-200/80">
-                    <div className="max-w-7xl mx-auto px-8">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                            <div>
-                                <div className="text-xs font-mono text-neutral-400 font-bold uppercase tracking-wider mb-3">
-                                    [ FITUR UTAMA ]
+                                {/* Floating UI Elements */}
+                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                    <Cpu className="w-4 h-4 sm:w-5 sm:h-5 text-[#2cb1bc] animate-pulse" />
+                                    <div className="text-[9px] sm:text-xs font-mono">
+                                        <p className="text-slate-800 dark:text-white font-bold">Menyusun Layout...</p>
+                                        <p className="text-[#2cb1bc]">Express &amp; EJS Applied</p>
+                                    </div>
                                 </div>
-                                <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-neutral-900">
-                                    Teknologi Pembuatan Web
-                                </h2>
+                                
+                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff8a5c]" />
+                                    <div className="text-[9px] sm:text-xs font-mono">
+                                        <p className="text-slate-800 dark:text-white font-bold">Aset Dimuat</p>
+                                        <p className="text-slate-500 dark:text-gray-400">Opt: WebP, 0.4s</p>
+                                    </div>
+                                </div>
                             </div>
-                            <p className="text-neutral-600 text-sm max-w-md font-normal">
-                                Menggunakan stack Node.js, Express, dan EJS untuk aplikasi yang cepat, stabil, dan siap pakai.
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+            {/* Section Fitur AI */}
+            <section id="fitur" className="py-16 sm:py-24 bg-white dark:bg-[#0a0d14] border-y border-slate-200 dark:border-white/5 relative z-10 transition-colors duration-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="mb-12 sm:mb-16">
+                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                            <span className="text-[#2cb1bc]">// fitur</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Yang Anda dapatkan</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Fokus pada alur kerja inti yang paling sering dipakai untuk membangun dan mengelola project berbasis Node.js.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                        {/* Fitur 1 */}
+                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                                    <Layers className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">project-builder.js</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Project builder</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Buat landing page atau aplikasi baru dengan struktur file yang langsung siap dipakai.
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {features.map((f, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className={`p-8 rounded-2xl border ${f.cardBg} ${f.border} transition-all duration-300 space-y-4`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-2xl font-bold uppercase tracking-tight text-neutral-900">
-                                            {f.title}
-                                        </h3>
-                                        <span className={`text-[10px] font-mono px-3 py-1 border rounded-md font-bold tracking-wider ${f.tagBg}`}>
-                                            {f.tag}
-                                        </span>
-                                    </div>
-                                    <p className="text-neutral-600 text-sm font-normal leading-relaxed">{f.desc}</p>
+                        {/* Fitur 2 */}
+                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                                    <Code2 className="w-5 h-5" />
                                 </div>
-                            ))}
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">browser-ide.js</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">IDE browser</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Edit file utama, jalankan project, lihat log, dan simpan perubahan dari dashboard.
+                            </p>
+                        </div>
+
+                        {/* Fitur 3 */}
+                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                                    <Globe className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">publish.sh</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Preview dan publish</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Aktifkan preview internal dan URL publik saat project sudah siap diuji atau dipresentasikan.
+                            </p>
+                        </div>
+
+                        {/* Fitur 4 */}
+                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">users.json</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Manajemen user</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Atur akun user, role, status aktif, password, dan batas project sesuai paket layanan.
+                            </p>
                         </div>
                     </div>
-                </section>
-            </main>
+                </div>
+            </section>
+
+            {/* Section Cara Kerja */}
+            <section id="cara-kerja" className="py-16 sm:py-24 relative z-10 transition-colors duration-500 dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="mb-14 sm:mb-20">
+                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                            <span className="text-[#2cb1bc]">// cara kerja</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Tiga langkah untuk mulai</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Alurnya dibuat singkat supaya user awam tetap bisa mulai tanpa banyak penyesuaian teknis.</p>
+                    </div>
+
+                    <div className="relative mt-4 sm:mt-8">
+                        <div className="hidden md:block absolute top-[24px] left-6 right-6 h-[1px] bg-slate-200 dark:bg-white/10 z-0" />
+                        <div className="block md:hidden absolute top-6 bottom-6 left-[23px] w-[1px] bg-slate-200 dark:bg-white/10 z-0" />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 relative z-10">
+                            {/* Langkah 1 */}
+                            <div className="relative flex md:block items-start gap-5 md:gap-0">
+                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">1</div>
+                                <div>
+                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Pilih paket</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Tentukan paket sesuai kebutuhan jumlah project dan jenis pekerjaan yang dijalankan.</p>
+                                </div>
+                            </div>
+
+                            {/* Langkah 2 */}
+                            <div className="relative flex md:block items-start gap-5 md:gap-0">
+                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">2</div>
+                                <div>
+                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Registrasi akun</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Isi nama lengkap, email, nomor WhatsApp, lalu buat akun untuk menyelesaikan pendaftaran.</p>
+                                </div>
+                            </div>
+
+                            {/* Langkah 3 */}
+                            <div className="relative flex md:block items-start gap-5 md:gap-0">
+                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">3</div>
+                                <div>
+                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Masuk dan mulai build</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Setelah akun aktif, login ke dashboard dan mulai membuat landing page atau aplikasi baru.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Section Akses Platform / Harga */}
+            <section id="harga" className="py-16 sm:py-24 relative z-10 transition-colors duration-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+                        <div className="text-[#ff8a5c] font-mono text-xs font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+                            <CreditCard className="w-4 h-4" />
+                            [ Akses Platform ]
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pilih Paket Builder Anda</h2>
+                        <p className="text-slate-600 dark:text-gray-400 mt-3 text-sm sm:text-base">Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                        {/* Free Tier */}
+                        <div className="bg-white/80 dark:bg-[#0f172a]/65 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col relative shadow-md">
+                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Starter</h3>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">Untuk eksplorasi kekuatan AI.</p>
+                            <div className="my-5 sm:my-6">
+                                <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Rp 0</span>
+                            </div>
+                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
+                                    10x Generate AI per bulan
+                                </li>
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
+                                    Akses Editor Visual &amp; Monaco IDE
+                                </li>
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
+                                    Subdomain Preview Sandbox
+                                </li>
+                            </ul>
+                            <Link href={auth?.user ? "/dashboard" : "/register"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm">
+                                {auth?.user ? "Buka Dashboard" : "Masuk Akun"}
+                            </Link>
+                        </div>
+
+                        {/* Pro Tier */}
+                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative shadow-2xl">
+                            <div className="absolute -top-3.5 right-6 sm:right-8 bg-[#2cb1bc] text-slate-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest py-1 px-3.5 sm:py-1.5 sm:px-4 rounded-full shadow-lg">
+                                Populer
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold text-white">Pro Builder</h3>
+                            <p className="text-xs sm:text-sm text-[#a6f4fa] mt-1 font-medium">Solusi lengkap untuk profesional.</p>
+                            <div className="my-5 sm:my-6">
+                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">Rp 149k</span><span class="text-gray-400 font-medium text-sm sm:text-base"> /bln</span>
+                            </div>
+                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
+                                    Unlimited Generate AI
+                                </li>
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
+                                    Export Bundle Kode Node.js (ZIP)
+                                </li>
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
+                                    Custom Subdomain Kustom
+                                </li>
+                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
+                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
+                                    Integrasi Database SQLite/MySQL Shim
+                                </li>
+                            </ul>
+                            <Link href={auth?.user ? "/dashboard" : "/register"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-slate-900 transition-all font-extrabold text-sm shadow-[0_0_20px_rgba(44,177,188,0.4)]">
+                                Berlangganan Pro
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Section Jasa Agensi */}
+            <section id="jasa" className="py-16 sm:py-24 border-y border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#060a13] relative z-10 overflow-hidden transition-colors duration-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="bg-white/80 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-300 dark:border-slate-800 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 shadow-lg">
+                        <div className="md:w-3/5 space-y-4 sm:space-y-6 text-left">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff8a5c]/10 border border-[#ff8a5c]/30 text-[10px] sm:text-[11px] font-mono font-bold text-[#e86a38] dark:text-[#ff8a5c]">
+                                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Opsi Terima Beres
+                            </div>
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tidak Punya Waktu Membuat Sendiri?</h3>
+                            <p className="text-slate-600 dark:text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed">
+                                Selain platform AI Builder, Nusantartech juga memiliki <strong className="text-slate-900 dark:text-white">Tim Studio Agensi Internal</strong>. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.
+                            </p>
+                        </div>
+                        <div className="md:w-2/5 w-full">
+                            <form onSubmit={handleWhatsAppAgency} className="bg-white dark:bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                                <h4 className="font-bold text-slate-900 dark:text-white mb-2 text-xs sm:text-sm font-mono uppercase tracking-wider">Konsultasi Proyek Kustom</h4>
+                                <input
+                                    type="text"
+                                    placeholder="Nama Anda"
+                                    value={agencyName}
+                                    onChange={(e) => setAgencyName(e.target.value)}
+                                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#ff8a5c] dark:text-white transition-colors"
+                                />
+                                <select
+                                    value={agencyType}
+                                    onChange={(e) => setAgencyType(e.target.value)}
+                                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#ff8a5c] text-slate-600 dark:text-gray-300 transition-colors"
+                                >
+                                    <option value="Company Profile">Jenis Website: Company Profile</option>
+                                    <option value="Toko Online">Jenis Website: Toko Online</option>
+                                    <option value="Landing Page">Jenis Website: Landing Page</option>
+                                    <option value="Sistem Web Kustom">Jenis Website: Sistem Web Kustom</option>
+                                </select>
+                                <button type="submit" className="w-full py-3 bg-[#ff8a5c] hover:bg-[#e86a38] active:scale-95 text-white font-bold rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-2 group shadow-md">
+                                    <span>Hubungi via WhatsApp</span>
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Section Terms & Conditions */}
+            <section id="terms" className="py-16 sm:py-24 relative z-10 transition-colors duration-500 border-y border-slate-200 dark:border-white/5 dark:bg-[#0a0d14]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+                    <div className="mb-10 sm:mb-12">
+                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                            <span className="text-[#2cb1bc]">// terms &amp; conditions</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Terms &amp; Conditions</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab platform.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§1</span>
+                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Penggunaan layanan</h3>
+                            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                Layanan hanya digunakan untuk keperluan yang sesuai dengan ketentuan, hukum yang berlaku, dan kebijakan internal yang Anda tetapkan.
+                            </p>
+                        </div>
+
+                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§2</span>
+                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Akses akun</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                Pengguna wajib menjaga kerahasiaan kredensial akun dan bertanggung jawab atas aktivitas yang dilakukan melalui akun tersebut.
+                            </p>
+                        </div>
+
+                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
+                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§3</span>
+                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Pembaruan ketentuan</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                Syarat dan ketentuan dapat diperbarui sewaktu-waktu selama perubahan tersebut diumumkan secara transparan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* Footer */}
-            <footer className="px-8 py-10 border-t border-neutral-200/80 max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-neutral-500 uppercase tracking-wider relative z-10 bg-white">
-                <div>&copy; {new Date().getFullYear()} NUSANTARA ENGINE</div>
-                <div className="flex items-center gap-4 font-bold text-neutral-700">
-                    <span>NODE.JS</span>
-                    <span>•</span>
-                    <span>EXPRESS</span>
-                    <span>•</span>
-                    <span>EJS</span>
+            <footer className="py-10 sm:py-12 bg-white dark:bg-[#0a0d14] border-t border-slate-200 dark:border-white/10 relative z-10 transition-colors duration-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-black flex items-center justify-center shrink-0">
+                                <span className="font-mono font-black text-white text-xs sm:text-sm">NT</span>
+                            </div>
+                            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg sm:text-xl">NUSANTARTECH</span>
+                        </div>
+
+                        <div className="text-center md:text-right">
+                            <div className="flex items-center justify-center md:justify-end gap-5 mb-3.5">
+                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="Twitter">
+                                    <Twitter className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="GitHub">
+                                    <Github className="w-5 h-5" />
+                                </a>
+                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="LinkedIn">
+                                    <Linkedin className="w-5 h-5" />
+                                </a>
+                            </div>
+                            <p className="text-slate-500 text-xs sm:text-sm">&copy; {new Date().getFullYear()} Nusantartech. All rights reserved.</p>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
