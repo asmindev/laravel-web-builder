@@ -53,17 +53,18 @@ export default function ProjectIndex({ projects }: IndexProps) {
         return true;
     });
 
-    const { auth, props } = usePage<{ auth?: any; enhanced_prompt?: string }>().props;
+    const pageProps = usePage<{ auth?: any; enhanced_prompt?: string }>().props;
+    const auth = pageProps.auth;
     const [enhancing, setEnhancing] = useState(false);
     const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
 
     // Sync enhanced_prompt when Inertia props updated
     useEffect(() => {
-        if (props.enhanced_prompt) {
-            setEnhancedPrompt(props.enhanced_prompt);
+        if (pageProps.enhanced_prompt) {
+            setEnhancedPrompt(pageProps.enhanced_prompt);
         }
-    }, [props.enhanced_prompt]);
+    }, [pageProps.enhanced_prompt]);
 
     const handleEnhancePrompt = () => {
         if (!name || !description) return;
