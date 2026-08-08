@@ -30,9 +30,11 @@ createInertiaApp({
 });
 
 import { route as routeFn } from 'ziggy-js';
+import { Ziggy } from './ziggy';
 
 declare global {
     var route: typeof routeFn;
 }
 
-window.route = routeFn;
+// @ts-ignore
+window.route = (name?: any, params?: any, absolute?: any, config: any = Ziggy) => routeFn(name, params, absolute, config);
