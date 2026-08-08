@@ -98,7 +98,7 @@ class UserController extends Controller
                 'project_limit' => $user->project_limit === 999999 ? 'Unlimited' : $user->project_limit,
                 'roles' => $user->getRoleNames(),
             ],
-            'projects' => $projects,
+            'userProjects' => $projects,
         ]);
     }
 

@@ -19,7 +19,8 @@ import { Project } from '@/types/project';
 import { Link, usePage } from '@inertiajs/react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { auth, projects } = usePage<PageProps & { auth?: any; projects?: Project[] }>().props;
+    const { auth, recent_projects, projects } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[] }>().props;
+    const userRecentProjects = recent_projects && recent_projects.length > 0 ? recent_projects : (projects || []);
 
     const navMain = [
         {
@@ -89,11 +90,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </SidebarMenu>
                     </SidebarGroup>
                 )}
-                {projects && projects.length > 0 && (
+                {userRecentProjects && userRecentProjects.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>
                         <SidebarMenu>
-                            {projects.slice(0, 5).map((p) => (
+                            {userRecentProjects.slice(0, 5).map((p) => (
                                 <SidebarMenuItem key={p.id}>
                                     <SidebarMenuButton asChild size="sm" tooltip={p.name}>
                                         <Link href={route('projects.show', p.slug)} className="group/item">

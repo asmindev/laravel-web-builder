@@ -64,6 +64,12 @@ class HandleInertiaRequests extends Middleware
                 ] : null,
             ],
             'enhanced_prompt' => fn() => session()->get('enhanced_prompt'),
+            'recent_projects' => fn() => $user
+                ? \App\Models\Project::where('user_id', $user->id)
+                    ->latest()
+                    ->limit(5)
+                    ->get(['id', 'name', 'slug', 'published'])
+                : [],
             'projects' => fn() => $user
                 ? \App\Models\Project::where('user_id', $user->id)
                     ->latest()

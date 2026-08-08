@@ -30,10 +30,12 @@ interface TargetUser {
 
 interface UserProjectsProps {
     targetUser: TargetUser;
-    projects: UserProjectItem[];
+    userProjects?: UserProjectItem[];
+    projects?: UserProjectItem[];
 }
 
-export default function UserProjects({ targetUser, projects }: UserProjectsProps) {
+export default function UserProjects({ targetUser, userProjects, projects: legacyProjects }: UserProjectsProps) {
+    const projects = userProjects || legacyProjects || [];
     const getPlanBadge = (plan: string) => {
         switch (plan) {
             case 'starter':
