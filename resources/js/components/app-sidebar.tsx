@@ -49,12 +49,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={route('dashboard')}>
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <GalleryVerticalEnd className="size-4" />
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
+                                    <img src="/images/logo.webp" alt="Web Builder Logo" className="size-8 object-contain" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-semibold">Web Builder</span>
-                                    <span className="">v1.0.0</span>
+                                    <span className="text-xs text-muted-foreground">v1.0.0</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>

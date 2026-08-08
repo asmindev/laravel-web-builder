@@ -33,7 +33,7 @@ export default function Welcome({ auth }: { auth: any }) {
     const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
     const fullText = "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
-    const logoUrl = "https://nusantaratech.id/logoo.png";
+    const logoUrl = "/images/logo.webp";
 
     // Typing effect simulation
     useEffect(() => {
@@ -79,8 +79,8 @@ export default function Welcome({ auth }: { auth: any }) {
                     
                     {/* Logo Header */}
                     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
-                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0">
-                            <img src={logoUrl} alt="Nusantartech Logo" className="w-full h-full object-cover" />
+                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-white/10 dark:bg-black/40 border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0 p-1 flex items-center justify-center">
+                            <img src={logoUrl} alt="Nusantartech Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-col">
                             <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white">NUSANTARTECH</span>

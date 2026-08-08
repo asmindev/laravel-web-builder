@@ -45,8 +45,8 @@ export default function Register() {
                 <div className="rounded-3xl border border-white/60 dark:border-white/10 bg-white/80 dark:bg-[#09090d]/85 backdrop-blur-xl p-8 shadow-2xl space-y-6">
                     {/* Brand & Header */}
                     <div className="space-y-3 text-center">
-                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-200 text-white dark:text-black font-bold shadow-lg">
-                            <Bot className="h-6 w-6" />
+                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 dark:bg-neutral-900/90 border border-neutral-200/60 dark:border-neutral-800 p-2 shadow-lg overflow-hidden">
+                            <img src="/images/logo.webp" alt="Nusantara Engine Logo" className="h-full w-full object-contain" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-600 dark:from-white dark:to-neutral-300 bg-clip-text text-transparent">

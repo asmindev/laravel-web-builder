@@ -15,17 +15,11 @@
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:title" content="{{ config('app.name', 'Nusantara Engine') }}">
     <meta property="og:description" content="AI-Powered Web Application Builder. Generate, preview, and manage full-stack web applications instantly.">
-    <meta property="og:image" content="{{ asset('favicon.svg') }}">
+    <meta property="og:image" content="{{ asset('images/logo.webp') }}">
+    <meta property="twitter:image" content="{{ asset('images/logo.webp') }}">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url('/') }}">
-    <meta property="twitter:title" content="{{ config('app.name', 'Nusantara Engine') }}">
-    <meta property="twitter:description" content="AI-Powered Web Application Builder. Generate, preview, and manage full-stack web applications instantly.">
-    <meta property="twitter:image" content="{{ asset('favicon.svg') }}">
-
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/favicon.svg">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/favicon.png">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
