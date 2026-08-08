@@ -41,10 +41,12 @@ class PublishController extends Controller
         return redirect()->back()->with('success', 'Project unpublished.');
     }
 
-    public function preview(Project $project): Response
+    public function preview(Project $project)
     {
         if ($project->user_id !== auth()->id()) {
             abort(403);
+        if ($project->is_suspended) {
+            return response()->view('errors.suspended', ['project' => $project], 403);
         }
 
         $project->load('files');

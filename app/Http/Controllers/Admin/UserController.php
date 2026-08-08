@@ -80,6 +80,9 @@ class UserController extends Controller
                     'slug' => $project->slug,
                     'description' => $project->description,
                     'published' => $project->published,
+                    'is_suspended' => (bool) $project->is_suspended,
+                    'suspension_reason' => $project->suspension_reason,
+                    'suspended_at' => $project->suspended_at?->format('d M Y H:i'),
                     'template' => $project->template,
                     'files_count' => $project->files_count,
                     'assets_count' => $project->assets_count,
@@ -100,6 +103,30 @@ class UserController extends Controller
             ],
             'userProjects' => $projects,
         ]);
+    }
+
+    public function toggleProjectSuspend(Request $request, \App\Models\Project $project): RedirectResponse
+    {
+        if ($project->is_suspended) {
+            $project->update([
+                'is_suspended' => false,
+                'suspension_reason' => null,
+                'suspended_at' => null,
+            ]);
+            return redirect()->back()->with('success', 'Penangguhan proyek telah dicabut.');
+        }
+
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $project->update([
+            'is_suspended' => true,
+            'suspension_reason' => $request->input('reason', 'Terindikasi melanggar Syarat & Ketentuan Layanan.'),
+            'suspended_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Proyek berhasil ditangguhkan karena pelanggaran.');
     }
 
     public function store(Request $request): RedirectResponse

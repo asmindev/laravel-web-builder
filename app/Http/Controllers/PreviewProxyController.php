@@ -10,9 +10,20 @@ class PreviewProxyController extends Controller
 {
     public function __invoke(Request $request, string $slug, string $path = '')
     {
-        $project = Project::where('slug', $slug)->published()->with('files')->first();
+        $project = Project::where('slug', $slug)->with('files')->first();
         if (!$project) {
             abort(404, 'Project not found');
+        }
+
+        if ($project->is_suspended) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Aplikasi ini telah ditangguhkan karena melanggar Syarat & Ketentuan.'], 403);
+            }
+            return response()->view('errors.suspended', ['project' => $project], 403);
+        }
+
+        if (!$project->published) {
+            abort(404, 'Project is not published');
         }
 
         // Serve static files (CSS, JS, images) langsung dari DB tanpa proxy ke Node Engine

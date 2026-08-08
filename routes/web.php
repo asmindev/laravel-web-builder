@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     // Admin Routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('users/{user}/projects', [AdminUserController::class, 'userProjects'])->name('users.projects');
+        Route::post('projects/{project}/toggle-suspend', [AdminUserController::class, 'toggleProjectSuspend'])->name('projects.toggle-suspend');
         Route::resource('users', AdminUserController::class);
     });
 

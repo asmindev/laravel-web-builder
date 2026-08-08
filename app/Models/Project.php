@@ -18,6 +18,9 @@ class Project extends Model
         'config',
         'published',
         'published_at',
+        'is_suspended',
+        'suspension_reason',
+        'suspended_at',
     ];
 
     protected function casts(): array
@@ -26,6 +29,8 @@ class Project extends Model
             'config' => 'array',
             'published' => 'boolean',
             'published_at' => 'datetime',
+            'is_suspended' => 'boolean',
+            'suspended_at' => 'datetime',
         ];
     }
 

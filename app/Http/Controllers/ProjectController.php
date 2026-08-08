@@ -53,6 +53,10 @@ class ProjectController extends Controller
             return redirect()->route('projects.index')->with('error', 'Project not found.');
         }
 
+        if ($project->is_suspended) {
+            return response()->view('errors.suspended', ['project' => $project], 403);
+        }
+
         $project->load('files', 'assets', 'folders');
 
         return Inertia::render('projects/show', [
