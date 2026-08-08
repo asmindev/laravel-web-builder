@@ -4,6 +4,7 @@ import * as React from 'react';
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupLabel,
     SidebarHeader,
@@ -12,6 +13,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
+import { NavUser } from '@/components/nav-user';
 import { PageProps } from '@/types';
 import { Project } from '@/types/project';
 import { Link, usePage } from '@inertiajs/react';
@@ -102,6 +104,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarGroup>
                 )}
             </SidebarContent>
+            <SidebarFooter>
+                <NavUser />
+            </SidebarFooter>
             <SidebarRail />
         </Sidebar>
     );
