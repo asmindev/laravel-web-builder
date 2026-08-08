@@ -29,13 +29,19 @@ class ProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $user = auth()->user();
+
+        if (!$user->canCreateProject()) {
+            return redirect()->back()->with('error', "Batas maksimal proyek untuk paket {$user->plan_name} ({$user->project_limit} proyek) telah tercapai. Silakan upgrade paket Anda.");
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'template' => 'nullable|string|max:100',
         ]);
 
-        $project = $this->projectService->create($validated, auth()->id());
+        $project = $this->projectService->create($validated, $user->id);
 
         return redirect()->route('projects.show', $project->slug)
             ->with('success', 'Project created successfully.');

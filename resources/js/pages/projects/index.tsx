@@ -53,7 +53,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
         return true;
     });
 
-    const { props } = usePage<{ enhanced_prompt?: string }>();
+    const { auth, props } = usePage<{ auth?: any; enhanced_prompt?: string }>().props;
     const [enhancing, setEnhancing] = useState(false);
     const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
@@ -81,9 +81,6 @@ export default function ProjectIndex({ projects }: IndexProps) {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
-                    // Extract enhanced_prompt from flash or inertia props if returned,
-                    // or handling inertia response payload
-                    const flash = (page.props as any)?.flash;
                     const result = (page.props as any)?.enhanced_prompt;
                     if (result) {
                         setEnhancedPrompt(result);
@@ -118,7 +115,6 @@ export default function ProjectIndex({ projects }: IndexProps) {
                 setTemplate('landing');
                 setEnhancedPrompt(null);
                 setErrors({});
-                router.reload({ only: ['projects'] });
             },
             onError: (errs) => {
                 setErrors(errs);
@@ -128,8 +124,29 @@ export default function ProjectIndex({ projects }: IndexProps) {
     };
 
     return (
-        <AdminLayout header={<h2 className="text-xl leading-tight font-semibold">Projects</h2>}>
+        <AdminLayout header={<h2 className="text-xl font-semibold leading-tight">Projects</h2>}>
             <Head title="Projects" />
+
+            {/* Quota Limit Warning Banner */}
+            {auth?.user && auth.user.can_create_project === false && (
+                <div className="mb-6 rounded-xl border border-[#ff8a5c]/40 bg-[#ff8a5c]/10 p-4 text-[#e86a38] dark:text-[#ff8a5c] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <Sparkles className="size-5 shrink-0" />
+                        <div>
+                            <p className="font-bold text-sm">Batas Proyek Tercapai ({auth.user.projects_count} / {auth.user.project_limit} Proyek — Paket {auth.user.plan_name})</p>
+                            <p className="text-xs opacity-90">Anda telah mencapai batas maksimal upload proyek untuk paket Anda. Upgrade ke Basic, Pro, atau Business untuk menambah kuota proyek.</p>
+                        </div>
+                    </div>
+                    <a
+                        href="https://wa.me/?text=Halo%20Admin%20Nusantartech,%20saya%20ingin%20upgrade%20paket%20proyek%20saya"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 rounded-lg bg-[#ff8a5c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#e86a38] transition-colors"
+                    >
+                        Hubungi Admin (Upgrade)
+                    </a>
+                </div>
+            )}
 
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative max-w-sm flex-1">
@@ -142,6 +159,11 @@ export default function ProjectIndex({ projects }: IndexProps) {
                     />
                 </div>
                 <div className="flex items-center gap-2">
+                    {auth?.user && (
+                        <div className="mr-2 hidden md:block text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-muted border border-border">
+                            Kuotamu: <span className="text-[#2cb1bc]">{auth.user.projects_count} / {auth.user.project_limit} Proyek</span> ({auth.user.plan_name})
+                        </div>
+                    )}
                     {(['all', 'published', 'draft'] as const).map((f) => (
                         <button
                             key={f}
@@ -154,7 +176,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                             {f.charAt(0).toUpperCase() + f.slice(1)}
                         </button>
                     ))}
-                    <Button onClick={() => setShowCreate(true)}>
+                    <Button onClick={() => setShowCreate(true)} disabled={auth?.user?.can_create_project === false}>
                         <Plus /> New Project
                     </Button>
                 </div>

@@ -35,6 +35,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -47,15 +49,27 @@ class HandleInertiaRequests extends Middleware
                     ?? session()->get('message'),
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'plan' => $user->plan ?? 'starter',
+                    'plan_name' => $user->plan_name,
+                    'project_limit' => $user->project_limit === 999999 ? 'Unlimited' : $user->project_limit,
+                    'raw_limit' => $user->project_limit,
+                    'projects_count' => $user->projects()->count(),
+                    'can_create_project' => $user->canCreateProject(),
+                    'is_admin' => $user->hasRole('admin'),
+                    'roles' => $user->getRoleNames(),
+                ] : null,
             ],
             'enhanced_prompt' => fn() => session()->get('enhanced_prompt'),
-            'projects' => fn() => $request->user()
-                ? \App\Models\Project::where('user_id', $request->user()->id)
+            'projects' => fn() => $user
+                ? \App\Models\Project::where('user_id', $user->id)
                     ->latest()
                     ->limit(5)
                     ->get(['id', 'name', 'slug', 'published'])
-            : [],
+                : [],
         ];
     }
 }

@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +13,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Demo User',
-            'email' => 'demo@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        // Create Spatie Roles
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
+
+        // Create Default Admin User
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@nusantaratech.id'],
+            [
+                'name' => 'Administrator',
+                'password' => bcrypt('password'),
+                'plan' => 'business',
+            ]
+        );
+        $admin->assignRole($adminRole);
+
+        // Create Demo Normal User
+        $demoUser = User::firstOrCreate(
+            ['email' => 'demo@example.com'],
+            [
+                'name' => 'Demo User',
+                'password' => bcrypt('password'),
+                'plan' => 'starter',
+            ]
+        );
+        $demoUser->assignRole($userRole);
+
+        // Ensure all existing users have at least 'user' role
+        User::all()->each(function ($u) use ($userRole, $admin) {
+            if ($u->id !== $admin->id && !$u->hasAnyRole(['admin', 'user'])) {
+                $u->assignRole($userRole);
+            }
+        });
 
         $this->call([
             ProjectSeeder::class,

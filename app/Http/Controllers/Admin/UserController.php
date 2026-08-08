@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
+use Spatie\Permission\Models\Role;
+
+class UserController extends Controller
+{
+    public function index(Request $request): Response
+    {
+        $search = $request->input('search');
+        $roleFilter = $request->input('role');
+        $planFilter = $request->input('plan');
+
+        $query = User::with('roles')->withCount('projects');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($roleFilter && $roleFilter !== 'all') {
+            $query->whereHas('roles', function ($q) use ($roleFilter) {
+                $q->where('name', $roleFilter);
+            });
+        }
+
+        if ($planFilter && $planFilter !== 'all') {
+            $query->where('plan', $planFilter);
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
+
+        // Transform users to include role name and project limit info
+        $users->getCollection()->transform(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'plan' => $user->plan ?? 'starter',
+                'plan_name' => $user->plan_name,
+                'project_limit' => $user->project_limit === 999999 ? 'Unlimited' : $user->project_limit,
+                'projects_count' => $user->projects_count,
+                'roles' => $user->getRoleNames(),
+                'created_at' => $user->created_at?->format('d M Y H:i'),
+            ];
+        });
+
+        return Inertia::render('admin/users/index', [
+            'users' => $users,
+            'filters' => [
+                'search' => $search ?? '',
+                'role' => $roleFilter ?? 'all',
+                'plan' => $planFilter ?? 'all',
+            ],
+            'roles' => Role::pluck('name')->toArray(),
+            'plans' => ['starter', 'basic', 'pro', 'business'],
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|string|exists:roles,name',
+            'plan' => 'required|string|in:starter,basic,pro,business',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'plan' => $validated['plan'],
+        ]);
+
+        $user->assignRole($validated['role']);
+
+        return redirect()->back()->with('success', 'User berhasil ditambahkan!');
+    }
+
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'password' => 'nullable|string|min:8',
+            'role' => 'required|string|exists:roles,name',
+            'plan' => 'required|string|in:starter,basic,pro,business',
+        ]);
+
+        $userData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'plan' => $validated['plan'],
+        ];
+
+        if (!empty($validated['password'])) {
+            $userData['password'] = bcrypt($validated['password']);
+        }
+
+        $user->update($userData);
+        $user->syncRoles([$validated['role']]);
+
+        return redirect()->back()->with('success', 'Data user dan paket berhasil diperbarui!');
+    }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User berhasil dihapus!');
+    }
+}

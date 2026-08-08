@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AIController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FolderController;
@@ -34,6 +35,11 @@ Route::middleware('auth')->group(function () {
             ],
         ]);
     })->name('dashboard');
+
+    // Admin Routes
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', AdminUserController::class);
+    });
 
     // Projects
     Route::resource('projects', ProjectController::class)

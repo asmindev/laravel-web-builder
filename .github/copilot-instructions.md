@@ -315,7 +315,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.15
+- php - 8.5.8
 - inertiajs/inertia-laravel (INERTIA) - v2
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v12
@@ -330,7 +330,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - @inertiajs/react (INERTIA) - v2
 - react (REACT) - v19
 - tailwindcss (TAILWINDCSS) - v4
-- @laravel/vite-plugin-wayfinder (WAYFINDER) - v0
 - eslint (ESLINT) - v9
 - prettier (PRETTIER) - v3
 
@@ -460,7 +459,9 @@ Route::get('/users', function () {
 - When using deferred props on the frontend, you should add a nice empty state with pulsing / animated skeleton.
 
 ### Inertia Form General Guidance
-- Build forms using the `useForm` helper. Use the code examples and `search-docs` tool with a query of `useForm helper` for guidance.
+- The recommended way to build forms when using Inertia is with the `<Form>` component - a useful example is below. Use `search-docs` with a query of `form component` for guidance.
+- Forms can also be built using the `useForm` helper for more programmatic control, or to follow existing conventions. Use `search-docs` with a query of `useForm helper` for guidance.
+- `resetOnError`, `resetOnSuccess`, and `setDefaultsOnSuccess` are available on the `<Form>` component. Use `search-docs` with a query of 'form component resetting' for guidance.
 
 
 === laravel/core rules ===
@@ -577,16 +578,11 @@ Wayfinder generates TypeScript functions and types for Laravel controllers and r
 
 
 ### Wayfinder + Inertia
-If your application uses the `useForm` component from Inertia, you can directly submit to the wayfinder generated functions.
+If your application uses the `<Form>` component from Inertia, you can use Wayfinder to generate form action and method automatically.
+<code-snippet name="Wayfinder Form Component (React)" lang="typescript">
 
-<code-snippet name="Wayfinder useForm Example" lang="typescript">
-    import { store } from "@/actions/App/Http/Controllers/ExampleController";
+<Form {...store.form()}><input name="title" /></Form>
 
-    const form = useForm({
-        name: "My Big Post",
-    });
-
-    form.submit(store());
 </code-snippet>
 
 
@@ -714,30 +710,35 @@ import { Link } from '@inertiajs/react'
 
 ## Inertia + React Forms
 
-<code-snippet name="Inertia React useForm Example" lang="react">
+<code-snippet name="`<Form>` Component Example" lang="react">
 
-import { useForm } from '@inertiajs/react'
+import { Form } from '@inertiajs/react'
 
-const { data, setData, post, processing, errors } = useForm({
-    email: '',
-    password: '',
-    remember: false,
-})
+export default () => (
+    <Form action="/users" method="post">
+        {({
+            errors,
+            hasErrors,
+            processing,
+            wasSuccessful,
+            recentlySuccessful,
+            clearErrors,
+            resetAndClearErrors,
+            defaults
+        }) => (
+        <>
+        <input type="text" name="name" />
 
-function submit(e) {
-    e.preventDefault()
-    post('/login')
-}
+        {errors.name && <div>{errors.name}</div>}
 
-return (
-<form onSubmit={submit}>
-    <input type="text" value={data.email} onChange={e => setData('email', e.target.value)} />
-    {errors.email && <div>{errors.email}</div>}
-    <input type="password" value={data.password} onChange={e => setData('password', e.target.value)} />
-    {errors.password && <div>{errors.password}</div>}
-    <input type="checkbox" checked={data.remember} onChange={e => setData('remember', e.target.checked)} /> Remember Me
-    <button type="submit" disabled={processing}>Login</button>
-</form>
+        <button type="submit" disabled={processing}>
+            {processing ? 'Creating...' : 'Create User'}
+        </button>
+
+        {wasSuccessful && <div>User created successfully!</div>}
+        </>
+    )}
+    </Form>
 )
 
 </code-snippet>

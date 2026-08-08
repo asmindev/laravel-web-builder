@@ -1,4 +1,4 @@
-import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings } from 'lucide-react';
+import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings, Users } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -19,7 +19,7 @@ import { Project } from '@/types/project';
 import { Link, usePage } from '@inertiajs/react';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { projects } = usePage<PageProps & { projects?: Project[] }>().props;
+    const { auth, projects } = usePage<PageProps & { auth?: any; projects?: Project[] }>().props;
 
     const navMain = [
         {
@@ -32,11 +32,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: route('projects.index'),
             icon: FolderOpen,
         },
-        // {
-        //     title: 'AI Generator',
-        //     url: '#',
-        //     icon: Sparkles,
-        // },
         {
             title: 'Settings',
             url: '#',
@@ -79,6 +74,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
+                {auth?.user?.is_admin && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Administrator</SidebarGroupLabel>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild tooltip="Kelola User">
+                                    <Link href={route('admin.users.index')} className="font-medium">
+                                        <Users className="size-4" />
+                                        <span>Kelola User</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                )}
                 {projects && projects.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>
