@@ -34,7 +34,10 @@ class MySQLToSQLiteAdapter {
      */
     translateQuery(sql) {
         if (!sql) return '';
-        return sql
+        let translated = sql;
+
+        // 1. Data type & DDL replacements
+        translated = translated
             .replace(/INT\(\d+\)/gi, 'INTEGER')
             .replace(/DECIMAL\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, 'REAL')
             .replace(/FLOAT\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, 'REAL')
@@ -47,12 +50,55 @@ class MySQLToSQLiteAdapter {
             .replace(/AUTO_INCREMENT/gi, 'AUTOINCREMENT')
             .replace(/DEFAULT\s+NOW\(\)/gi, "DEFAULT (datetime('now'))")
             .replace(/DEFAULT\s+CURRENT_TIMESTAMP/gi, "DEFAULT (datetime('now'))")
+            .replace(/ENGINE\s*=\s*\w+/gi, '')
+            .replace(/DEFAULT\s+CHARSET\s*=\s*[\w\d\-_]+/gi, '')
+            .replace(/CHARACTER\s+SET\s+[\w\d\-_]+/gi, '')
+            .replace(/COLLATE\s*=\s*[\w\d\-_]+/gi, '');
+
+        // 2. MySQL DATE_SUB(expr, INTERVAL n unit)
+        translated = translated.replace(
+            /DATE_SUB\s*\(\s*(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP|date\('now'\)|datetime\('now'\)|'now'|[^,]+?)\s*,\s*INTERVAL\s+([0-9\?]+|\w+)\s+(DAY|MONTH|YEAR|HOUR|MINUTE|SECOND)S?\s*\)/gi,
+            (match, expr, num, unit) => {
+                const cleanExpr = expr.trim();
+                const isNow = /^(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP|date\('now'\)|datetime\('now'\)|'now')$/i.test(cleanExpr);
+                const base = isNow ? "'now'" : cleanExpr;
+                return `date(${base}, '-${num} ${unit.toLowerCase()}s')`;
+            }
+        );
+
+        // 3. MySQL DATE_ADD(expr, INTERVAL n unit)
+        translated = translated.replace(
+            /DATE_ADD\s*\(\s*(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP|date\('now'\)|datetime\('now'\)|'now'|[^,]+?)\s*,\s*INTERVAL\s+([0-9\?]+|\w+)\s+(DAY|MONTH|YEAR|HOUR|MINUTE|SECOND)S?\s*\)/gi,
+            (match, expr, num, unit) => {
+                const cleanExpr = expr.trim();
+                const isNow = /^(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP|date\('now'\)|datetime\('now'\)|'now')$/i.test(cleanExpr);
+                const base = isNow ? "'now'" : cleanExpr;
+                return `date(${base}, '+${num} ${unit.toLowerCase()}s')`;
+            }
+        );
+
+        // 4. Standalone INTERVAL arithmetic: expr - INTERVAL n unit
+        translated = translated.replace(
+            /(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP|\w+)\s*([\+\-])\s*INTERVAL\s+([0-9\?]+|\w+)\s+(DAY|MONTH|YEAR|HOUR|MINUTE|SECOND)S?/gi,
+            (match, expr, op, num, unit) => {
+                const cleanExpr = expr.trim();
+                const isNow = /^(CURDATE\(\)|NOW\(\)|CURRENT_DATE|CURRENT_TIMESTAMP)$/i.test(cleanExpr);
+                const base = isNow ? "'now'" : cleanExpr;
+                const sign = op === '-' ? '-' : '+';
+                return `date(${base}, '${sign}${num} ${unit.toLowerCase()}s')`;
+            }
+        );
+
+        // 5. Functions & Keywords
+        translated = translated
             .replace(/NOW\(\)/gi, "datetime('now')")
             .replace(/CURDATE\(\)/gi, "date('now')")
-            .replace(/ENGINE\s*=\s*\w+/gi, '')
-            .replace(/DEFAULT\s+CHARSET\s*=\s*[\w\d]+/gi, '')
-            .replace(/CHARACTER\s+SET\s+[\w\d]+/gi, '')
-            .replace(/COLLATE\s*=\s*[\w\d]+/gi, '');
+            .replace(/CURTIME\(\)/gi, "time('now')")
+            .replace(/IFNULL\s*\(/gi, 'COALESCE(')
+            .replace(/DATEDIFF\s*\(\s*([^,]+)\s*,\s*([^)]+)\s*\)/gi, "(julianday($1) - julianday($2))")
+            .replace(/DATE_FORMAT\s*\(\s*([^,]+)\s*,\s*('[^']+')\s*\)/gi, "strftime($2, $1)");
+
+        return translated;
     }
 
     query(sql, params, callback) {
