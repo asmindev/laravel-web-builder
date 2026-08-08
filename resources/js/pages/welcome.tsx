@@ -567,7 +567,7 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                                     <Linkedin className="w-5 h-5" />
                                 </a>
                             </div>
-                            <p className="text-slate-500 text-xs sm:text-sm">&copy; 2026 {appName}. All rights reserved.</p>
+                            <p className="text-slate-500 text-xs sm:text-sm">&copy; {new Date().getFullYear()} {appName}. All rights reserved.</p>
                         </div>
                     </div>
                 </div>
