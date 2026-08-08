@@ -7,7 +7,7 @@ import { Toaster } from 'sonner';
 import { TooltipProvider } from "@/components/ui/tooltip"
 
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Nusantara Engine';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
