@@ -47,7 +47,7 @@ class ProjectController extends Controller
             ->with('success', 'Project created successfully.');
     }
 
-    public function show(Project $project): Response|RedirectResponse
+    public function show(Project $project)
     {
         if ($project->user_id !== auth()->id()) {
             return redirect()->route('projects.index')->with('error', 'Project not found.');

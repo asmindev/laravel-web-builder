@@ -8,6 +8,9 @@ export interface Project {
     config: Record<string, unknown> | null;
     published: boolean;
     published_at: string | null;
+    is_suspended?: boolean;
+    suspension_reason?: string | null;
+    suspended_at?: string | null;
     created_at: string;
     updated_at: string;
     files_count?: number;

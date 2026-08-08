@@ -14,7 +14,7 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen, Layout, Terminal, Loader2, Sparkles, Copy, CheckCircle2, Check } from 'lucide-react';
+import { Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen, Layout, Terminal, Loader2, Sparkles, Copy, CheckCircle2, Check, ShieldAlert } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -330,61 +330,89 @@ export default function ProjectIndex({ projects }: IndexProps) {
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {filtered.map((project) => (
-                        <Card key={project.id} className="group">
+                        <Card key={project.id} className={`group flex flex-col justify-between ${project.is_suspended ? 'border-red-500/50 bg-red-500/5 dark:bg-red-950/10' : ''}`}>
                             <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between">
+                                <div className="flex items-start justify-between gap-2">
                                     <div className="space-y-1">
-                                        <CardTitle className="text-base">
-                                            <a href={route('projects.show', project.slug)} className="hover:underline">
-                                                {project.name}
-                                            </a>
+                                        <CardTitle className="text-base font-bold">
+                                            {project.is_suspended ? (
+                                                <span className="text-slate-700 dark:text-slate-300">{project.name}</span>
+                                            ) : (
+                                                <a href={route('projects.show', project.slug)} className="hover:underline">
+                                                    {project.name}
+                                                </a>
+                                            )}
                                         </CardTitle>
                                         {project.description && (
                                             <CardDescription className="line-clamp-2">{project.description}</CardDescription>
                                         )}
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon-xs">
-                                                <MoreHorizontal />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>
-                                                <a href={route('projects.show', project.slug)}>Open Editor</a>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <a href={route('projects.preview', project.slug)}>Preview</a>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <a href={route('projects.export-zip', project.slug)}>Export ZIP (MySQL)</a>
-                                            </DropdownMenuItem>
-                                            {project.published && (
+
+                                    {project.is_suspended ? (
+                                        <Badge variant="destructive" className="bg-red-600 text-white font-bold text-[10px] shrink-0 animate-pulse">
+                                            Pelanggaran
+                                        </Badge>
+                                    ) : (
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon-xs">
+                                                    <MoreHorizontal />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
                                                 <DropdownMenuItem>
-                                                    <a href={route('app.preview', [project.slug])} target="_blank" rel="noopener">
-                                                        View Live <ExternalLink className="ml-1 size-3" />
-                                                    </a>
+                                                    <a href={route('projects.show', project.slug)}>Open Editor</a>
                                                 </DropdownMenuItem>
-                                            )}
-                                            <DropdownMenuItem
-                                                className="text-red-600 focus:text-red-700"
-                                                onClick={() => setDeletingProject(project)}
-                                            >
-                                                Delete Project
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                                <DropdownMenuItem>
+                                                    <a href={route('projects.preview', project.slug)}>Preview</a>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <a href={route('projects.export-zip', project.slug)}>Export ZIP (MySQL)</a>
+                                                </DropdownMenuItem>
+                                                {project.published && (
+                                                    <DropdownMenuItem>
+                                                        <a href={route('app.preview', [project.slug])} target="_blank" rel="noopener">
+                                                            View Live <ExternalLink className="ml-1 size-3" />
+                                                        </a>
+                                                    </DropdownMenuItem>
+                                                )}
+                                                <DropdownMenuItem
+                                                    className="text-red-600 focus:text-red-700"
+                                                    onClick={() => setDeletingProject(project)}
+                                                >
+                                                    Delete Project
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    )}
                                 </div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <CardContent className="space-y-3">
+                                {project.is_suspended && (
+                                    <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-300 space-y-1.5">
+                                        <div className="flex items-center gap-1.5 font-bold text-red-600 dark:text-red-400">
+                                            <ShieldAlert className="size-4 shrink-0" />
+                                            <span>Ditangguhkan (Pelanggaran)</span>
+                                        </div>
+                                        <p className="text-[11px] leading-relaxed opacity-90">
+                                            Aplikasi ditangguhkan oleh Admin karena melanggar Syarat & Ketentuan Layanan.
+                                        </p>
+                                        {project.suspension_reason && (
+                                            <div className="text-[11px] font-mono bg-red-500/15 p-2 rounded border border-red-500/20 italic">
+                                                Alasan: "{project.suspension_reason}"
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-2">
                                     <span className="flex items-center gap-1">
                                         <FileCode className="size-3" /> {project.files_count ?? 0} files
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Globe className="size-3" />
-                                        <Badge variant={project.published ? 'default' : 'secondary'} className="px-1.5 py-0 text-[10px]">
-                                            {project.published ? 'Published' : 'Draft'}
+                                        <Badge variant={project.is_suspended ? 'destructive' : project.published ? 'default' : 'secondary'} className="px-1.5 py-0 text-[10px]">
+                                            {project.is_suspended ? 'Suspended' : project.published ? 'Published' : 'Draft'}
                                         </Badge>
                                     </span>
                                 </div>
