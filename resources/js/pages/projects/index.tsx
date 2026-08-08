@@ -139,7 +139,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                         </div>
                     </div>
                     <a
-                        href="https://wa.me/?text=Halo%20Admin%20Nusantartech,%20saya%20ingin%20upgrade%20paket%20proyek%20saya"
+                        href={`https://wa.me/${((usePage<{ app_settings?: { admin_whatsapp: string } }>().props.app_settings?.admin_whatsapp) || '6281234567890').replace(/[^0-9]/g, '')}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20paket%20proyek%20saya`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="shrink-0 rounded-lg bg-[#ff8a5c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#e86a38] transition-colors"

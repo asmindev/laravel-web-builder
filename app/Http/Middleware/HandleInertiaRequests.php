@@ -39,7 +39,11 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => \App\Models\Setting::get('app_name', config('app.name')),
+            'app_settings' => [
+                'app_name' => \App\Models\Setting::get('app_name', 'Nusantara Engine'),
+                'admin_whatsapp' => \App\Models\Setting::get('admin_whatsapp', '6281234567890'),
+            ],
             'flash' => fn() => [
                 'type' => session()->has('error')
                     ? 'error'

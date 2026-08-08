@@ -157,8 +157,12 @@
 
         <h1>Aplikasi Ini Ditangguhkan</h1>
 
+        @php
+            $appName = \App\Models\Setting::get('app_name', 'Nusantara Engine');
+            $adminWa = \App\Models\Setting::get('admin_whatsapp', '6281234567890');
+        @endphp
         <p class="description">
-            Akses ke situs web <strong>"{{ $project->name ?? 'Aplikasi' }}"</strong> ditangguhkan oleh Administrator karena terindikasi melanggar Syarat & Ketentuan Layanan Nusantara Engine.
+            Akses ke situs web <strong>"{{ $project->name ?? 'Aplikasi' }}"</strong> ditangguhkan oleh Administrator karena terindikasi melanggar Syarat & Ketentuan Layanan {{ $appName }}.
         </p>
 
         @if(!empty($project->suspension_reason))
@@ -170,7 +174,7 @@
 
         <div class="actions">
             <a href="/" class="btn btn-secondary">Kembali ke Beranda</a>
-            <a href="https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20ingin%20bertanya%20mengenai%20penangguhan%20proyek%20{{ urlencode($project->name ?? '') }}" target="_blank" class="btn btn-primary">Bantuan & Banding</a>
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $adminWa) }}?text=Halo%20Admin%20{{ urlencode($appName) }},%20saya%20ingin%20bertanya%20mengenai%20penangguhan%20proyek%20{{ urlencode($project->name ?? '') }}" target="_blank" class="btn btn-primary">Bantuan & Banding</a>
         </div>
     </div>
 </body>

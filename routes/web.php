@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('users/{user}/projects', [AdminUserController::class, 'userProjects'])->name('users.projects');
         Route::post('projects/{project}/toggle-suspend', [AdminUserController::class, 'toggleProjectSuspend'])->name('projects.toggle-suspend');
+        Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
         Route::resource('users', AdminUserController::class);
     });
 
