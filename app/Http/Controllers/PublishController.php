@@ -73,7 +73,7 @@ class PublishController extends Controller
 
         $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'project';
         $timestamp = now()->format('Ymd_His');
-        $filename = "{$safeName}_{$project->slug}_{$timestamp}.zip";
+        $filename = "{$safeName}_{$timestamp}.zip";
 
         return response()->download($path, $filename)->deleteFileAfterSend();
     }
