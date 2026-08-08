@@ -53,11 +53,29 @@ class ProjectService
 
         if ($template === 'node-backend') {
             $defaults = [
+                'package.json' => [
+                    'content' => '{
+  "name": "my-api-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ejs": "^3.1.10"
+  }
+}',
+                    'mime_type' => 'application/json',
+                ],
                 'app.js' => [
                     'content' => "const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
@@ -72,9 +90,9 @@ app.get('/api/info', (_req, res) => {
     });
 });
 
-// All other routes → index.html (SPA-friendly fallback)
+// All other routes → index.ejs (SPA-friendly fallback)
 app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.render('index');
 });
 
 app.listen(PORT, () => {
@@ -84,7 +102,7 @@ app.listen(PORT, () => {
 module.exports = app;",
                     'mime_type' => 'application/javascript',
                 ],
-                'public/index.html' => [
+                'views/index.ejs' => [
                     'content' => '<!DOCTYPE html>
 <html lang="en">
 <head>

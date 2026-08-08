@@ -10,7 +10,7 @@ use App\Http\Controllers\PreviewProxyController;
 use Illuminate\Support\Facades\Route;
 
 // Public preview via Node Engine proxy (also serves static files directly)
-Route::get('/app/{slug}/{path?}', PreviewProxyController::class)
+Route::any('/app/{slug}/{path?}', PreviewProxyController::class)
     ->where('path', '.*')
     ->name('app.preview');
 
@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/import', [PublishController::class, 'import'])->name('projects.import');
 
     // AI
+    Route::post('/ai/enhance-prompt', [AIController::class, 'enhancePrompt'])->name('ai.enhance-prompt');
     Route::post('/ai/generate', [AIController::class, 'generate'])->name('ai.generate');
     Route::post('/ai/improve', [AIController::class, 'improve'])->name('ai.improve');
 });

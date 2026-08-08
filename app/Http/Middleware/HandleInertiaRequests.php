@@ -49,12 +49,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-                'projects' => fn() => $request->user()
-                    ? \App\Models\Project::where('user_id', $request->user()->id)
-                        ->latest()
-                        ->limit(5)
-                        ->get(['id', 'name', 'slug', 'published'])
-                : [],
+            'enhanced_prompt' => fn() => session()->get('enhanced_prompt'),
+            'projects' => fn() => $request->user()
+                ? \App\Models\Project::where('user_id', $request->user()->id)
+                    ->latest()
+                    ->limit(5)
+                    ->get(['id', 'name', 'slug', 'published'])
+            : [],
         ];
     }
 }

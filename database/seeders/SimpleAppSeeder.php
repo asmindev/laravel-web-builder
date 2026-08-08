@@ -187,7 +187,7 @@ module.exports = router;
 JS,
             ],
             [
-                'path' => 'public/index.html',
+                'path' => 'views/index.ejs',
                 'mime_type' => 'text/html',
                 'content' => <<<'HTML'
 <!DOCTYPE html>
@@ -514,6 +514,6 @@ JS,
         ]);
 
         echo "Simple CRUD seeded: {$project->name} ({$project->slug})\n";
-        echo "  Files: app.js, src/db.js, src/posts.js, public/index.html, public/style.css, database/*.sql, .env.example, package.json\n";
+        echo "  Files: app.js, src/db.js, src/posts.js, views/index.ejs, public/style.css, database/*.sql, .env.example, package.json\n";
     }
 }

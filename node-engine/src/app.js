@@ -9,7 +9,7 @@ const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://127.0.0.1:8000';
 const INTERNAL_API_SECRET = process.env.INTERNAL_API_SECRET || 'dev-secret-key-change-in-production';
 
 const app = express();
-app.use(express.json());
+app.use(express.raw({ type: '*/*', limit: '10mb' }));
 
 // CORS — allow Laravel frontend to fetch from engine
 app.use((_req, res, next) => {
@@ -25,11 +25,30 @@ const render = new RenderService(cache, api);
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
+// Helper for internal JSON parsing from raw body
+const parseJsonBody = (req) => {
+    if (Buffer.isBuffer(req.body)) {
+        try { return JSON.parse(req.body.toString('utf-8')); } catch { return {}; }
+    }
+    return req.body || {};
+};
+
+// Preload project data via POST body (avoids 431 header overflow)
+app.post('/internal/preload', (req, res) => {
+    const body = parseJsonBody(req);
+    const { slug, projectData } = body;
+    if (!slug || !projectData) return res.status(400).json({ error: 'Missing slug or projectData' });
+    cache.set(`preload:${slug}`, projectData);
+    res.json({ ok: true });
+});
+
 // Purge cache (internal, called by Laravel on publish)
 app.post('/internal/purge-cache', internalAuth(INTERNAL_API_SECRET), (req, res) => {
-    const { slug } = req.body;
+    const body = parseJsonBody(req);
+    const { slug } = body;
     if (slug) {
         cache.del(`project:${slug}`);
+        cache.del(`preload:${slug}`);
         res.json({ purged: true, slug });
     } else {
         cache.flush();
@@ -68,11 +87,22 @@ app.use('/:slug', async (req, res, next) => {
 
     // If the Laravel proxy sent project data inline, use it to avoid API callback
     let projectData = null;
-    const encoded = req.headers['x-project-data'];
-    if (encoded) {
-        try {
-            projectData = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
-        } catch {}
+
+    // Check preload cache (set by POST /internal/preload)
+    const cached = cache.get(`preload:${slug}`);
+    if (cached) {
+        cache.del(`preload:${slug}`);
+        projectData = cached;
+    }
+
+    // Fallback: header (legacy, smaller projects)
+    if (!projectData) {
+        const encoded = req.headers['x-project-data'];
+        if (encoded) {
+            try {
+                projectData = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
+            } catch {}
+        }
     }
 
     try {

@@ -38,6 +38,17 @@ export function FileTree({
     // Root files = files with no folder prefix
     const rootFiles = files.filter((f) => !f.path.includes('/'));
 
+    // Extract all unique folder paths from files (e.g. "views/index.ejs" -> "views")
+    const implicitFolderNames = new Set<string>();
+    files.forEach((f) => {
+        if (f.path.includes('/')) {
+            const parts = f.path.split('/');
+            implicitFolderNames.add(parts[0]);
+        }
+    });
+
+    const allFolderNames = Array.from(new Set([...folders.map((f) => f.name), ...implicitFolderNames]));
+
     // ── Native HTML5 drag handlers ──
 
     const onDragStart = (e: React.DragEvent, path: string) => {
@@ -179,23 +190,25 @@ export function FileTree({
                 </div>
             </div>
 
-            {/* ── FOLDERS (from DB — always visible) ── */}
-            {folders.map((folder) => {
-                const dirFiles = files.filter((f) => f.path.startsWith(folder.name + '/'));
+            {/* ── FOLDERS (both DB folders & path-derived folders) ── */}
+            {allFolderNames.map((folderName) => {
+                const dirFiles = files.filter((f) => f.path.startsWith(folderName + '/'));
+                const dbFolder = folders.find((f) => f.name === folderName);
+
                 return (
                     <div
-                        key={folder.id}
-                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(folder.name); }}
+                        key={dbFolder ? dbFolder.id : folderName}
+                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver(folderName); }}
                         onDragLeave={() => setDragOver(null)}
-                        onDrop={(e) => onDropToFolder(e, folder.name)}
+                        onDrop={(e) => onDropToFolder(e, folderName)}
                         className={cn(
                             'rounded-md transition-all',
-                            dragOver === folder.name && 'bg-primary/15 ring-2 ring-primary/40',
+                            dragOver === folderName && 'bg-primary/15 ring-2 ring-primary/40',
                         )}
                     >
                         <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
                             <Folder className="size-3" />
-                            {folder.name}
+                            {folderName}
                         </div>
                         {dirFiles.map((file) => renderFile(file, 1))}
                     </div>

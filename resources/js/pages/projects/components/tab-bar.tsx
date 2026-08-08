@@ -25,12 +25,12 @@ export function TabBar({ openTabs, activeFile, onSelect, onClose }: TabBarProps)
                 >
                     <FileCode className={`size-3 ${EXT_ICONS[getExt(path)] || ''}`} />
                     <span className="max-w-32 truncate">{path.split('/').pop()}</span>
-                    <button
+                    <span
                         onClick={(e) => { e.stopPropagation(); onClose(path); }}
-                        className="-mr-0.5 ml-1 rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-muted-foreground/20"
+                        className="-mr-0.5 ml-1 cursor-pointer rounded p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-muted-foreground/20"
                     >
                         <X className="size-2.5" />
-                    </button>
+                    </span>
                 </button>
             ))}
         </div>

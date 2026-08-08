@@ -18,6 +18,11 @@ class PreviewProxyController extends Controller
         // Serve static files (CSS, JS, images) langsung dari DB tanpa proxy ke Node Engine
         if (!empty($path)) {
             $file = $project->files->firstWhere('path', $path);
+            // Fallback: cari by basename (e.g. /style.css → public/style.css)
+            if (!$file) {
+                $basename = basename($path);
+                $file = $project->files->first(fn ($f) => basename($f->path) === $basename);
+            }
             if ($file && $file->content) {
                 return response($file->content, 200, [
                     'Content-Type' => $file->mime_type ?? 'text/plain',
@@ -35,30 +40,93 @@ class PreviewProxyController extends Controller
         }
 
         try {
-            $response = Http::timeout(15)->withHeaders([
-                'X-Project-Data' => base64_encode($project->toJson()),
-            ])->send($request->method(), $target);
+            // Two-step: preload project data via POST body (avoids 431 header overflow),
+            // then dispatch the original request method
+            $project->load('files', 'assets');
+            Http::timeout(15)->post("$engineUrl/internal/preload", [
+                'slug' => $slug,
+                'projectData' => $project->toArray(),
+            ]);
+
+            $httpRequest = Http::timeout(15);
+            
+            // Forward raw Cookie header dari browser client (e.g. connect.sid untuk express-session)
+            $rawCookieHeader = $_SERVER['HTTP_COOKIE'] ?? $request->server('HTTP_COOKIE') ?? $request->header('Cookie');
+            
+            // Clean up connect.sid if encrypted by Laravel EncryptCookies middleware in previous requests
+            if ($rawCookieHeader && preg_match('/connect\.sid=([^;]+)/', $rawCookieHeader, $matches)) {
+                $rawSid = urldecode($matches[1]);
+                // If it looks like Laravel encrypted cookie (JSON base64 payload with mac), strip or use plain sid
+                if (str_contains($rawSid, '{"iv":') || str_contains($rawSid, 'eyJpdiI')) {
+                    // Extract plain sid if possible or clean up cookie string
+                }
+            }
+
+            if ($rawCookieHeader) {
+                $httpRequest = $httpRequest->withHeaders([
+                    'Cookie' => $rawCookieHeader,
+                ]);
+            }
+
+            if ($request->header('Content-Type')) {
+                $httpRequest = $httpRequest->withHeaders([
+                    'Content-Type' => $request->header('Content-Type'),
+                ]);
+            }
+            
+            $bodyContent = $request->getContent();
+            if (!empty($bodyContent)) {
+                $httpRequest = $httpRequest->withBody($bodyContent, $request->header('Content-Type', 'application/json'));
+            }
+
+            $response = $httpRequest->send($request->method(), $target);
 
             $body = $response->body();
             $contentType = $response->header('Content-Type', 'text/html; charset=utf-8');
 
             // Rewrite absolute paths di HTML/JS agar request sampe ke Node Engine.
             // /assets/... → /app/slug/assets/..., /api/... → /app/slug/api/...
+            // Root-level files: /style.css → /app/slug/style.css
             if (str_contains($contentType, 'text/html')) {
                 $prefix = '/app/' . $slug;
-                $body = preg_replace(
-                    '#(?:(["\']))(/(?:assets|public|api)/)#i',
-                    '$1' . $prefix . '$2',
+                // Direct replacements
+                $body = str_replace(
+                    ["'/api/", '"/api/', '`/api/'],
+                    ["'" . $prefix . '/api/', '"' . $prefix . '/api/', '`' . $prefix . '/api/'],
+                    $body
+                );
+                $body = str_replace(
+                    ["'/assets/", '"/assets/', '`/assets/'],
+                    ["'" . $prefix . '/assets/', '"' . $prefix . '/assets/', '`' . $prefix . '/assets/'],
+                    $body
+                );
+                $body = str_replace(
+                    ["'/public/", '"/public/', '`/public/'],
+                    ["'" . $prefix . '/public/', '"' . $prefix . '/public/', '`' . $prefix . '/public/'],
                     $body
                 );
             }
 
-            $headers = ['Content-Type' => $contentType];
-            $headers['Access-Control-Allow-Origin'] = '*';
+            $headers = [
+                'Content-Type' => $contentType,
+                'Access-Control-Allow-Origin' => '*',
+            ];
 
-            return response($body, $response->status(), $headers);
-        } catch (\Exception $e) {
-            abort(502, 'Engine unavailable');
+            $laravelResponse = response($body, $response->status(), $headers);
+
+            // Forward Set-Cookie header dari Node Engine (e.g. connect.sid) ke browser client
+            $setCookieHeader = $response->header('Set-Cookie');
+            if ($setCookieHeader) {
+                // Set raw header Set-Cookie to preserve Express Session ID
+                $laravelResponse->headers->set('Set-Cookie', $setCookieHeader, false);
+            }
+
+            return $laravelResponse;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('PreviewProxyController error: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            abort(502, 'Engine unavailable: ' . $e->getMessage());
         }
     }
 }

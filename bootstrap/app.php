@@ -20,6 +20,14 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        $middleware->encryptCookies(except: [
+            'connect.sid',
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'app/*',
+        ]);
+
         $middleware->alias([
             'internal-api' => InternalApiMiddleware::class,
         ]);

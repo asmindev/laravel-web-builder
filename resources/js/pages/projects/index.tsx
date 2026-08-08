@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen, Layout, Terminal, Loader2 } from 'lucide-react';
+import { Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen, Layout, Terminal, Loader2, Sparkles, Copy, CheckCircle2, Check } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -42,6 +42,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
     const [template, setTemplate] = useState('landing');
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
     const filtered = projects.filter((p) => {
         const match = p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -52,6 +53,60 @@ export default function ProjectIndex({ projects }: IndexProps) {
         return true;
     });
 
+    const { props } = usePage<{ enhanced_prompt?: string }>();
+    const [enhancing, setEnhancing] = useState(false);
+    const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+
+    // Sync enhanced_prompt when Inertia props updated
+    useEffect(() => {
+        if (props.enhanced_prompt) {
+            setEnhancedPrompt(props.enhanced_prompt);
+        }
+    }, [props.enhanced_prompt]);
+
+    const handleEnhancePrompt = () => {
+        if (!name || !description) return;
+        setEnhancing(true);
+        setEnhancedPrompt(null);
+        
+        router.post(
+            route('ai.enhance-prompt'),
+            {
+                app_name: name,
+                app_description: description,
+                app_type: template === 'landing' ? 'landing' : 'nodejs',
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    // Extract enhanced_prompt from flash or inertia props if returned,
+                    // or handling inertia response payload
+                    const flash = (page.props as any)?.flash;
+                    const result = (page.props as any)?.enhanced_prompt;
+                    if (result) {
+                        setEnhancedPrompt(result);
+                    }
+                },
+                onError: (errs) => {
+                    console.error('Failed to enhance prompt', errs);
+                },
+                onFinish: () => {
+                    setEnhancing(false);
+                },
+            }
+        );
+    };
+
+    const copyToClipboard = () => {
+        if (enhancedPrompt) {
+            navigator.clipboard.writeText(enhancedPrompt);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
     const handleCreate = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
@@ -61,6 +116,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                 setName('');
                 setDescription('');
                 setTemplate('landing');
+                setEnhancedPrompt(null);
                 setErrors({});
                 router.reload({ only: ['projects'] });
             },
@@ -105,10 +161,10 @@ export default function ProjectIndex({ projects }: IndexProps) {
             </div>
 
             <Dialog open={showCreate} onOpenChange={setShowCreate}>
-                <DialogContent className="sm:max-w-md md:min-w-2/4">
+                <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Create Project</DialogTitle>
-                        <DialogDescription>Name your project and pick a template.</DialogDescription>
+                        <DialogDescription>Name your project, pick a template, or generate a tailored Gemini Prompt.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreate}>
                         <div className="space-y-5 py-2">
@@ -118,7 +174,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                     id="name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="My Awesome Site"
+                                    placeholder="My Awesome App"
                                     required
                                     autoFocus
                                 />
@@ -132,7 +188,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                     id="description"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="What is this project about?"
+                                    placeholder="What is this project about? (e.g. Kasir toko dan stok barang)"
                                     rows={3}
                                 />
                             </div>
@@ -159,10 +215,66 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Gemini Prompt Enhancer Action Section */}
+                            <div className="rounded-xl border bg-muted/40 p-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                                        <Sparkles className="size-4 text-amber-500" />
+                                        <span>Gemini Prompt Enhancer</span>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 text-xs gap-1.5"
+                                        disabled={!name || !description || enhancing}
+                                        onClick={handleEnhancePrompt}
+                                    >
+                                        {enhancing ? (
+                                            <>
+                                                <Loader2 className="size-3.5 animate-spin" /> Enhancing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles className="size-3.5 text-amber-500" /> Enhance Prompt with Gemini
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Gemini akan secara otomatis merancang skema database, workflow, dan strict rules engine ke dalam satu Master Prompt khusus yang siap di-copy.
+                                </p>
+
+                                {enhancedPrompt && (
+                                    <div className="mt-3 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                                <CheckCircle2 className="size-3.5" /> Prompt Generated!
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                size="sm"
+                                                className="h-7 text-xs gap-1"
+                                                onClick={copyToClipboard}
+                                            >
+                                                {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+                                                {copied ? 'Copied!' : 'Copy Prompt'}
+                                            </Button>
+                                        </div>
+                                        <Textarea
+                                            value={enhancedPrompt}
+                                            readOnly
+                                            className="h-44 text-xs font-mono bg-background resize-none"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <DialogFooter showCloseButton className="mt-6">
                             <Button type="submit" className="min-w-28" disabled={processing}>
-                                {processing ? <Loader2 className="size-4 animate-spin" /> : 'Create'}
+                                {processing ? <Loader2 className="size-4 animate-spin" /> : 'Create Project'}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -228,6 +340,12 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                                     </a>
                                                 </DropdownMenuItem>
                                             )}
+                                            <DropdownMenuItem
+                                                className="text-red-600 focus:text-red-700"
+                                                onClick={() => setDeletingProject(project)}
+                                            >
+                                                Delete Project
+                                            </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
@@ -249,6 +367,36 @@ export default function ProjectIndex({ projects }: IndexProps) {
                     ))}
                 </div>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!deletingProject} onOpenChange={(open) => !open && setDeletingProject(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Project</DialogTitle>
+                        <DialogDescription>
+                            Are you absolutely sure you want to delete <strong>{deletingProject?.name}</strong>?
+                            This action cannot be undone and will permanently delete all files and configuration associated with this project.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                        <Button variant="outline" onClick={() => setDeletingProject(null)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                if (deletingProject) {
+                                    router.delete(route('projects.destroy', deletingProject.slug), {
+                                        onSuccess: () => setDeletingProject(null),
+                                    });
+                                }
+                            }}
+                        >
+                            Delete Project
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AdminLayout>
     );
 }

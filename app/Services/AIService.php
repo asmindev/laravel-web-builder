@@ -2,91 +2,102 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\AI\ProviderInterface;
+use App\Services\AI\Providers\GeminiProvider;
+use App\Services\AI\Providers\OpenAIProvider;
+use App\Services\AI\PromptEnhancer;
+use App\Services\AI\GenerationResult;
 use Illuminate\Support\Facades\Log;
 
 class AIService
 {
-    public function generateTemplate(array $prompt, string $provider = 'openai'): array
+    /**
+     * Registered AI provider instances, keyed by provider name.
+     *
+     * @var array<string, ProviderInterface>
+     */
+    private array $providers = [];
+
+    private readonly PromptEnhancer $promptEnhancer;
+
+    public function __construct()
     {
-        return match ($provider) {
-            'openai' => $this->viaOpenAI($prompt),
-            'gemini' => $this->viaGemini($prompt),
-            default => throw new \InvalidArgumentException("Unsupported AI provider: {$provider}"),
-        };
+        $this->promptEnhancer = new PromptEnhancer();
+        $this->registerDefaultProviders();
     }
 
-    public function improveTemplate(string $existingCode, string $feedback, string $provider = 'openai'): array
+    /**
+     * Enhance a basic app description into a detailed master prompt
+     * using the Gemini API (or fallback if unavailable).
+     */
+    public function enhancePrompt(string $appName, string $appDescription, string $appType = 'nodejs'): string
     {
-        return match ($provider) {
-            'openai' => $this->viaOpenAI([
-                'instruction' => 'Improve this template',
-                'existing_code' => $existingCode,
-                'feedback' => $feedback,
-            ]),
-            'gemini' => $this->viaGemini([
-                'instruction' => 'Improve this template',
-                'existing_code' => $existingCode,
-                'feedback' => $feedback,
-            ]),
-            default => throw new \InvalidArgumentException("Unsupported AI provider: {$provider}"),
-        };
+        return $this->promptEnhancer->enhance($appName, $appDescription, $appType);
     }
 
-    private function viaOpenAI(array $prompt): array
+    /**
+     * Generate a project template from a prompt using the specified AI provider.
+     *
+     * @return array{files: array<string, string>, config: array<string, string>, provider: string}
+     */
+    public function generateTemplate(array|string $prompt, string $provider = 'gemini'): array
     {
-        $system = 'You are a web developer generating HTML/JS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
+        $promptString = is_array($prompt) ? json_encode($prompt) : $prompt;
 
-        try {
-            $response = Http::withToken(config('services.openai.key'))
-                ->timeout(60)
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini',
-                    'messages' => [
-                        ['role' => 'system', 'content' => $system],
-                        ['role' => 'user', 'content' => json_encode($prompt)],
-                    ],
-                    'response_format' => ['type' => 'json_object'],
-                ])->throw()->json();
+        return $this->resolveProvider($provider)->generate($promptString)->toArray();
+    }
 
-            $content = json_decode($response['choices'][0]['message']['content'] ?? '{}', true);
+    /**
+     * Improve an existing template based on user feedback.
+     *
+     * @return array{files: array<string, string>, config: array<string, string>, provider: string}
+     */
+    public function improveTemplate(string $existingCode, string $feedback, string $provider = 'gemini'): array
+    {
+        $improvementPrompt = implode("\n", [
+            'Instruction: Improve this template',
+            'Existing Code:',
+            $existingCode,
+            'Feedback:',
+            $feedback,
+        ]);
 
-            return [
-                'files' => $content['files'] ?? [],
-                'config' => $content['config'] ?? ['title' => 'New Project'],
-                'provider' => 'openai',
-            ];
-        } catch (\Throwable $e) {
-            Log::error('OpenAI generation failed', ['error' => $e->getMessage()]);
-            throw $e;
+        return $this->resolveProvider($provider)->generate($improvementPrompt)->toArray();
+    }
+
+    /**
+     * Register a custom AI provider at runtime.
+     */
+    public function registerProvider(string $name, ProviderInterface $provider): void
+    {
+        $this->providers[$name] = $provider;
+    }
+
+    /**
+     * Resolve a provider instance by name.
+     *
+     * @throws \InvalidArgumentException If the provider is not registered.
+     */
+    private function resolveProvider(string $name): ProviderInterface
+    {
+        if (!isset($this->providers[$name])) {
+            throw new \InvalidArgumentException("Unsupported AI provider: {$name}");
         }
+
+        return $this->providers[$name];
     }
 
-    private function viaGemini(array $prompt): array
+    /**
+     * Register the built-in AI providers (Gemini & OpenAI).
+     */
+    private function registerDefaultProviders(): void
     {
-        $system = 'You are a web developer generating HTML/JS templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.';
+        $this->providers['gemini'] = new GeminiProvider(
+            apiKey: (string) config('services.gemini.key'),
+        );
 
-        try {
-            $response = Http::withToken(config('services.gemini.key'))
-                ->timeout(60)
-                ->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', [
-                    'contents' => [
-                        ['role' => 'user', 'parts' => [['text' => $system . "\n\n" . json_encode($prompt)]]],
-                    ],
-                    'generationConfig' => ['responseMimeType' => 'application/json'],
-                ])->throw()->json();
-
-            $text = $response['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
-            $content = json_decode($text, true);
-
-            return [
-                'files' => $content['files'] ?? [],
-                'config' => $content['config'] ?? ['title' => 'New Project'],
-                'provider' => 'gemini',
-            ];
-        } catch (\Throwable $e) {
-            Log::error('Gemini generation failed', ['error' => $e->getMessage()]);
-            throw $e;
-        }
+        $this->providers['openai'] = new OpenAIProvider(
+            apiKey: (string) config('services.openai.key'),
+        );
     }
 }
