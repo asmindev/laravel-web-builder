@@ -7,29 +7,29 @@ export default function Welcome({ auth }: { auth: any }) {
     const features = [
         {
             icon: <Cpu className="w-6 h-6 text-indigo-400" />,
-            title: "Generasi Kode AI Instan",
-            description: "Cukup jelaskan ide aplikasi web Anda dalam bahasa sehari-hari, Nusantara Engine akan menghasilkan kode Express & React secara utuh dan siap jalan."
+            title: "Prompt-to-Code Instant",
+            description: "Tulis kebutuhan web app kamu dalam bahasa sehari-hari. Engine langsung bikin kode Express & React yang siap jalan."
         },
         {
             icon: <Zap className="w-6 h-6 text-violet-400" />,
-            title: "Sandbox Node Engine Real-time",
-            description: "Jalankan dan uji aplikasi langsung di dalam lingkungan terisolasi Node Engine. Cek kueri database, API, dan tampilan secara langsung."
+            title: "Live Node Sandbox",
+            description: "Langsung tes aplikasi di lingkungan Node Engine terisolasi. Cek database, API, dan tampilan secara real-time."
         },
         {
             icon: <Code2 className="w-6 h-6 text-emerald-400" />,
-            title: "Kendali Kode Sepenuhnya",
-            description: "Inspeksi dan ubah setiap baris kode secara langsung menggunakan Monaco Editor terintegrasi tanpa batasan atau kekangan sistem."
+            title: "Code Editor Terintegrasi",
+            description: "Bebas lihat dan ubah setiap baris kode dengan Monaco Editor. Tanpa lock-in, kode proyek 100% milik kamu."
         },
         {
             icon: <Globe className="w-6 h-6 text-amber-400" />,
-            title: "Publikasi & Ekspor Instan",
-            description: "Rilis aplikasi web buatan AI ke subdomain kustom atau unduh seluruh bundle file zip proyek secara utuh hanya dalam satu klik."
+            title: "One-Click Deploy & Export",
+            description: "Langsung publish ke subdomain kustom atau unduh semua file proyek dalam format ZIP kapan saja."
         }
     ];
 
     return (
         <div className="min-h-screen bg-[#09090b] text-neutral-100 font-sans selection:bg-indigo-500/30 overflow-hidden relative">
-            <Head title="Nusantara Engine - Pembuat Aplikasi Web Berbasis AI" />
+            <Head title="Nusantara Engine — Web Builder Generasi Baru" />
 
             {/* Background radial glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-indigo-600/20 via-purple-600/10 to-transparent blur-3xl pointer-events-none rounded-full" />
@@ -78,21 +78,21 @@ export default function Welcome({ auth }: { auth: any }) {
             <section className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-20 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-8 backdrop-blur-sm">
                     <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
-                    <span>Mesin Generator Aplikasi Web Berbasis AI</span>
+                    <span>Web Builder Generasi Baru</span>
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8 bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                    Ubah Ide Menjadi Aplikasi Web Full-Stack Secara Instan
+                    Bikin Aplikasi Web dari Teks, Tanpa Ribet.
                 </h1>
 
                 <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-normal">
-                    Nusantara Engine membantu developer dan kreator membangun, menguji, dan mempublikasikan aplikasi web Node.js utuh hanya menggunakan instruksi bahasa alami.
+                    Nusantara Engine bantu kamu bikin, tes, dan publish aplikasi Node.js full-stack dalam hitungan detik. Cukup ketik apa yang kamu mau.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Link href={auth?.user ? "/dashboard" : "/register"}>
                         <Button size="lg" className="w-full sm:w-auto h-13 px-8 text-base bg-white text-black hover:bg-neutral-200 rounded-full font-semibold shadow-xl shadow-white/10 transition-all hover:scale-105">
-                            {auth?.user ? "Buka Dashboard" : "Mulai Buat Gratis"}
+                            {auth?.user ? "Buka Dashboard" : "Coba Gratis Sekarang"}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </Link>
@@ -103,10 +103,10 @@ export default function Welcome({ auth }: { auth: any }) {
             <section className="relative z-10 max-w-6xl mx-auto px-6 py-20">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
-                        Dirancang untuk Kecepatan Pengembangan Maksimal
+                        Didesain untuk Kerja Cepat
                     </h2>
                     <p className="text-neutral-400 max-w-xl mx-auto text-base">
-                        Semua fitur yang Anda butuhkan untuk mengubah ide menjadi aplikasi web siap pakai dan produksi.
+                        Semua yang kamu butuhkan untuk eksekusi ide web app tanpa setup berbelit-belit.
                     </p>
                 </div>
 
@@ -129,7 +129,7 @@ export default function Welcome({ auth }: { auth: any }) {
 
             {/* Footer */}
             <footer className="relative z-10 border-t border-white/5 py-8 text-center text-sm text-neutral-500">
-                <p>&copy; {new Date().getFullYear()} Nusantara Engine. Hak cipta dilindungi.</p>
+                <p>&copy; {new Date().getFullYear()} Nusantara Engine.</p>
             </footer>
         </div>
     );
