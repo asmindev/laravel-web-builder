@@ -32,9 +32,16 @@ createInertiaApp({
 import { route as routeFn } from 'ziggy-js';
 import { Ziggy } from './ziggy';
 
-declare global {
-    var route: typeof routeFn;
+// Dynamically bind location.origin to Ziggy so URLs never default to hardcoded localhost
+if (typeof window !== 'undefined') {
+    (Ziggy as any).url = window.location.origin;
 }
 
 // @ts-ignore
-window.route = (name?: any, params?: any, absolute?: any, config: any = Ziggy) => routeFn(name, params, absolute, config);
+window.route = (name?: any, params?: any, absolute?: any, config: any = Ziggy) => {
+    const activeConfig = (typeof window !== 'undefined' && (window as any).Ziggy)
+        ? { ...(window as any).Ziggy, url: window.location.origin }
+        : { ...config, url: typeof window !== 'undefined' ? window.location.origin : config?.url };
+
+    return routeFn(name, params, absolute, activeConfig);
+};
