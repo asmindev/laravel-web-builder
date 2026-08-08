@@ -47,12 +47,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton size="lg" asChild tooltip="Web Builder">
                             <Link href={route('dashboard')}>
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden shrink-0">
                                     <img src="/images/logo.webp" alt="Web Builder Logo" className="size-8 object-contain" />
                                 </div>
-                                <div className="flex flex-col gap-0.5 leading-none">
+                                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                                     <span className="font-semibold">Web Builder</span>
                                     <span className="text-xs text-muted-foreground">v1.0.0</span>
                                 </div>
