@@ -12,7 +12,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Search, Users, ShieldAlert, ShieldCheck, FolderOpen, Edit, Trash2, Loader2, Sparkles, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
