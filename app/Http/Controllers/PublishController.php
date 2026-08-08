@@ -45,6 +45,8 @@ class PublishController extends Controller
     {
         if ($project->user_id !== auth()->id()) {
             abort(403);
+        }
+
         if ($project->is_suspended) {
             return response()->view('errors.suspended', ['project' => $project], 403);
         }
