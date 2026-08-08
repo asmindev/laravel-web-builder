@@ -71,7 +71,10 @@ class PublishController extends Controller
 
         $path = $this->exportService->exportAsZip($project);
 
-        return response()->download($path, "{$project->slug}.zip")->deleteFileAfterSend();
+        $safeName = \Illuminate\Support\Str::slug($project->name) ?: 'project';
+        $filename = "{$safeName}-{$project->slug}.zip";
+
+        return response()->download($path, $filename)->deleteFileAfterSend();
     }
 
     public function import(Request $request): RedirectResponse
