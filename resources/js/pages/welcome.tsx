@@ -30,9 +30,10 @@ export default function Welcome({ auth }: { auth: any }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [typingText, setTypingText] = useState('');
     const [agencyName, setAgencyName] = useState('');
-    const [agencyType, setAgencyType] = useState('Company Profile');
+    const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
     const fullText = "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
+    const logoUrl = "https://nusantaratech.id/logoo.png";
 
     // Typing effect simulation
     useEffect(() => {
@@ -44,7 +45,7 @@ export default function Welcome({ auth }: { auth: any }) {
             } else {
                 clearInterval(interval);
             }
-        }, 35);
+        }, 30);
         return () => clearInterval(interval);
     }, []);
 
@@ -68,7 +69,7 @@ export default function Welcome({ auth }: { auth: any }) {
         <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
             <Head title="Nusantartech AI — Generate Website dengan Prompt" />
 
-            {/* Dynamic Background Patterns */}
+            {/* Background Patterns */}
             <div className="fixed inset-0 bg-grid-light dark:bg-grid-dark bg-[length:32px_32px] sm:bg-[length:40px_40px] opacity-[0.4] dark:opacity-[0.04] pointer-events-none z-0 transition-opacity duration-500" />
             <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] md:w-[800px] h-[300px] sm:h-[500px] bg-[#2cb1bc] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] sm:blur-[200px] opacity-[0.05] dark:opacity-[0.08] pointer-events-none z-0 transition-opacity duration-500" />
 
@@ -76,10 +77,10 @@ export default function Welcome({ auth }: { auth: any }) {
             <header className="fixed w-full top-0 z-50 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl transition-all duration-300 border-b border-slate-200/50 dark:border-white/5">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between">
                     
-                    {/* Brand Logo */}
+                    {/* Logo Header */}
                     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
-                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all flex items-center justify-center shrink-0">
-                            <span className="font-mono font-black text-white text-xs sm:text-sm tracking-tighter">NT</span>
+                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0">
+                            <img src={logoUrl} alt="Nusantartech Logo" className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col">
                             <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white">NUSANTARTECH</span>
@@ -89,19 +90,19 @@ export default function Welcome({ auth }: { auth: any }) {
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation */}
+                    {/* Desktop Menu */}
                     <nav className="hidden md:flex items-center gap-6 lg:gap-8">
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#fitur">Fitur AI</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#harga">Langganan</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#terms">Terms</a>
-                        <div className="h-4 w-px bg-slate-300 dark:bg-slate-800" />
+                        <div className="h-4 w-px bg-slate-300 dark:bg-[#1e293b]" />
                         <a className="text-sm font-semibold text-[#ff8a5c] hover:text-[#e86a38] transition-colors flex items-center gap-1.5" href="#jasa">
                             <LayoutTemplate className="w-4 h-4" /> Jasa Agensi
                         </a>
                     </nav>
 
-                    {/* Desktop Actions */}
+                    {/* Header Actions */}
                     <div className="hidden md:flex items-center gap-3 lg:gap-4">
                         <button
                             onClick={() => setIsDark(!isDark)}
@@ -115,11 +116,11 @@ export default function Welcome({ auth }: { auth: any }) {
                             href={auth?.user ? "/dashboard" : "/login"}
                             className="text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 px-5 lg:px-6 py-2.5 rounded-full transition-all shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95"
                         >
-                            {auth?.user ? "Masuk ke Dashboard" : "Masuk"}
+                            Masuk ke Dashboard
                         </Link>
                     </div>
 
-                    {/* Mobile Actions */}
+                    {/* Mobile Action Controls */}
                     <div className="flex items-center gap-2 sm:gap-3 md:hidden">
                         <button
                             onClick={() => setIsDark(!isDark)}
@@ -130,15 +131,16 @@ export default function Welcome({ auth }: { auth: any }) {
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className="p-2 rounded-xl text-slate-900 dark:text-white focus:outline-none active:bg-slate-200 dark:active:bg-slate-800 transition-colors"
+                            aria-label="Open Menu"
                         >
                             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
                 </div>
 
-                {/* Mobile Dropdown */}
+                {/* Mobile Menu Dropdown */}
                 {mobileMenuOpen && (
-                    <div className="absolute top-full left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 border-b border-slate-200/80 dark:border-slate-800 flex flex-col px-6 py-6 gap-4 md:hidden shadow-2xl backdrop-blur-2xl z-50">
+                    <div className="absolute top-full left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 border-b border-slate-200/80 dark:border-[#1e293b]/80 flex flex-col px-6 py-6 gap-4 md:hidden shadow-2xl backdrop-blur-2xl z-50">
                         <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#fitur">
                             <span>Fitur AI</span>
                             <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -159,7 +161,7 @@ export default function Welcome({ auth }: { auth: any }) {
                             <span className="flex items-center gap-2"><LayoutTemplate className="w-4 h-4" /> Jasa Agensi (Kustom)</span>
                             <ChevronRight className="w-4 h-4 text-[#ff8a5c]" />
                         </a>
-                        <hr className="border-slate-200 dark:border-slate-800 my-1" />
+                        <hr className="border-slate-200 dark:border-slate-800/80 my-1" />
                         <Link href={auth?.user ? "/dashboard" : "/login"} className="text-center text-sm font-bold bg-slate-900 dark:bg-white text-white dark:text-black py-3.5 rounded-xl active:scale-95 transition-transform shadow-md">
                             Masuk ke Dashboard
                         </Link>
@@ -167,12 +169,12 @@ export default function Welcome({ auth }: { auth: any }) {
                 )}
             </header>
 
-            {/* Hero Section */}
+            {/* Main Content */}
             <main className="relative pt-28 sm:pt-36 pb-16 lg:pt-48 lg:pb-32 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                         
-                        {/* Hero Left Copy */}
+                        {/* Hero Text Content */}
                         <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[10px] sm:text-xs font-mono font-bold text-[#2cb1bc] mb-1 backdrop-blur-md">
                                 <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
@@ -195,11 +197,11 @@ export default function Welcome({ auth }: { auth: any }) {
                                     <div className="pl-2.5 sm:pl-3 text-[#2cb1bc] shrink-0">
                                         <Terminal className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </div>
-                                    <div className="w-full text-left text-slate-800 dark:text-white text-xs sm:text-sm font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
+                                    <div className="w-full text-left bg-transparent text-slate-800 dark:text-white text-xs sm:text-sm font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
                                         <span>{typingText}</span>
                                         <span className="animate-pulse text-[#2cb1bc] font-bold">|</span>
                                     </div>
-                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] shrink-0">
+                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)] shrink-0" aria-label="Jalankan Prompt AI">
                                         <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </Link>
                                 </div>
@@ -211,36 +213,40 @@ export default function Welcome({ auth }: { auth: any }) {
                             </div>
                         </div>
 
-                        {/* Hero Right Visual */}
+                        {/* Hero Interactive Orbit Visual */}
                         <div className="relative h-[320px] sm:h-[450px] lg:h-[520px] flex items-center justify-center mt-6 lg:mt-0">
                             <div className="relative w-full max-w-[280px] sm:max-w-md aspect-square flex items-center justify-center">
+                                
                                 <div className="absolute w-32 h-32 sm:w-40 sm:h-40 bg-[#2cb1bc] rounded-full blur-[50px] sm:blur-[60px] opacity-40 animate-pulse" />
+
                                 <div className="absolute w-[78%] h-[78%] rounded-full border border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30 border-dashed animate-spin" style={{ animationDuration: '18s' }} />
                                 <div className="absolute w-[98%] h-[98%] rounded-full border border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20 border-dotted animate-spin" style={{ animationDuration: '22s', animationDirection: 'reverse' }}>
                                     <div className="absolute top-0 left-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#ff8a5c] rounded-full shadow-[0_0_10px_#ff8a5c] -translate-x-1/2 -translate-y-1/2" />
                                     <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-[#2cb1bc] rounded-full shadow-[0_0_10px_#2cb1bc] -translate-x-1/2 translate-y-1/2" />
+                                    <div className="absolute top-1/2 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#a6f4fa] rounded-full shadow-[0_0_8px_#a6f4fa] translate-x-1/2 -translate-y-1/2" />
                                 </div>
 
-                                {/* Central Core Frame */}
-                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl z-20 bg-black flex items-center justify-center">
-                                    <div className="text-center space-y-1">
-                                        <div className="text-2xl sm:text-4xl font-black text-white tracking-widest font-mono">
-                                            AI<span className="text-[#2cb1bc]">CORE</span>
-                                        </div>
-                                        <div className="text-[10px] font-mono text-[#ff8a5c] tracking-widest uppercase">NODE &amp; EJS ENGINE</div>
+                                {/* Central Logo Frame */}
+                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl dark:shadow-[0_0_50px_rgba(44,177,188,0.25)] z-20 bg-black group">
+                                    <img src={logoUrl} alt="Nusantartech AI Core" className="w-full h-full object-cover transform scale-110 group-hover:scale-125 transition-transform duration-1000 ease-out" />
+                                    
+                                    <div className="absolute inset-0 z-30 pointer-events-none mix-blend-screen">
+                                        <div className="w-full h-8 bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent animate-pulse" />
                                     </div>
+                                    
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)] z-10 pointer-events-none" />
                                 </div>
 
                                 {/* Floating UI Elements */}
-                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
                                     <Cpu className="w-4 h-4 sm:w-5 sm:h-5 text-[#2cb1bc] animate-pulse" />
                                     <div className="text-[9px] sm:text-xs font-mono">
                                         <p className="text-slate-800 dark:text-white font-bold">Menyusun Layout...</p>
-                                        <p className="text-[#2cb1bc]">Express &amp; EJS Applied</p>
+                                        <p className="text-[#2cb1bc]">CSS Grid Applied</p>
                                     </div>
                                 </div>
                                 
-                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
                                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff8a5c]" />
                                     <div className="text-[9px] sm:text-xs font-mono">
                                         <p className="text-slate-800 dark:text-white font-bold">Aset Dimuat</p>
@@ -283,7 +289,7 @@ export default function Welcome({ auth }: { auth: any }) {
                         {/* Fitur 2 */}
                         <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
                             <div className="flex justify-between items-center mb-6">
-                                <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform">
                                     <Code2 className="w-5 h-5" />
                                 </div>
                                 <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">browser-ide.js</span>
@@ -355,7 +361,7 @@ export default function Welcome({ auth }: { auth: any }) {
                                 <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">2</div>
                                 <div>
                                     <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Registrasi akun</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Isi nama lengkap, email, nomor WhatsApp, lalu buat akun untuk menyelesaikan pendaftaran.</p>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Isi nama lengkap, email, nomor WhatsApp, lalu lanjut ke checkout DOKU untuk menyelesaikan pembayaran.</p>
                                 </div>
                             </div>
 
@@ -385,8 +391,8 @@ export default function Welcome({ auth }: { auth: any }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
-                        {/* Free Tier */}
-                        <div className="bg-white/80 dark:bg-[#0f172a]/65 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col relative shadow-md">
+                        {/* Starter Tier */}
+                        <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/8 flex flex-col relative shadow-sm">
                             <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Starter</h3>
                             <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">Untuk eksplorasi kekuatan AI.</p>
                             <div className="my-5 sm:my-6">
@@ -399,27 +405,27 @@ export default function Welcome({ auth }: { auth: any }) {
                                 </li>
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
                                     <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
-                                    Akses Editor Visual &amp; Monaco IDE
+                                    Akses Editor Visual Dasar
                                 </li>
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
                                     <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
-                                    Subdomain Preview Sandbox
+                                    Domain nusantartech.site
                                 </li>
                             </ul>
-                            <Link href={auth?.user ? "/dashboard" : "/register"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm">
-                                {auth?.user ? "Buka Dashboard" : "Masuk Akun"}
+                            <Link href={auth?.user ? "/dashboard" : "/login"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm">
+                                Masuk ke Dashboard
                             </Link>
                         </div>
 
                         {/* Pro Tier */}
-                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative shadow-2xl">
+                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative transform md:-translate-y-4 shadow-2xl">
                             <div className="absolute -top-3.5 right-6 sm:right-8 bg-[#2cb1bc] text-slate-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest py-1 px-3.5 sm:py-1.5 sm:px-4 rounded-full shadow-lg">
                                 Populer
                             </div>
                             <h3 className="text-xl sm:text-2xl font-bold text-white">Pro Builder</h3>
                             <p className="text-xs sm:text-sm text-[#a6f4fa] mt-1 font-medium">Solusi lengkap untuk profesional.</p>
                             <div className="my-5 sm:my-6">
-                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">Rp 149k</span><span class="text-gray-400 font-medium text-sm sm:text-base"> /bln</span>
+                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">Rp 149k</span><span className="text-gray-400 font-medium text-sm sm:text-base"> /bln</span>
                             </div>
                             <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
@@ -428,15 +434,15 @@ export default function Welcome({ auth }: { auth: any }) {
                                 </li>
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
                                     <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Export Bundle Kode Node.js (ZIP)
+                                    Export Kode (HTML/React/Tailwind)
                                 </li>
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
                                     <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Custom Subdomain Kustom
+                                    Custom Domain (.com/.id)
                                 </li>
                                 <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
                                     <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Integrasi Database SQLite/MySQL Shim
+                                    Integrasi Database
                                 </li>
                             </ul>
                             <Link href={auth?.user ? "/dashboard" : "/register"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-slate-900 transition-all font-extrabold text-sm shadow-[0_0_20px_rgba(44,177,188,0.4)]">
@@ -448,9 +454,11 @@ export default function Welcome({ auth }: { auth: any }) {
             </section>
 
             {/* Section Jasa Agensi */}
-            <section id="jasa" className="py-16 sm:py-24 border-y border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#060a13] relative z-10 overflow-hidden transition-colors duration-500">
+            <section id="jasa" className="py-16 sm:py-24 border-y border-slate-200 dark:border-[#1e293b] bg-slate-100 dark:bg-[#060a13] relative z-10 overflow-hidden transition-colors duration-500">
+                <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#ff8a5c] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] sm:blur-[150px] opacity-[0.05] dark:opacity-[0.08] pointer-events-none" />
+
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="bg-white/80 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-300 dark:border-slate-800 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 shadow-lg">
+                    <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-300 dark:border-[#1e293b] rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 shadow-lg">
                         <div className="md:w-3/5 space-y-4 sm:space-y-6 text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff8a5c]/10 border border-[#ff8a5c]/30 text-[10px] sm:text-[11px] font-mono font-bold text-[#e86a38] dark:text-[#ff8a5c]">
                                 <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Opsi Terima Beres
@@ -460,9 +468,9 @@ export default function Welcome({ auth }: { auth: any }) {
                                 Selain platform AI Builder, Nusantartech juga memiliki <strong className="text-slate-900 dark:text-white">Tim Studio Agensi Internal</strong>. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.
                             </p>
                         </div>
-                        <div className="md:w-2/5 w-full">
+                        <div className="md:w-2/5 w-full flex flex-col gap-4">
                             <form onSubmit={handleWhatsAppAgency} className="bg-white dark:bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                                <h4 className="font-bold text-slate-900 dark:text-white mb-2 text-xs sm:text-sm font-mono uppercase tracking-wider">Konsultasi Proyek Kustom</h4>
+                                <h4 className="font-bold text-slate-900 dark:text-white mb-3 sm:mb-4 text-xs sm:text-sm font-mono uppercase tracking-wider">Konsultasi Proyek Kustom</h4>
                                 <input
                                     type="text"
                                     placeholder="Nama Anda"
@@ -475,10 +483,10 @@ export default function Welcome({ auth }: { auth: any }) {
                                     onChange={(e) => setAgencyType(e.target.value)}
                                     className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#ff8a5c] text-slate-600 dark:text-gray-300 transition-colors"
                                 >
-                                    <option value="Company Profile">Jenis Website: Company Profile</option>
-                                    <option value="Toko Online">Jenis Website: Toko Online</option>
-                                    <option value="Landing Page">Jenis Website: Landing Page</option>
-                                    <option value="Sistem Web Kustom">Jenis Website: Sistem Web Kustom</option>
+                                    <option value="Jenis Website: Company Profile">Jenis Website: Company Profile</option>
+                                    <option value="Jenis Website: Toko Online">Jenis Website: Toko Online</option>
+                                    <option value="Jenis Website: Landing Page">Jenis Website: Landing Page</option>
+                                    <option value="Jenis Website: Sistem Web Kustom">Jenis Website: Sistem Web Kustom</option>
                                 </select>
                                 <button type="submit" className="w-full py-3 bg-[#ff8a5c] hover:bg-[#e86a38] active:scale-95 text-white font-bold rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-2 group shadow-md">
                                     <span>Hubungi via WhatsApp</span>
@@ -498,18 +506,20 @@ export default function Welcome({ auth }: { auth: any }) {
                             <span className="text-[#2cb1bc]">// terms &amp; conditions</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Terms &amp; Conditions</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab platform.</p>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Gunakan bagian ini untuk menaruh aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                        {/* T&C 1 */}
                         <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
                             <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§1</span>
                             <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Penggunaan layanan</h3>
-                            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
                                 Layanan hanya digunakan untuk keperluan yang sesuai dengan ketentuan, hukum yang berlaku, dan kebijakan internal yang Anda tetapkan.
                             </p>
                         </div>
 
+                        {/* T&C 2 */}
                         <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
                             <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§2</span>
                             <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Akses akun</h3>
@@ -518,11 +528,12 @@ export default function Welcome({ auth }: { auth: any }) {
                             </p>
                         </div>
 
+                        {/* T&C 3 */}
                         <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
                             <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§3</span>
                             <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Pembaruan ketentuan</h3>
                             <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                                Syarat dan ketentuan dapat diperbarui sewaktu-waktu selama perubahan tersebut diumumkan secara transparan.
+                                Anda dapat memperbarui syarat dan ketentuan sewaktu-waktu selama perubahan tersebut diumumkan dengan jelas kepada pengguna.
                             </p>
                         </div>
                     </div>
@@ -534,8 +545,8 @@ export default function Welcome({ auth }: { auth: any }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-black flex items-center justify-center shrink-0">
-                                <span className="font-mono font-black text-white text-xs sm:text-sm">NT</span>
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-[#1e293b] bg-black flex items-center justify-center overflow-hidden shrink-0">
+                                <img src={logoUrl} alt="Logo Footer" className="w-full h-full object-cover" />
                             </div>
                             <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg sm:text-xl">NUSANTARTECH</span>
                         </div>
@@ -552,7 +563,7 @@ export default function Welcome({ auth }: { auth: any }) {
                                     <Linkedin className="w-5 h-5" />
                                 </a>
                             </div>
-                            <p className="text-slate-500 text-xs sm:text-sm">&copy; {new Date().getFullYear()} Nusantartech. All rights reserved.</p>
+                            <p className="text-slate-500 text-xs sm:text-sm">&copy; 2026 Nusantartech. All rights reserved.</p>
                         </div>
                     </div>
                 </div>
