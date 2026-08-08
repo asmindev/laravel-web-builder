@@ -18,6 +18,8 @@ import { PageProps } from '@/types';
 import { Project } from '@/types/project';
 import { Link, usePage } from '@inertiajs/react';
 
+import { Can } from '@/components/can';
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { auth, recent_projects, projects } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[] }>().props;
     const userRecentProjects = recent_projects && recent_projects.length > 0 ? recent_projects : (projects || []);
@@ -75,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
-                {auth?.user?.is_admin && (
+                <Can role="admin">
                     <SidebarGroup>
                         <SidebarGroupLabel>Administrator</SidebarGroupLabel>
                         <SidebarMenu>
@@ -89,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroup>
-                )}
+                </Can>
                 {userRecentProjects && userRecentProjects.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>

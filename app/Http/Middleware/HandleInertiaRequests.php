@@ -61,6 +61,7 @@ class HandleInertiaRequests extends Middleware
                     'can_create_project' => $user->canCreateProject(),
                     'is_admin' => $user->hasRole('admin'),
                     'roles' => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
                 ] : null,
             ],
             'enhanced_prompt' => fn() => session()->get('enhanced_prompt'),

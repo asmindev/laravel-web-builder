@@ -9,7 +9,11 @@ class ProjectSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = \App\Models\User::first();
+        if (Project::where('slug', 'landing-page')->exists()) {
+            return;
+        }
+
+        $user = \App\Models\User::where('email', 'demo@example.com')->first() ?? \App\Models\User::first();
 
         if (!$user) {
             $user = \App\Models\User::factory()->create([
