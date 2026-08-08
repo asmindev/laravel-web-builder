@@ -1,4 +1,4 @@
-import { Save, Eye, Globe, Loader2, FileCode } from 'lucide-react';
+import { Save, Eye, Globe, Loader2, FileCode, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
@@ -39,6 +39,11 @@ export function TopBar({ project, activeFile, saving, publishing, onSave, onPubl
                     <Link href={route('projects.preview', project.slug)}>
                         <Eye className="mr-1 size-3" /> Preview
                     </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                    <a href={route('projects.export-zip', project.slug)}>
+                        <Download className="mr-1 size-3" /> Export ZIP
+                    </a>
                 </Button>
                 <Button size="sm" onClick={onPublish} disabled={publishing}>
                     {publishing ? (

@@ -333,6 +333,9 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                             <DropdownMenuItem>
                                                 <a href={route('projects.preview', project.slug)}>Preview</a>
                                             </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <a href={route('projects.export-zip', project.slug)}>Export ZIP (MySQL)</a>
+                                            </DropdownMenuItem>
                                             {project.published && (
                                                 <DropdownMenuItem>
                                                     <a href={route('app.preview', [project.slug])} target="_blank" rel="noopener">
