@@ -133,19 +133,18 @@ export default function UserProjects({ targetUser, projects }: UserProjectsProps
                                             </span>
                                         </div>
 
-                                        {/* Action Buttons (Strict Secret Mode: Preview and Live Only) */}
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <Button variant="outline" size="sm" asChild className="h-8 text-xs flex-1">
-                                                <a href={route('projects.preview', p.slug)} title="Preview Project">
-                                                    <Eye className="size-3.5 mr-1" /> Preview
-                                                </a>
-                                            </Button>
-                                            {p.published && (
-                                                <Button size="sm" asChild className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white flex-1" title="View Live">
+                                        {/* Action Buttons (Strict Secret Mode: Live Only) */}
+                                        <div className="flex items-center gap-2">
+                                            {p.published ? (
+                                                <Button size="sm" asChild className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white w-full" title="View Live">
                                                     <a href={route('app.preview', [p.slug])} target="_blank" rel="noopener noreferrer">
-                                                        <Globe className="size-3.5 mr-1" /> Live
+                                                        <Globe className="size-3.5 mr-1" /> View Live
                                                     </a>
                                                 </Button>
+                                            ) : (
+                                                <div className="text-xs text-muted-foreground italic text-center w-full py-1">
+                                                    Draft (Belum Dipublikasi)
+                                                </div>
                                             )}
                                         </div>
                                     </CardContent>
