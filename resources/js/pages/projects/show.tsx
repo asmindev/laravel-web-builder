@@ -187,41 +187,29 @@ export default function ProjectShow({ project }: ShowProps) {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between border-t border-b border-border py-3 flex-wrap gap-2">
+                        <div className="flex items-center justify-between border-t border-b border-border py-3">
                             <div className="flex items-center gap-2 text-xs font-semibold text-primary">
                                 <Sparkles className="size-4 text-amber-500" />
                                 <span>Gemini Prompt Enhancer</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 gap-1.5 text-xs font-bold border-indigo-500/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
-                                    asChild
-                                >
-                                    <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="size-3.5 text-indigo-500" /> Buka Gemini
-                                    </a>
-                                </Button>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    className="h-8 gap-1.5 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90"
-                                    disabled={!appName || !appDesc || enhancing}
-                                    onClick={handleEnhancePrompt}
-                                >
-                                    {enhancing ? (
-                                        <>
-                                            <Loader2 className="size-3.5 animate-spin" /> Enhancing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Sparkles className="size-3.5 text-amber-500" /> Generate Prompt Master
-                                        </>
-                                    )}
-                                </Button>
-                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 gap-1.5 text-xs font-bold"
+                                disabled={!appName || !appDesc || enhancing}
+                                onClick={handleEnhancePrompt}
+                            >
+                                {enhancing ? (
+                                    <>
+                                        <Loader2 className="size-3.5 animate-spin" /> Enhancing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="size-3.5 text-amber-500" /> Generate Prompt Master
+                                    </>
+                                )}
+                            </Button>
                         </div>
 
                         {enhanceError && (
@@ -259,19 +247,8 @@ export default function ProjectShow({ project }: ShowProps) {
                         )}
                     </div>
 
-                    <DialogFooter className="flex items-center justify-between gap-2 sm:justify-between">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 border-indigo-500/40 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
-                            asChild
-                        >
-                            <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="size-3.5 text-indigo-500" /> Buka Gemini AI
-                            </a>
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => setShowPromptModal(false)}>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowPromptModal(false)}>
                             Tutup
                         </Button>
                     </DialogFooter>
