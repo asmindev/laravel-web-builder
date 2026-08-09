@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { EXT_ICONS, getExt } from '@/lib/file-utils';
 import type { ProjectFile, ProjectFolder } from '@/types/project';
@@ -162,6 +163,11 @@ export function FileTree({
     const [editingFolder, setEditingFolder] = useState<string | null>(null);
     const [editingFolderValue, setEditingFolderValue] = useState<string>('');
 
+    // Folder Move Modal States
+    const [folderToMove, setFolderToMove] = useState<string | null>(null);
+    const [folderMoveTarget, setFolderMoveTarget] = useState<string>('/');
+    const [isCustomFolderMove, setIsCustomFolderMove] = useState<boolean>(false);
+
     // Focus & select text ONCE when editing mode opens (prevents re-selecting on every key typed)
     useEffect(() => {
         if (editingFolder && folderInputRef.current) {
@@ -170,14 +176,23 @@ export function FileTree({
         }
     }, [editingFolder]);
 
-    const startRenameFolder = (folderPath: string) => {
+    const startRenameFolder = (folderPath: string, folderDisplayName: string) => {
         setEditingFolder(folderPath);
-        setEditingFolderValue(folderPath);
+        setEditingFolderValue(folderDisplayName);
     };
 
     const submitRenameFolder = (oldPath: string) => {
-        if (editingFolderValue.trim() && editingFolderValue.trim() !== oldPath) {
-            onRenameFolderByName(oldPath, editingFolderValue.trim());
+        const newName = editingFolderValue.trim();
+        if (!newName) {
+            setEditingFolder(null);
+            return;
+        }
+        const parts = oldPath.split('/');
+        const parentPath = parts.length > 1 ? parts.slice(0, -1).join('/') : '';
+        const newFullPath = parentPath ? `${parentPath}/${newName}` : newName;
+
+        if (newFullPath !== oldPath) {
+            onRenameFolderByName(oldPath, newFullPath);
         }
         setEditingFolder(null);
     };
@@ -437,8 +452,17 @@ export function FileTree({
                             <ContextMenuItem onClick={() => onNewFileInFolder(folderPath)}>
                                 <Plus className="size-3.5 text-primary" /> Buat File di Folder ini
                             </ContextMenuItem>
-                            <ContextMenuItem onClick={() => startRenameFolder(folderPath)}>
-                                <Pencil className="size-3.5 text-indigo-500" /> Pindahkan / Rename Folder
+                            <ContextMenuItem onClick={() => startRenameFolder(folderPath, folderDisplayName)}>
+                                <Pencil className="size-3.5 text-indigo-500" /> Rename Folder
+                            </ContextMenuItem>
+                            <ContextMenuItem
+                                onClick={() => {
+                                    setFolderToMove(folderPath);
+                                    setFolderMoveTarget('/');
+                                    setIsCustomFolderMove(false);
+                                }}
+                            >
+                                <ArrowRight className="size-3.5 text-emerald-500" /> Pindahkan Folder
                             </ContextMenuItem>
                             <ContextMenuSeparator />
                             <ContextMenuItem
@@ -454,8 +478,18 @@ export function FileTree({
                         <DropdownMenuItem onClick={() => onNewFileInFolder(folderPath)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
                             <Plus className="size-4 text-primary" /> Buat File di Folder ini
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => startRenameFolder(folderPath)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
-                            <Pencil className="size-4 text-indigo-500" /> Pindahkan / Rename Folder
+                        <DropdownMenuItem onClick={() => startRenameFolder(folderPath, folderDisplayName)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                            <Pencil className="size-4 text-indigo-500" /> Rename Folder
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                setFolderToMove(folderPath);
+                                setFolderMoveTarget('/');
+                                setIsCustomFolderMove(false);
+                            }}
+                            className="flex items-center gap-2 cursor-pointer text-xs font-medium text-emerald-600 dark:text-emerald-400"
+                        >
+                            <ArrowRight className="size-4 text-emerald-500" /> Pindahkan Folder
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -501,6 +535,122 @@ export function FileTree({
             >
                 {treeItems.map((node) => renderNode(node, 0))}
             </div>
+
+            {/* Pindahkan Folder Dialog Modal */}
+            {folderToMove && (() => {
+                const folderBaseName = folderToMove.split('/').pop()!;
+                const destPath = !folderMoveTarget || folderMoveTarget === '/'
+                    ? folderBaseName
+                    : `${folderMoveTarget.replace(/\/$/, '')}/${folderBaseName}`;
+
+                // Extract all folders list
+                const implicitFolders = new Set<string>();
+                files.forEach((f) => {
+                    if (f.path.includes('/')) {
+                        const parts = f.path.split('/');
+                        parts.pop();
+                        for (let i = 1; i <= parts.length; i++) {
+                            implicitFolders.add(parts.slice(0, i).join('/'));
+                        }
+                    }
+                });
+                const allFoldersList = Array.from(new Set([...folders.map((f) => f.name), ...implicitFolders])).sort();
+
+                // Valid targets = exclude folderToMove itself and its child subfolders
+                const validTargets = allFoldersList.filter(
+                    (fPath) => fPath !== folderToMove && !fPath.startsWith(folderToMove + '/')
+                );
+
+                return (
+                    <Dialog open={!!folderToMove} onOpenChange={(open) => !open && setFolderToMove(null)}>
+                        <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2 text-base font-bold">
+                                    <ArrowRight className="size-5 text-primary" /> Pindahkan Folder
+                                </DialogTitle>
+                                <DialogDescription className="text-xs">
+                                    Pilih folder tujuan untuk memindahkan folder <strong>{folderBaseName}</strong>.
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="space-y-4 py-2">
+                                {/* Current Location */}
+                                <div className="flex items-center gap-3 rounded-lg border bg-muted/40 p-3 text-xs">
+                                    <Folder className="size-6 text-amber-500 shrink-0" />
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-foreground truncate">{folderBaseName}</p>
+                                        <p className="text-[11px] text-muted-foreground truncate">
+                                            Lokasi saat ini: <code className="font-mono bg-muted px-1 rounded">{folderToMove}</code>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Target Selection */}
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-semibold">Pilih Folder Tujuan</Label>
+                                    <select
+                                        value={isCustomFolderMove ? '__custom__' : folderMoveTarget}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (val === '__custom__') {
+                                                setIsCustomFolderMove(true);
+                                            } else {
+                                                setIsCustomFolderMove(false);
+                                                setFolderMoveTarget(val);
+                                            }
+                                        }}
+                                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-xs shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    >
+                                        <option value="/">📁 Root Directory ( / )</option>
+                                        {validTargets.map((fName) => (
+                                            <option key={fName} value={fName}>
+                                                📁 {fName}
+                                            </option>
+                                        ))}
+                                        <option value="__custom__">➕ Ketik Folder Baru / Custom Path</option>
+                                    </select>
+
+                                    {isCustomFolderMove && (
+                                        <Input
+                                            value={folderMoveTarget}
+                                            onChange={(e) => setFolderMoveTarget(e.target.value)}
+                                            placeholder="misal: src/components"
+                                            className="h-8 text-xs font-mono mt-2"
+                                            autoFocus
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Destination Preview */}
+                                <div className="rounded-md border border-primary/20 bg-primary/5 p-2.5 text-xs space-y-1">
+                                    <span className="text-[11px] font-medium text-muted-foreground">Lokasi Akhir Folder:</span>
+                                    <div className="font-mono text-primary font-bold truncate">
+                                        {destPath}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <DialogFooter className="flex gap-2 sm:justify-end">
+                                <Button variant="outline" size="sm" onClick={() => setFolderToMove(null)}>
+                                    Batal
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    className="font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                                    onClick={() => {
+                                        if (destPath !== folderToMove) {
+                                            onRenameFolderByName(folderToMove, destPath);
+                                        }
+                                        setFolderToMove(null);
+                                    }}
+                                >
+                                    Pindahkan Folder
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                );
+            })()}
 
             {/* Delete Folder Alert Dialog */}
             {folderToDelete && (
