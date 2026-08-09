@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     // Export / Import
     Route::get('/projects/{project:slug}/export-json', [PublishController::class, 'exportJson'])->name('projects.export-json');
     Route::get('/projects/{project:slug}/export-zip', [PublishController::class, 'exportZip'])->name('projects.export-zip');
+    Route::get('/projects/{project:slug}/export-file', [PublishController::class, 'exportFile'])->name('projects.export-file');
     Route::post('/projects/import', [PublishController::class, 'import'])->name('projects.import');
 
     // AI

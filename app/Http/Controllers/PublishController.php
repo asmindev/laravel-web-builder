@@ -82,6 +82,44 @@ class PublishController extends Controller
         return response()->download($path, $filename)->deleteFileAfterSend();
     }
 
+    public function exportFile(Project $project, Request $request)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $type = $request->query('type', 'nodejs');
+        $project->load('files');
+        $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'project';
+
+        if ($type === 'nodejs') {
+            $file = $project->files->first(fn($f) => in_array(basename($f->path), ['index.js', 'server.js', 'app.js', 'main.js']));
+            if (!$file) {
+                $file = $project->files->first(fn($f) => str_ends_with($f->path, '.js'));
+            }
+            $ext = $file ? pathinfo($file->path, PATHINFO_EXTENSION) : 'js';
+            $filename = "{$safeName}_index.{$ext}";
+            $content = $file ? $file->content : "// File Node.js tidak ditemukan\n";
+            return response($content, 200, [
+                'Content-Type' => 'text/plain',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        } else {
+            $file = $project->files->first(fn($f) => in_array(basename($f->path), ['index.ejs', 'index.html', 'home.ejs', 'index.hbs']));
+            if (!$file) {
+                $file = $project->files->first(fn($f) => str_ends_with($f->path, '.ejs') || str_ends_with($f->path, '.html'));
+            }
+            $ext = $file ? pathinfo($file->path, PATHINFO_EXTENSION) : 'html';
+            $filename = "{$safeName}_index.{$ext}";
+            $content = $file ? $file->content : "<!-- File Index tidak ditemukan -->\n";
+            $mime = $ext === 'ejs' ? 'text/plain' : 'text/html';
+            return response($content, 200, [
+                'Content-Type' => $mime,
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+    }
+
     public function import(Request $request): RedirectResponse
     {
         $validated = $request->validate([
