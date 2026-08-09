@@ -176,6 +176,8 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
             route('admin.settings.update'),
             form as any,
             {
+                preserveScroll: true,
+                preserveState: true,
                 onFinish: () => setIsSubmitting(false),
             }
         );
