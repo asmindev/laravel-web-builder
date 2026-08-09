@@ -22,8 +22,9 @@ CRITICAL MANDATORY RULES:
    - Username / Email: `admin` (or `admin@app.com`)
    - Password: `admin123` (hashed with bcryptjs or disupported directly)
    - Role: `admin`
-3. The UI Login View (`views/index.ejs`) MUST CLEARLY DISPLAY AN INFO BADGE WITH DEFAULT CREDENTIALS:
-   "Default Login -> Username: admin | Password: admin123" so the user can log in immediately.
+3. The UI Login View (`views/index.ejs`) MUST CLEARLY DISPLAY AN EXPLICIT HTML INFO BADGE / ALERT BOX WITH DEFAULT CREDENTIALS:
+   <div class="alert alert-info">Default Login: Username: <b>admin</b> | Password: <b>admin123</b></div>
+   AND set default input attributes `value="admin"` and `value="admin123"` on the login form inputs.
 4. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.
 PROMPT;
     }
@@ -45,12 +46,13 @@ CRITICAL MANDATORY REQUIREMENT FOR ALL NODE.JS APPS:
    - Default Username / Email: `admin` (or `admin@app.com`)
    - Default Password: `admin123` (hashed with bcryptjs)
    - Default Role: `admin`
-3. The Frontend UI (Login Form / Page / View) MUST DISPLAY A HELPFUL INFO BADGE WITH DEFAULT CREDENTIALS:
-   `Default Login -> Username/Email: admin | Password: admin123` so the user can log in instantly without guessing.
+3. The Frontend UI Login View (`views/index.ejs`) MUST EXPLICITLY RENDER AN HTML ALERT BOX AND PRE-FILL INPUT VALUES WITH DEFAULT CREDENTIALS:
+   - Alert Box HTML: `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-xs mb-4"><strong>Demo Login:</strong> Username/Email: <b>admin</b> | Password: <b>admin123</b></div>`
+   - Form Inputs: Set `<input name="email" value="admin">` and `<input name="password" value="admin123">` or provide a "Fill Demo Credentials" button.
 
 YOU MUST STRUCTURE THE OUTPUT MASTER PROMPT AS FOLLOWS (USE THIS EXACT FORMAT AND SECTION TITLES IN INDONESIAN):
 
-Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANPA PLACEHOLDER, MEMILIKI HALAMAN LOGIN & AKUN DEFAULT ADMIN (admin | admin123), dan LANGSUNG JALAN."
+Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANPA PLACEHOLDER, MEMILIKI HALAMAN LOGIN, MENAMPILKAN BADGE KREDENSIAL DEFAULT (admin | admin123) PADA FORM LOGIN, dan LANGSUNG JALAN."
 
 1. DESKRIPSI DAN KONTEKS BISNIS APLIKASI
    - Nama Aplikasi & Tujuan Bisnis Utama yang spesifik (sesuai dengan: {$appName} - {$appDescription}).
@@ -76,7 +78,9 @@ Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANP
 
 4. RANCANGAN ANTARMUKA SINGLE PAGE APPLICATION (SPA) (views/index.ejs) & HALAMAN LOGIN
    - Layout & Tema: Gunakan desain UI/UX modern, premium, dan profesional. Wajib pakai Tailwind CSS v3/v4 (CDN) + FontAwesome v6.
-   - Halaman Login & Gate: Wajib sediakan View/State Login Form dengan info petunjuk akun default: "Akun Default: admin | Password: admin123".
+   - Halaman Login & Gate: WAJIB sediakan View/State Login Form yang SECARA EKSPLISIT MENAMPILKAN KARTU BADGE INFORMASI KREDENSIAL DEFAULT DALAM KODE HTML:
+     `<div class="bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[#2cb1bc] p-3 rounded-lg text-xs mb-4"><strong>Demo Login Account:</strong><br>Username/Email: <b>admin</b><br>Password: <b>admin123</b></div>`
+   - Form Inputs Default Value: Atur input `username`/`email` dan `password` pada form login agar memiliki atribut default `value="admin"` dan `value="admin123"` atau tombol quick-fill.
    - Navigasi: Sidebar Menu / Topbar Menu menggunakan Hash URL (`#dashboard`, `#module1`, `#module2`).
    - Dashboard Interaktif: Rancang widget/card analytics yang sesuai dengan aplikasi (misal: Total Pendapatan, Jumlah Transaksi, dll).
    - Form & Data Table: Sediakan desain CRUD (Tabel dengan aksi Edit/Hapus, dan Modal Form untuk Input Data).
@@ -133,7 +137,9 @@ Buatkan fungsi `initDB()` di app.js yang secara otomatis mengeksekusi tabel-tabe
 
 ## 4. DESAIN FRONTEND SPA (views/index.ejs) & HALAMAN LOGIN:
 - Gunakan Tailwind CSS CDN v3 + FontAwesome v6 (Dark Mode aesthetic).
-- Halaman/View Login interaktif yang menampilkan petunjuk jelas: `Akun Default: admin | Password: admin123`.
+- WAJIB TAMPILKAN EKSPLISIT KARTU ALERT INFO DEMO LOGIN PADA FORM LOGIN HTML:
+  `<div class="bg-blue-500/10 border border-blue-500/30 text-blue-400 p-3 rounded-lg text-xs mb-4"><b>Akun Default Login:</b><br>Username/Email: <code>admin</code><br>Password: <code>admin123</code></div>`
+- Atur input form login dengan default attribute: `<input name="email" value="admin">` dan `<input name="password" value="admin123">`.
 - Sidebar Navigation dengan Hash URL (#dashboard, #orders, #items, #users).
 - Ringkasan statistik di Dashboard (Total Pemasukan, Pesanan Aktif, Total Pelanggan).
 - Modal Form Interaktif untuk Tambah/Edit Data dan Cetak Struk/Detail Transaksi.
