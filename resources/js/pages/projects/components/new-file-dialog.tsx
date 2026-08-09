@@ -1,16 +1,14 @@
 import { useState } from 'react';
-import { Plus, Image, File, FolderOpen } from 'lucide-react';
+import { Plus, Image, File, FolderOpen, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import type { ProjectAsset } from '@/types/project';
 
@@ -25,116 +23,120 @@ interface NewFileDialogProps {
 
 type CreateMode = 'file' | 'folder';
 
-export function NewFileDialog({ newFileName, onChangeFileName, onCreateFile, onCreateFolder, onUploadAsset, assets }: NewFileDialogProps) {
+export function NewFileDialog({
+    newFileName,
+    onChangeFileName,
+    onCreateFile,
+    onCreateFolder,
+    onUploadAsset,
+    assets,
+}: NewFileDialogProps) {
     const [mode, setMode] = useState<CreateMode>('file');
     const [open, setOpen] = useState(false);
 
     const handleCreateFile = () => {
+        if (!newFileName.trim()) return;
         onCreateFile();
         setOpen(false);
     };
 
     const handleCreateFolder = () => {
+        if (!newFileName.trim()) return;
         onCreateFolder();
         setOpen(false);
     };
 
-    const modes: { value: CreateMode; label: string; icon: typeof File }[] = [
-        { value: 'file', label: 'File', icon: File },
-        { value: 'folder', label: 'Folder', icon: FolderOpen },
-    ];
-
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button variant="ghost" size="icon-xs">
-                    <Plus className="size-3" />
+        <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-xs" className="size-6 p-0 hover:bg-accent" title="Tambah File / Folder">
+                    <Plus className="size-3.5" />
                 </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>New {mode === 'file' ? 'File' : 'Folder'}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                    <div className="flex rounded-lg border p-0.5 bg-muted">
-                        {modes.map((m) => (
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64 p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-foreground">Buat Baru</span>
+                    <div className="flex rounded-md border p-0.5 bg-muted">
+                        <button
+                            type="button"
+                            onClick={() => { setMode('file'); onChangeFileName(''); }}
+                            className={cn(
+                                'flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium transition-colors',
+                                mode === 'file' ? 'bg-background text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            )}
+                        >
+                            <File className="size-3" /> File
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setMode('folder'); onChangeFileName(''); }}
+                            className={cn(
+                                'flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium transition-colors',
+                                mode === 'folder' ? 'bg-background text-foreground shadow-xs font-bold' : 'text-muted-foreground hover:text-foreground'
+                            )}
+                        >
+                            <FolderOpen className="size-3" /> Folder
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <Input
+                        value={newFileName}
+                        onChange={(e) => onChangeFileName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                mode === 'file' ? handleCreateFile() : handleCreateFolder();
+                            }
+                        }}
+                        placeholder={mode === 'file' ? 'Nama file (mis. index.ejs)' : 'Nama folder (mis. views)'}
+                        className="h-8 text-xs font-mono"
+                        autoFocus
+                    />
+                </div>
+
+                {mode === 'file' && (
+                    <div className="flex flex-wrap gap-1">
+                        {[
+                            { label: '.ejs', value: 'index.ejs' },
+                            { label: '.css', value: 'style.css' },
+                            { label: '.js', value: 'script.js' },
+                            { label: '.json', value: 'data.json' },
+                        ].map((preset) => (
                             <button
-                                key={m.value}
+                                key={preset.value}
                                 type="button"
-                                onClick={() => { setMode(m.value); onChangeFileName(''); }}
+                                onClick={() => onChangeFileName(preset.value)}
                                 className={cn(
-                                    'flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
-                                    mode === m.value
-                                        ? 'bg-background text-foreground shadow-xs'
-                                        : 'text-muted-foreground hover:text-foreground'
+                                    'rounded border px-2 py-0.5 text-[10px] font-medium transition-colors hover:bg-accent',
+                                    newFileName === preset.value ? 'border-primary bg-primary/10 text-primary font-bold' : 'text-muted-foreground'
                                 )}
                             >
-                                <m.icon className="size-3.5" />
-                                {m.label}
+                                {preset.label}
                             </button>
                         ))}
                     </div>
+                )}
 
-                    <div className="space-y-2">
-                        <Label>{mode === 'file' ? 'Filename' : 'Folder name'}</Label>
-                        <Input
-                            value={newFileName}
-                            onChange={(e) => onChangeFileName(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && (mode === 'file' ? handleCreateFile() : handleCreateFolder())}
-                            placeholder={mode === 'file' ? 'about.ejs' : 'images'}
-                        />
-                    </div>
+                <Button
+                    size="sm"
+                    onClick={mode === 'file' ? handleCreateFile : handleCreateFolder}
+                    disabled={!newFileName.trim()}
+                    className="w-full h-7 text-xs font-bold"
+                >
+                    + Buat {mode === 'file' ? 'File' : 'Folder'}
+                </Button>
 
-                    {mode === 'file' && (
-                        <div className="flex flex-wrap gap-1.5">
-                            {[
-                                { label: '.ejs', value: 'index.ejs' },
-                                { label: '.css', value: 'style.css' },
-                                { label: '.js', value: 'script.js' },
-                                { label: '.json', value: 'data.json' },
-                            ].map((preset) => (
-                                <button
-                                    key={preset.value}
-                                    type="button"
-                                    onClick={() => onChangeFileName(preset.value)}
-                                    className="rounded-md border px-2.5 py-1 text-xs font-medium transition-colors hover:bg-accent data-[active=true]:border-primary"
-                                    data-active={newFileName === preset.value}
-                                >
-                                    {preset.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                <DropdownMenuSeparator />
 
-                    <Button onClick={mode === 'file' ? handleCreateFile : handleCreateFolder} className="w-full">
-                        Create {mode === 'file' ? 'File' : 'Folder'}
-                    </Button>
-
-                    <Separator />
-
-                    <div className="space-y-2">
-                        <Label>Upload Asset</Label>
-                        <Input type="file" onChange={onUploadAsset} className="text-xs" />
-                    </div>
-
-                    {assets && assets.length > 0 && (
-                        <div>
-                            <Label className="text-xs text-muted-foreground">Assets</Label>
-                            <div className="mt-2 max-h-32 space-y-1 overflow-y-auto">
-                                {assets.map((asset) => (
-                                    <div
-                                        key={asset.id}
-                                        className="flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent"
-                                    >
-                                        <Image className="size-3 shrink-0" />
-                                        <span className="truncate">{asset.original_filename}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                <div className="space-y-1.5">
+                    <Label className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                        <Upload className="size-3" /> Upload Asset File
+                    </Label>
+                    <Input type="file" onChange={(e) => { onUploadAsset(e); setOpen(false); }} className="h-8 text-[11px] cursor-pointer" />
                 </div>
-            </DialogContent>
-        </Dialog>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
