@@ -338,7 +338,6 @@ export function useProjectFiles(project: Project) {
             },
             onError: () => {
                 toast.error('Failed to move file');
-                router.reload({ preserveState: true, preserveScroll: true });
             },
         });
     };
@@ -410,7 +409,6 @@ export function useProjectFiles(project: Project) {
                     preserveScroll: true,
                     onError: () => {
                         toast.error('Moved but old file could not be deleted');
-                        router.reload({ only: ['project'] });
                     },
                 });
             },
@@ -423,6 +421,30 @@ export function useProjectFiles(project: Project) {
 
     const handleRenameFolderByName = (folderName: string, newName: string) => {
         if (!newName || newName === folderName) return;
+
+        // 1. Optimistic React state update — NO reload!
+        setFolders((prev) =>
+            prev.map((f) => {
+                if (f.name === folderName) return { ...f, name: newName };
+                if (f.name.startsWith(folderName + '/')) return { ...f, name: f.name.replace(folderName + '/', newName + '/') };
+                return f;
+            })
+        );
+        setFiles((prev) =>
+            prev.map((f) => {
+                if (f.path.startsWith(folderName + '/')) {
+                    return { ...f, path: f.path.replace(folderName + '/', newName + '/') };
+                }
+                return f;
+            })
+        );
+        setOpenTabs((prev) =>
+            prev.map((p) => (p.startsWith(folderName + '/') ? p.replace(folderName + '/', newName + '/') : p))
+        );
+        if (activeFile?.startsWith(folderName + '/')) {
+            setActiveFile(activeFile.replace(folderName + '/', newName + '/'));
+        }
+
         const dbFolder = folders.find((f) => f.name === folderName);
 
         if (dbFolder) {
@@ -430,16 +452,9 @@ export function useProjectFiles(project: Project) {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: (page) => {
-                    const updatedFolders = (page.props.project as Project)?.folders ?? [];
-                    const updatedFiles = (page.props.project as Project)?.files ?? [];
-                    setFolders(updatedFolders);
-                    setFiles(updatedFiles);
-                    setOpenTabs((prev) => prev.map((p) => p.startsWith(folderName + '/') ? p.replace(folderName + '/', newName + '/') : p));
-                    if (activeFile?.startsWith(folderName + '/')) {
-                        setActiveFile(activeFile.replace(folderName + '/', newName + '/'));
-                    }
-                    toast.success('Folder renamed');
-                    router.reload({ preserveState: true, preserveScroll: true });
+                    const updatedFolders = (page.props.project as Project)?.folders;
+                    if (updatedFolders) setFolders(updatedFolders);
+                    toast.success('Folder updated');
                 },
                 onError: () => toast.error('Failed to rename folder'),
             });
@@ -458,8 +473,7 @@ export function useProjectFiles(project: Project) {
                     },
                 });
             });
-            toast.success('Folder renamed');
-            router.reload({ preserveState: true, preserveScroll: true });
+            toast.success('Folder updated');
         }
     };
 
