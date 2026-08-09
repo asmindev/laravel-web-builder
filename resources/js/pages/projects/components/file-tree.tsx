@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Folder, FileCode, Trash2, Copy, Pencil, ArrowRight, Plus, MoreHorizontal } from 'lucide-react';
 import {
     ContextMenu,
@@ -50,6 +50,7 @@ export function FileTree({
     onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolderByName, onDeleteFolderByName,
 }: FileTreeProps) {
     const dragSource = useRef<string | null>(null);
+    const folderInputRef = useRef<HTMLInputElement>(null);
     const [dragOver, setDragOver] = useState<string | null>(null);
     const [dragging, setDragging] = useState<string | null>(null);
 
@@ -57,6 +58,14 @@ export function FileTree({
     const [folderToDelete, setFolderToDelete] = useState<{ name: string; files: ProjectFile[] } | null>(null);
     const [editingFolder, setEditingFolder] = useState<string | null>(null);
     const [editingFolderValue, setEditingFolderValue] = useState<string>('');
+
+    // Focus & select text ONCE when editing mode opens (prevents re-selecting on every key typed)
+    useEffect(() => {
+        if (editingFolder && folderInputRef.current) {
+            folderInputRef.current.focus();
+            folderInputRef.current.select();
+        }
+    }, [editingFolder]);
 
     // Root files = files with no folder prefix
     const rootFiles = files.filter((f) => !f.path.includes('/'));
@@ -242,12 +251,7 @@ export function FileTree({
                                             <div className="flex items-center gap-1.5 flex-1 pr-2">
                                                 <Folder className="size-4 text-amber-500 shrink-0" />
                                                 <Input
-                                                    ref={(input) => {
-                                                        if (input) {
-                                                            input.focus();
-                                                            input.select();
-                                                        }
-                                                    }}
+                                                    ref={folderInputRef}
                                                     value={editingFolderValue}
                                                     onChange={(e) => setEditingFolderValue(e.target.value)}
                                                     onKeyDown={(e) => {
@@ -261,7 +265,6 @@ export function FileTree({
                                                     }}
                                                     onBlur={() => submitRenameFolder(folderName)}
                                                     className="h-6 py-0 px-1 text-xs font-semibold font-mono border-primary bg-background w-36"
-                                                    autoFocus
                                                     onClick={(e) => e.stopPropagation()}
                                                 />
                                             </div>
