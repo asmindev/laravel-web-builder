@@ -2,13 +2,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
 import type { Project } from '@/types/project';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Check,
     CheckCircle2,
@@ -24,6 +24,11 @@ import {
     Search,
     ShieldAlert,
     Sparkles,
+    Trash2,
+    Edit3,
+    Eye,
+    FileArchive,
+    Code2,
     Terminal,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -383,32 +388,51 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                     ) : (
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon-xs">
-                                                    <MoreHorizontal />
+                                                <Button variant="ghost" size="icon" className="size-8 p-0">
+                                                    <MoreHorizontal className="size-4" />
+                                                    <span className="sr-only">Buka menu</span>
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem>
-                                                    <a href={route('projects.show', project.slug)}>Open Editor</a>
+                                            <DropdownMenuContent align="end" className="w-52">
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={route('projects.show', project.slug)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <Edit3 className="size-4 text-primary" /> Buka Editor Code
+                                                    </Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <a href={route('projects.preview', project.slug)}>Preview</a>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <a href={route('projects.export-zip', project.slug)}>Export ZIP (MySQL)</a>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={route('projects.preview', project.slug)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <Eye className="size-4 text-indigo-500" /> Preview App
+                                                    </Link>
                                                 </DropdownMenuItem>
                                                 {project.published && (
-                                                    <DropdownMenuItem>
-                                                        <a href={route('app.preview', [project.slug])} target="_blank" rel="noopener">
-                                                            View Live <ExternalLink className="ml-1 size-3" />
+                                                    <DropdownMenuItem asChild>
+                                                        <a href={route('app.preview', [project.slug])} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                            <Globe className="size-4 text-emerald-500" /> View Live Site
                                                         </a>
                                                     </DropdownMenuItem>
                                                 )}
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem asChild>
+                                                    <a href={`/projects/${project.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <FileArchive className="size-4 text-emerald-500" /> Export Full ZIP (MySQL)
+                                                    </a>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <a href={`/projects/${project.slug}/export-file?type=nodejs`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <FileCode className="size-4 text-sky-500" /> Download Node.js (index.js)
+                                                    </a>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <a href={`/projects/${project.slug}/export-file?type=index`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <Code2 className="size-4 text-amber-500" /> Download Index (views/index)
+                                                    </a>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
                                                 <DropdownMenuItem
-                                                    className="text-red-600 focus:text-red-700"
+                                                    className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-red-600 dark:text-red-400 focus:text-red-600"
                                                     onClick={() => setDeletingProject(project)}
                                                 >
-                                                    Delete Project
+                                                    <Trash2 className="size-4 text-red-500" /> Hapus Project
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

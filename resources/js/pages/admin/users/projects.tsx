@@ -3,8 +3,9 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, FileCode, FolderOpen, Globe, ShieldAlert, Ban, CheckCircle } from 'lucide-react';
+import { ArrowLeft, FileCode, FolderOpen, Globe, ShieldAlert, Ban, CheckCircle, MoreHorizontal, FileArchive, Code2, Edit3, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
     Dialog,
     DialogContent,
@@ -213,16 +214,73 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
                                                     </CardDescription>
                                                 )}
                                             </div>
-                                            
-                                            {p.is_suspended ? (
-                                                <Badge variant="destructive" className="bg-red-600 text-white font-bold text-[10px] shrink-0 animate-pulse">
-                                                    Pelanggaran
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant={p.published ? 'default' : 'secondary'} className="text-[10px] shrink-0">
-                                                    {p.published ? 'Published' : 'Draft'}
-                                                </Badge>
-                                            )}
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                {p.is_suspended ? (
+                                                    <Badge variant="destructive" className="bg-red-600 text-white font-bold text-[10px] animate-pulse">
+                                                        Pelanggaran
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant={p.published ? 'default' : 'secondary'} className="text-[10px]">
+                                                        {p.published ? 'Published' : 'Draft'}
+                                                    </Badge>
+                                                )}
+
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="size-7 p-0">
+                                                            <MoreHorizontal className="size-4" />
+                                                            <span className="sr-only">Buka menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-52">
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('projects.show', p.slug)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <Edit3 className="size-4 text-primary" /> Buka Editor Code
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('projects.preview', p.slug)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <Eye className="size-4 text-indigo-500" /> Preview App
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        {p.published && !p.is_suspended && (
+                                                            <DropdownMenuItem asChild>
+                                                                <a href={route('app.preview', [p.slug])} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                    <Globe className="size-4 text-emerald-500" /> View Live Site
+                                                                </a>
+                                                            </DropdownMenuItem>
+                                                        )}
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem asChild>
+                                                            <a href={`/projects/${p.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <FileArchive className="size-4 text-emerald-500" /> Export Full ZIP (MySQL)
+                                                            </a>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <a href={`/projects/${p.slug}/export-file?type=nodejs`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <FileCode className="size-4 text-sky-500" /> Download Node.js (index.js)
+                                                            </a>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <a href={`/projects/${p.slug}/export-file?type=index`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <Code2 className="size-4 text-amber-500" /> Download Index (views/index)
+                                                            </a>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => handleToggleSuspend(p)} className="flex items-center gap-2 cursor-pointer text-xs font-semibold">
+                                                            {p.is_suspended ? (
+                                                                <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                                                    <CheckCircle className="size-4" /> Pulihkan / Unsuspend
+                                                                </span>
+                                                            ) : (
+                                                                <span className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                                                                    <Ban className="size-4" /> Suspend / Pelanggaran
+                                                                </span>
+                                                            )}
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
                                         </div>
                                     </CardHeader>
 
