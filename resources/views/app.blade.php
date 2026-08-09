@@ -9,6 +9,7 @@
     <title inertia>{{ config('app.name', 'Nusantara Engine') }}</title>
     <meta name="description" content="AI-Powered Web Application Builder. Generate, preview, and manage full-stack web applications instantly with Nusantara Tech Engine.">
     <meta name="theme-color" content="#6366f1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">

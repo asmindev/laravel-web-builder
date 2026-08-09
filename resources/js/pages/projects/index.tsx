@@ -61,13 +61,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
     const [enhancing, setEnhancing] = useState(false);
     const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
-
-    // Sync enhanced_prompt when Inertia props updated
-    useEffect(() => {
-        if (pageProps.enhanced_prompt) {
-            setEnhancedPrompt(pageProps.enhanced_prompt);
-        }
-    }, [pageProps.enhanced_prompt]);
+    const [enhanceError, setEnhanceError] = useState<string | null>(null);
 
     // Auto-open create project modal when URL has ?create=true
     useEffect(() => {
@@ -79,20 +73,30 @@ export default function ProjectIndex({ projects }: IndexProps) {
         }
     }, []);
 
+    const getCsrfToken = () => {
+        const metaToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+        if (metaToken) return metaToken;
+        if ((window as any).csrfToken) return (window as any).csrfToken;
+        const match = document.cookie.match(new RegExp('(?:^|; )XSRF-TOKEN=([^;]+)'));
+        if (match) return decodeURIComponent(match[1]);
+        return '';
+    };
+
     const handleEnhancePrompt = async () => {
         if (!name || !description) return;
         setEnhancing(true);
         setEnhancedPrompt(null);
+        setEnhanceError(null);
 
         try {
-            const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '';
-
+            const token = getCsrfToken();
             const res = await fetch(route('ai.enhance-prompt'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': token,
+                    'X-XSRF-TOKEN': token,
                 },
                 body: JSON.stringify({
                     app_name: name,
@@ -101,12 +105,20 @@ export default function ProjectIndex({ projects }: IndexProps) {
                 }),
             });
 
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => null);
+                throw new Error(errorData?.message || `HTTP ${res.status}: Gagal memproses prompt AI`);
+            }
+
             const data = await res.json();
             if (data?.enhanced_prompt) {
                 setEnhancedPrompt(data.enhanced_prompt);
+            } else {
+                throw new Error('Respon AI tidak mengembalikan prompt');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to enhance prompt', err);
+            setEnhanceError(err.message || 'Gagal memproses prompt AI');
         } finally {
             setEnhancing(false);
         }
@@ -290,10 +302,12 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                         )}
                                     </Button>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Gemini akan secara otomatis merancang skema database, workflow, dan strict rules engine ke dalam satu Master
-                                    Prompt khusus yang siap di-copy.
-                                </p>
+                                {enhanceError && (
+                                    <div className="mt-3 flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs font-semibold text-red-600 dark:text-red-400">
+                                        <ShieldAlert className="size-4 shrink-0" />
+                                        <span>{enhanceError}</span>
+                                    </div>
+                                )}
 
                                 {enhancedPrompt && (
                                     <div className="mt-3 space-y-2">
