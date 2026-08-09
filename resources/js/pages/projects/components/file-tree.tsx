@@ -242,6 +242,12 @@ export function FileTree({
                                             <div className="flex items-center gap-1.5 flex-1 pr-2">
                                                 <Folder className="size-4 text-amber-500 shrink-0" />
                                                 <Input
+                                                    ref={(input) => {
+                                                        if (input) {
+                                                            input.focus();
+                                                            input.select();
+                                                        }
+                                                    }}
                                                     value={editingFolderValue}
                                                     onChange={(e) => setEditingFolderValue(e.target.value)}
                                                     onKeyDown={(e) => {

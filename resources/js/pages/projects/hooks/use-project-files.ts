@@ -363,6 +363,7 @@ export function useProjectFiles(project: Project) {
                         setActiveFile(activeFile.replace(folderName + '/', newName + '/'));
                     }
                     toast.success('Folder renamed');
+                    router.reload({ preserveState: true, preserveScroll: true });
                 },
                 onError: () => toast.error('Failed to rename folder'),
             });
@@ -382,7 +383,7 @@ export function useProjectFiles(project: Project) {
                 });
             });
             toast.success('Folder renamed');
-            router.reload({ only: ['project'] });
+            router.reload({ preserveState: true, preserveScroll: true });
         }
     };
 
