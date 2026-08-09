@@ -20,7 +20,7 @@ CRITICAL MANDATORY RULES:
 1. EVERY generated Node.js application MUST include a Login page, session authentication (express-session & bcryptjs), and protected routes.
 2. The database initialization function `initDB()` in `app.js` MUST AUTOMATICALLY SEED / CREATE A DEFAULT ADMIN USER into the `users` table if not existing:
    - Username / Email: `admin` (or `admin@app.com`)
-   - Password: `admin123` (hashed with bcryptjs or disupported directly)
+   - Password: `admin123` (or `Admin123`) (hashed with bcryptjs or disupported directly)
    - Role: `admin`
 3. The UI Login View (`views/index.ejs`) MUST CLEARLY DISPLAY AN EXPLICIT HTML INFO BADGE / ALERT BOX WITH DEFAULT CREDENTIALS:
    <div class="alert alert-info">Default Login: Username: <b>admin</b> | Password: <b>admin123</b></div>
