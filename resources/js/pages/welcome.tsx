@@ -156,7 +156,7 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                         <div className="flex flex-col">
                             <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white uppercase">{appName}</span>
                             <span className="text-[8px] sm:text-[10px] font-mono text-primary font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> {settings.app_version || 'V2'} AI Builder
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> {app_settings?.app_version || 'V2'} AI Builder
                             </span>
                         </div>
                     </Link>
