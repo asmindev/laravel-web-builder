@@ -1,1 +1,0 @@
-import{c}from"./createLucideIcon-SdD7PNV-.js";const e=[["path",{d:"M20 6 9 17l-5-5",key:"1gmf2c"}]],a=c("check",e);const o=[["path",{d:"M12 19h8",key:"baeox8"}],["path",{d:"m4 17 6-6-6-6",key:"1yngyt"}]],n=c("terminal",o);export{a as C,n as T};

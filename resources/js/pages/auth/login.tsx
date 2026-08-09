@@ -82,7 +82,7 @@ export default function Login() {
                             <img
                                 src="/images/logo.webp"
                                 alt={`${appName} Logo`}
-                                className="mx-auto h-20 w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                                className="mx-auto h-32 md:h-36 w-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
                             />
                         </Link>
                         <div>
