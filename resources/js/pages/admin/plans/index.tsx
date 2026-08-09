@@ -151,11 +151,11 @@ export default function PlanIndex({ plans }: IndexProps) {
                 </div>
 
                 {/* Plans Cards Grid */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 pt-3">
                     {plans.map((plan) => (
                         <Card key={plan.id} className={`flex flex-col justify-between relative transition-all ${plan.is_popular ? 'border-2 border-primary shadow-lg' : ''}`}>
                             {plan.is_popular && (
-                                <div className="absolute -top-3 right-4 bg-primary text-primary-foreground text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow">
+                                <div className="absolute -top-3.5 right-4 z-10 bg-primary text-primary-foreground text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-md">
                                     Populer
                                 </div>
                             )}
