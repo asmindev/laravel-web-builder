@@ -10,7 +10,7 @@ class AIController extends Controller
 {
     public function __construct(private readonly AIService $aiService) {}
 
-    public function enhancePrompt(Request $request): JsonResponse
+    public function enhancePrompt(Request $request)
     {
         $validated = $request->validate([
             'app_name' => 'required|string|max:255',
@@ -23,6 +23,10 @@ class AIController extends Controller
             $validated['app_description'],
             $validated['app_type'] ?? 'nodejs'
         );
+
+        if ($request->header('X-Inertia')) {
+            return redirect()->back()->with('enhanced_prompt', $enhancedPrompt);
+        }
 
         return response()->json([
             'enhanced_prompt' => $enhancedPrompt,

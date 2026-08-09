@@ -73,55 +73,38 @@ export default function ProjectIndex({ projects }: IndexProps) {
         }
     }, []);
 
-    const getCsrfToken = () => {
-        const metaToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
-        if (metaToken) return metaToken;
-        if ((window as any).csrfToken) return (window as any).csrfToken;
-        const match = document.cookie.match(new RegExp('(?:^|; )XSRF-TOKEN=([^;]+)'));
-        if (match) return decodeURIComponent(match[1]);
-        return '';
-    };
-
-    const handleEnhancePrompt = async () => {
+    const handleEnhancePrompt = () => {
         if (!name || !description) return;
         setEnhancing(true);
         setEnhancedPrompt(null);
         setEnhanceError(null);
 
-        try {
-            const token = getCsrfToken();
-            const res = await fetch(route('ai.enhance-prompt'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'X-XSRF-TOKEN': token,
+        router.post(
+            route('ai.enhance-prompt'),
+            {
+                app_name: name,
+                app_description: description,
+                app_type: template === 'landing' ? 'landing' : 'nodejs',
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    const result = (page.props as any)?.flash?.enhanced_prompt || (page.props as any)?.enhanced_prompt;
+                    if (result) {
+                        setEnhancedPrompt(result);
+                    }
                 },
-                body: JSON.stringify({
-                    app_name: name,
-                    app_description: description,
-                    app_type: template === 'landing' ? 'landing' : 'nodejs',
-                }),
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => null);
-                throw new Error(errorData?.message || `HTTP ${res.status}: Gagal memproses prompt AI`);
-            }
-
-            const data = await res.json();
-            if (data?.enhanced_prompt) {
-                setEnhancedPrompt(data.enhanced_prompt);
-            } else {
-                throw new Error('Respon AI tidak mengembalikan prompt');
-            }
-        } catch (err: any) {
-            console.error('Failed to enhance prompt', err);
-            setEnhanceError(err.message || 'Gagal memproses prompt AI');
-        } finally {
-            setEnhancing(false);
-        }
+                onError: (errs) => {
+                    console.error('Failed to enhance prompt', errs);
+                    const firstMsg = Object.values(errs)[0];
+                    setEnhanceError(typeof firstMsg === 'string' ? firstMsg : 'Gagal memproses prompt AI');
+                },
+                onFinish: () => {
+                    setEnhancing(false);
+                },
+            },
+        );
     };
 
     const copyToClipboard = () => {
