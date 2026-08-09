@@ -53,6 +53,7 @@ interface LandingContent {
     hero_title_highlight?: string;
     hero_subtitle?: string;
     hero_prompt_demo?: string;
+    hero_prompt_suggestions?: string[];
 
     fitur_section_tag?: string;
     fitur_title?: string;
@@ -63,6 +64,19 @@ interface LandingContent {
     cara_kerja_title?: string;
     cara_kerja_subtitle?: string;
     cara_kerja_steps?: StepItem[];
+
+    pricing_section_tag?: string;
+    pricing_title?: string;
+    pricing_subtitle?: string;
+    pricing_starter_title?: string;
+    pricing_starter_subtitle?: string;
+    pricing_starter_price?: string;
+    pricing_starter_features?: string[];
+    pricing_pro_title?: string;
+    pricing_pro_subtitle?: string;
+    pricing_pro_price?: string;
+    pricing_pro_period?: string;
+    pricing_pro_features?: string[];
 
     agency_badge?: string;
     agency_title?: string;
@@ -86,7 +100,8 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
     const [agencyName, setAgencyName] = useState('');
     const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
-    const fullText = content.hero_prompt_demo || "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
+    const defaultPrompt = content.hero_prompt_demo || "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
+    const [activePrompt, setActivePrompt] = useState(defaultPrompt);
     const logoUrl = "/images/logo.webp";
 
     // Typing effect simulation
@@ -94,15 +109,15 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
         let index = 0;
         setTypingText('');
         const interval = setInterval(() => {
-            if (index < fullText.length) {
-                setTypingText(fullText.slice(0, index + 1));
+            if (index < activePrompt.length) {
+                setTypingText(activePrompt.slice(0, index + 1));
                 index++;
             } else {
                 clearInterval(interval);
             }
         }, 30);
         return () => clearInterval(interval);
-    }, [fullText]);
+    }, [activePrompt]);
 
     // Toggle Dark Mode class on html element
     useEffect(() => {
@@ -121,6 +136,7 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
     };
 
     const fiturIcons = [Layers, Code2, Globe, Users];
+    const suggestions = content.hero_prompt_suggestions || ['Toko Sepatu Sneakers', 'Klinik Gigi Premium'];
 
     return (
         <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
@@ -136,8 +152,8 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                     
                     {/* Logo Header */}
                     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
-                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-white/10 dark:bg-black/40 border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0 p-1 flex items-center justify-center">
-                            <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-contain" />
+                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0">
+                            <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col">
                             <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white uppercase">{appName}</span>
@@ -151,6 +167,7 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                     <nav className="hidden md:flex items-center gap-6 lg:gap-8">
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#fitur">Fitur AI</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
+                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#harga">Langganan</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#terms">Terms</a>
                         <div className="h-4 w-px bg-slate-300 dark:bg-[#1e293b]" />
                         <a className="text-sm font-semibold text-[#ff8a5c] hover:text-[#e86a38] transition-colors flex items-center gap-1.5" href="#jasa">
@@ -205,6 +222,10 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                             <span>Cara Kerja</span>
                             <ChevronRight className="w-4 h-4 text-slate-400" />
                         </a>
+                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#harga">
+                            <span>Langganan</span>
+                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </a>
                         <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#terms">
                             <span>Terms &amp; Conditions</span>
                             <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -221,7 +242,7 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                 )}
             </header>
 
-            {/* Main Content */}
+            {/* Hero Main Content */}
             <main className="relative pt-28 sm:pt-36 pb-16 lg:pt-48 lg:pb-32 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -248,64 +269,65 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                             {/* AI Prompt Input Simulation */}
                             <div className="pt-2 max-w-xl mx-auto lg:mx-0">
                                 <div className="bg-white dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712] border border-slate-200 dark:border-[#2cb1bc]/30 rounded-2xl p-2 flex items-center gap-2 sm:gap-3 shadow-xl">
-                                    <div className="pl-3 text-[#2cb1bc]">
-                                        <Wand2 className="w-5 h-5 animate-pulse" />
+                                    <div className="pl-2.5 sm:pl-3 text-[#2cb1bc] shrink-0">
+                                        <Terminal className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </div>
-                                    <div className="flex-1 text-left py-1 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 min-h-[40px] flex items-center overflow-hidden">
-                                        <span>{typingText}</span>
-                                        <span className="w-2 h-4 bg-[#2cb1bc] ml-1 inline-block animate-pulse" />
+                                    <div className="w-full text-left bg-transparent text-slate-800 dark:text-white text-xs sm:text-sm focus:outline-none font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
+                                        <span className="break-all">{typingText}</span>
+                                        <span className="w-1.5 h-4 bg-[#2cb1bc] ml-1 inline-block animate-pulse" />
                                     </div>
                                     <Link
                                         href={auth?.user ? "/dashboard" : "/login"}
-                                        className="shrink-0 bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] hover:opacity-90 active:scale-95 text-slate-900 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5"
+                                        className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)] shrink-0 flex items-center justify-center"
+                                        aria-label="Jalankan Prompt AI"
                                     >
-                                        <span>Generate</span>
-                                        <ArrowRight className="w-4 h-4" />
+                                        <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </Link>
                                 </div>
-                            </div>
 
-                            {/* Trust Badge */}
-                            <div className="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-[#2cb1bc]" /> Instant Node Server</span>
-                                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-[#ff8a5c]" /> Multi-Role RBAC</span>
+                                {/* Prompt Suggestions */}
+                                <div className="mt-3.5 flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono text-slate-500 dark:text-gray-500 justify-center lg:justify-start items-center">
+                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
+                                    {suggestions.map((sug, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`)}
+                                            className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 transition-all bg-white/50 dark:bg-transparent"
+                                        >
+                                            "{sug}"
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Hero Interactive Code Preview */}
-                        <div className="relative">
-                            <div className="relative mx-auto max-w-lg lg:max-w-none">
-                                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b101d] shadow-2xl overflow-hidden">
-                                    <div className="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-[#070b14] border-b border-slate-200 dark:border-slate-800">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                                            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                                            <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                                            <span className="ml-2 text-xs font-mono text-slate-400">app.js — Node.js Proxy Engine</span>
-                                        </div>
-                                        <div className="text-[10px] font-mono text-[#2cb1bc] bg-[#2cb1bc]/10 px-2 py-0.5 rounded border border-[#2cb1bc]/20">
-                                            Status: Live
-                                        </div>
+                        {/* Hero Interactive 3D Orbit Visual */}
+                        <div className="relative h-[320px] sm:h-[450px] lg:h-[520px] flex items-center justify-center mt-6 lg:mt-0">
+                            <div className="relative w-full max-w-[280px] sm:max-w-md aspect-square flex items-center justify-center">
+                                
+                                <div className="absolute w-32 h-32 sm:w-40 sm:h-40 bg-[#2cb1bc] rounded-full blur-[50px] sm:blur-[60px] animate-pulse" />
+
+                                <div className="absolute w-[78%] h-[78%] rounded-full border border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30 border-dashed animate-spin" style={{ animationDuration: '18s' }} />
+                                <div className="absolute w-[98%] h-[98%] rounded-full border border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20 border-dotted animate-spin" style={{ animationDuration: '22s', animationDirection: 'reverse' }}>
+                                    <div className="absolute top-0 left-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#ff8a5c] rounded-full shadow-[0_0_10px_#ff8a5c] -translate-x-1/2 -translate-y-1/2" />
+                                    <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-[#2cb1bc] rounded-full shadow-[0_0_10px_#2cb1bc] -translate-x-1/2 translate-y-1/2" />
+                                    <div className="absolute top-1/2 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#a6f4fa] rounded-full shadow-[0_0_8px_#a6f4fa] translate-x-1/2 -translate-y-1/2" />
+                                </div>
+
+                                {/* Central Logo Frame */}
+                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl dark:shadow-[0_0_50px_rgba(44,177,188,0.25)] z-20 bg-black group">
+                                    <img src={logoUrl} alt={`${appName} Core AI`} className="w-full h-full object-cover transform scale-110 group-hover:scale-125 transition-transform duration-1000 ease-out" />
+                                    
+                                    <div className="absolute inset-0 z-30 pointer-events-none mix-blend-screen">
+                                        <div className="w-full h-8 bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent animate-bounce" />
                                     </div>
                                     
-                                    <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-300 space-y-2 overflow-x-auto">
-                                        <p className="text-slate-400 dark:text-slate-500">// 1. Express Server & Internal Proxy Initialization</p>
-                                        <p><span className="text-purple-600 dark:text-purple-400">const</span> express = <span className="text-[#2cb1bc]">require</span>(<span className="text-emerald-600 dark:text-emerald-400">'express'</span>);</p>
-                                        <p><span className="text-purple-600 dark:text-purple-400">const</span> app = <span className="text-[#2cb1bc]">express</span>();</p>
-                                        <p className="text-slate-400 dark:text-slate-500 pt-2">// 2. Dynamic Preload Project Route Context</p>
-                                        <p>app.<span className="text-[#ff8a5c]">post</span>(<span className="text-emerald-600 dark:text-emerald-400">'/internal/preload'</span>, (req, res) =&gt; &#123;</p>
-                                        <p className="pl-4"><span className="text-[#2cb1bc]">preloadProjectData</span>(req.body.slug, req.body.projectData);</p>
-                                        <p className="pl-4">res.<span className="text-[#2cb1bc]">json</span>(&#123; status: <span className="text-emerald-600 dark:text-emerald-400">'ready'</span> &#125;);</p>
-                                        <p>&#125;);</p>
-                                        <p className="text-slate-400 dark:text-slate-500 pt-2">// 3. Start Live Server Port</p>
-                                        <p>app.<span className="text-[#ff8a5c]">listen</span>(<span className="text-amber-600 dark:text-amber-400">4000</span>, () =&gt; console.<span className="text-[#2cb1bc]">log</span>(<span className="text-emerald-600 dark:text-emerald-400">'Node Engine Ready!'</span>));</p>
-                                    </div>
-
                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)] z-10 pointer-events-none" />
                                 </div>
 
                                 {/* Floating UI Elements */}
-                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg animate-bounce" style={{ animationDuration: '4s' }}>
                                     <Cpu className="w-4 h-4 sm:w-5 sm:h-5 text-[#2cb1bc] animate-pulse" />
                                     <div className="text-[9px] sm:text-xs font-mono">
                                         <p className="text-slate-800 dark:text-white font-bold">Menyusun Layout...</p>
@@ -313,7 +335,7 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                                     </div>
                                 </div>
                                 
-                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg">
+                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }}>
                                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff8a5c]" />
                                     <div className="text-[9px] sm:text-xs font-mono">
                                         <p className="text-slate-800 dark:text-white font-bold">Aset Dimuat</p>
@@ -395,6 +417,94 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Section Akses Platform / Harga */}
+            <section id="harga" className="py-16 sm:py-24 relative z-10 transition-colors duration-500">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+                        <div className="text-[#ff8a5c] font-mono text-xs font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+                            <CreditCard className="w-4 h-4" />
+                            {content.pricing_section_tag || '[ Akses Platform ]'}
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            {content.pricing_title || 'Pilih Paket Builder Anda'}
+                        </h2>
+                        <p className="text-slate-600 dark:text-gray-400 mt-3 text-sm sm:text-base">
+                            {content.pricing_subtitle || 'Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.'}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
+                        {/* Free Tier */}
+                        <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-8 rounded-3xl flex flex-col relative shadow-lg">
+                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                                {content.pricing_starter_title || 'Starter'}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">
+                                {content.pricing_starter_subtitle || 'Untuk eksplorasi kekuatan AI.'}
+                            </p>
+                            <div className="my-5 sm:my-6">
+                                <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+                                    {content.pricing_starter_price || 'Rp 0'}
+                                </span>
+                            </div>
+                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
+                                {(content.pricing_starter_features || ['10x Generate AI per bulan', 'Akses Editor Visual Dasar', 'Domain nusantartech.site']).map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
+                                        <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0">
+                                            <Check className="w-3 h-3 text-[#2cb1bc]" />
+                                        </div>
+                                        <span>{feat}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                href={auth?.user ? "/dashboard" : "/login"}
+                                className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm"
+                            >
+                                Masuk ke Dashboard
+                            </Link>
+                        </div>
+
+                        {/* Pro Tier (Highlighted) */}
+                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative transform md:-translate-y-4 shadow-2xl dark:shadow-[0_0_40px_rgba(44,177,188,0.15)]">
+                            <div className="absolute -top-3.5 right-6 sm:right-8 bg-[#2cb1bc] text-slate-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest py-1 px-3.5 sm:py-1.5 sm:px-4 rounded-full shadow-lg">
+                                Populer
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold text-white">
+                                {content.pricing_pro_title || 'Pro Builder'}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-[#a6f4fa] mt-1 font-medium">
+                                {content.pricing_pro_subtitle || 'Solusi lengkap untuk profesional.'}
+                            </p>
+                            <div className="my-5 sm:my-6">
+                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">
+                                    {content.pricing_pro_price || 'Rp 149k'}
+                                </span>
+                                <span className="text-gray-400 font-medium text-sm sm:text-base">
+                                    {content.pricing_pro_period || ' /bln'}
+                                </span>
+                            </div>
+                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
+                                {(content.pricing_pro_features || ['Unlimited Generate AI', 'Export Kode (HTML/React/Tailwind)', 'Custom Domain (.com/.id)', 'Integrasi Database']).map((feat, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
+                                        <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0">
+                                            <Check className="w-3 h-3 text-slate-900" />
+                                        </div>
+                                        <span>{feat}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                href={auth?.user ? "/dashboard" : "/login"}
+                                className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-slate-900 transition-all font-extrabold text-sm shadow-[0_0_20px_rgba(44,177,188,0.4)]"
+                            >
+                                Berlangganan Pro
+                            </Link>
                         </div>
                     </div>
                 </div>

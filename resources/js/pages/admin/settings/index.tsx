@@ -17,7 +17,8 @@ import {
     Layers,
     ListOrdered,
     Briefcase,
-    FileText
+    FileText,
+    CreditCard
 } from 'lucide-react';
 
 interface FiturItem {
@@ -49,6 +50,7 @@ interface LandingSettings {
     hero_title_highlight: string;
     hero_subtitle: string;
     hero_prompt_demo: string;
+    hero_prompt_suggestions: string[];
 
     // Fitur AI
     fitur_section_tag: string;
@@ -61,6 +63,20 @@ interface LandingSettings {
     cara_kerja_title: string;
     cara_kerja_subtitle: string;
     cara_kerja_steps: StepItem[];
+
+    // Pricing
+    pricing_section_tag: string;
+    pricing_title: string;
+    pricing_subtitle: string;
+    pricing_starter_title: string;
+    pricing_starter_subtitle: string;
+    pricing_starter_price: string;
+    pricing_starter_features: string[];
+    pricing_pro_title: string;
+    pricing_pro_subtitle: string;
+    pricing_pro_price: string;
+    pricing_pro_period: string;
+    pricing_pro_features: string[];
 
     // Jasa Agensi
     agency_badge: string;
@@ -80,7 +96,7 @@ interface SettingsProps {
 
 export default function AdminSettingsIndex({ settings }: SettingsProps) {
     const flash = usePage<{ flash?: { type?: string; content?: string } }>().props.flash;
-    const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'fitur' | 'cara_kerja' | 'jasa' | 'terms'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'fitur' | 'cara_kerja' | 'pricing' | 'jasa' | 'terms'>('general');
     
     // Form State
     const [form, setForm] = useState<LandingSettings>({
@@ -93,6 +109,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
         hero_title_highlight: settings.hero_title_highlight || 'Websitenya.',
         hero_subtitle: settings.hero_subtitle || '',
         hero_prompt_demo: settings.hero_prompt_demo || '',
+        hero_prompt_suggestions: settings.hero_prompt_suggestions || ['Toko Sepatu Sneakers', 'Klinik Gigi Premium'],
 
         fitur_section_tag: settings.fitur_section_tag || '// fitur',
         fitur_title: settings.fitur_title || 'Yang Anda dapatkan',
@@ -103,6 +120,19 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
         cara_kerja_title: settings.cara_kerja_title || 'Tiga langkah untuk mulai',
         cara_kerja_subtitle: settings.cara_kerja_subtitle || '',
         cara_kerja_steps: settings.cara_kerja_steps || [],
+
+        pricing_section_tag: settings.pricing_section_tag || '[ Akses Platform ]',
+        pricing_title: settings.pricing_title || 'Pilih Paket Builder Anda',
+        pricing_subtitle: settings.pricing_subtitle || '',
+        pricing_starter_title: settings.pricing_starter_title || 'Starter',
+        pricing_starter_subtitle: settings.pricing_starter_subtitle || '',
+        pricing_starter_price: settings.pricing_starter_price || 'Rp 0',
+        pricing_starter_features: settings.pricing_starter_features || [],
+        pricing_pro_title: settings.pricing_pro_title || 'Pro Builder',
+        pricing_pro_subtitle: settings.pricing_pro_subtitle || '',
+        pricing_pro_price: settings.pricing_pro_price || 'Rp 149k',
+        pricing_pro_period: settings.pricing_pro_period || '/bln',
+        pricing_pro_features: settings.pricing_pro_features || [],
 
         agency_badge: settings.agency_badge || 'Opsi Terima Beres',
         agency_title: settings.agency_title || 'Tidak Punya Waktu Membuat Sendiri?',
@@ -158,6 +188,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
         { id: 'hero', label: 'Hero Section', icon: Sparkles },
         { id: 'fitur', label: 'Fitur AI', icon: Layers },
         { id: 'cara_kerja', label: 'Cara Kerja', icon: ListOrdered },
+        { id: 'pricing', label: 'Harga / Paket', icon: CreditCard },
         { id: 'jasa', label: 'Jasa Agensi', icon: Briefcase },
         { id: 'terms', label: 'Terms', icon: FileText },
     ] as const;
@@ -174,7 +205,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                             <Settings className="size-6 text-[#2cb1bc]" /> Pengaturan Konten Landing Page
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Kelola seluruh teks, judul hero, fitur, cara kerja, jasa agensi, dan syarat ketentuan landing page.
+                            Kelola seluruh teks, judul hero, fitur, cara kerja, harga paket, jasa agensi, dan syarat ketentuan landing page.
                         </p>
                     </div>
 
@@ -199,7 +230,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                 <form onSubmit={handleSubmit}>
                     <div className="w-full space-y-6">
                         {/* Tab Buttons Bar */}
-                        <div className="grid grid-cols-2 md:grid-cols-6 gap-1.5 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div className="grid grid-cols-2 md:grid-cols-7 gap-1.5 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
                             {tabs.map((tab) => {
                                 const IconComp = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -208,7 +239,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         key={tab.id}
                                         type="button"
                                         onClick={() => setActiveTab(tab.id as any)}
-                                        className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                        className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all ${
                                             isActive
                                                 ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-slate-700'
                                                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -340,7 +371,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="hero_prompt_demo">Teks Simulasi Prompt AI</Label>
+                                        <Label htmlFor="hero_prompt_demo">Teks Simulasi Prompt AI Default</Label>
                                         <Textarea
                                             id="hero_prompt_demo"
                                             rows={3}
@@ -506,7 +537,128 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                             </Card>
                         )}
 
-                        {/* TAB 5: Jasa Agensi */}
+                        {/* TAB 5: Pricing */}
+                        {activeTab === 'pricing' && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-base">Section Harga & Paket Langganan (#harga)</CardTitle>
+                                    <CardDescription>Atur judul section dan isi fitur untuk Paket Starter & Pro Builder.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="grid gap-4 md:grid-cols-3">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pricing_section_tag">Tag Subtitle Section</Label>
+                                            <Input
+                                                id="pricing_section_tag"
+                                                value={form.pricing_section_tag}
+                                                onChange={(e) => handleChange('pricing_section_tag', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor="pricing_title">Judul Section Harga</Label>
+                                            <Input
+                                                id="pricing_title"
+                                                value={form.pricing_title}
+                                                onChange={(e) => handleChange('pricing_title', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="pricing_subtitle">Deskripsi Section Harga</Label>
+                                        <Input
+                                            id="pricing_subtitle"
+                                            value={form.pricing_subtitle}
+                                            onChange={(e) => handleChange('pricing_subtitle', e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="grid gap-6 md:grid-cols-2 pt-2">
+                                        {/* Starter Card Setting */}
+                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40">
+                                            <CardHeader className="py-3 px-4">
+                                                <CardTitle className="text-xs font-bold uppercase text-slate-700 dark:text-slate-200">
+                                                    Paket Starter (Gratis)
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3 p-4 pt-0">
+                                                <div>
+                                                    <Label className="text-[11px]">Nama Paket</Label>
+                                                    <Input
+                                                        value={form.pricing_starter_title}
+                                                        onChange={(e) => handleChange('pricing_starter_title', e.target.value)}
+                                                        className="h-8 text-xs font-bold"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="text-[11px]">Subtitle Paket</Label>
+                                                    <Input
+                                                        value={form.pricing_starter_subtitle}
+                                                        onChange={(e) => handleChange('pricing_starter_subtitle', e.target.value)}
+                                                        className="h-8 text-xs"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="text-[11px]">Harga</Label>
+                                                    <Input
+                                                        value={form.pricing_starter_price}
+                                                        onChange={(e) => handleChange('pricing_starter_price', e.target.value)}
+                                                        className="h-8 text-xs font-mono font-bold"
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        {/* Pro Card Setting */}
+                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-[#2cb1bc]/40">
+                                            <CardHeader className="py-3 px-4">
+                                                <CardTitle className="text-xs font-bold uppercase text-[#2cb1bc]">
+                                                    Paket Pro Builder (Berbayar)
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3 p-4 pt-0">
+                                                <div>
+                                                    <Label className="text-[11px]">Nama Paket</Label>
+                                                    <Input
+                                                        value={form.pricing_pro_title}
+                                                        onChange={(e) => handleChange('pricing_pro_title', e.target.value)}
+                                                        className="h-8 text-xs font-bold"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label className="text-[11px]">Subtitle Paket</Label>
+                                                    <Input
+                                                        value={form.pricing_pro_subtitle}
+                                                        onChange={(e) => handleChange('pricing_pro_subtitle', e.target.value)}
+                                                        className="h-8 text-xs"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <Label className="text-[11px]">Harga</Label>
+                                                        <Input
+                                                            value={form.pricing_pro_price}
+                                                            onChange={(e) => handleChange('pricing_pro_price', e.target.value)}
+                                                            className="h-8 text-xs font-mono font-bold text-[#2cb1bc]"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="text-[11px]">Periode</Label>
+                                                        <Input
+                                                            value={form.pricing_pro_period}
+                                                            onChange={(e) => handleChange('pricing_pro_period', e.target.value)}
+                                                            className="h-8 text-xs font-mono"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* TAB 6: Jasa Agensi */}
                         {activeTab === 'jasa' && (
                             <Card>
                                 <CardHeader>
@@ -545,7 +697,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                             </Card>
                         )}
 
-                        {/* TAB 6: Terms & Conditions */}
+                        {/* TAB 7: Terms & Conditions */}
                         {activeTab === 'terms' && (
                             <Card>
                                 <CardHeader>

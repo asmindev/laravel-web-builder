@@ -31,6 +31,7 @@ class SettingController extends Controller
             'hero_title_highlight' => 'nullable|string|max:255',
             'hero_subtitle' => 'nullable|string|max:1000',
             'hero_prompt_demo' => 'nullable|string|max:1000',
+            'hero_prompt_suggestions' => 'nullable|array',
 
             // Fitur
             'fitur_section_tag' => 'nullable|string|max:255',
@@ -49,6 +50,20 @@ class SettingController extends Controller
             'cara_kerja_steps.*.step' => 'nullable|string|max:10',
             'cara_kerja_steps.*.title' => 'nullable|string|max:255',
             'cara_kerja_steps.*.description' => 'nullable|string|max:1000',
+
+            // Pricing
+            'pricing_section_tag' => 'nullable|string|max:255',
+            'pricing_title' => 'nullable|string|max:255',
+            'pricing_subtitle' => 'nullable|string|max:1000',
+            'pricing_starter_title' => 'nullable|string|max:255',
+            'pricing_starter_subtitle' => 'nullable|string|max:255',
+            'pricing_starter_price' => 'nullable|string|max:100',
+            'pricing_starter_features' => 'nullable|array',
+            'pricing_pro_title' => 'nullable|string|max:255',
+            'pricing_pro_subtitle' => 'nullable|string|max:255',
+            'pricing_pro_price' => 'nullable|string|max:100',
+            'pricing_pro_period' => 'nullable|string|max:50',
+            'pricing_pro_features' => 'nullable|array',
 
             // Jasa Agensi
             'agency_badge' => 'nullable|string|max:255',

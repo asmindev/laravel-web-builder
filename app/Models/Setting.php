@@ -39,6 +39,10 @@ class Setting extends Model
             'hero_title_highlight' => static::get('hero_title_highlight', 'Websitenya.'),
             'hero_subtitle' => static::get('hero_subtitle', 'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'),
             'hero_prompt_demo' => static::get('hero_prompt_demo', 'Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...'),
+            'hero_prompt_suggestions' => json_decode(static::get('hero_prompt_suggestions', ''), true) ?: [
+                'Toko Sepatu Sneakers',
+                'Klinik Gigi Premium',
+            ],
 
             // Fitur AI
             'fitur_section_tag' => static::get('fitur_section_tag', '// fitur'),
@@ -79,20 +83,43 @@ class Setting extends Model
                 ],
                 [
                     'step' => '2',
-                    'title' => 'Buat project',
-                    'description' => 'Isi nama project, deskripsi singkat, lalu pilih template awal untuk memulai.',
+                    'title' => 'Registrasi akun',
+                    'description' => 'Isi nama lengkap, email, nomor WhatsApp, lalu lanjut ke checkout DOKU untuk menyelesaikan pembayaran.',
                 ],
                 [
                     'step' => '3',
-                    'title' => 'Publish dan bagikan',
-                    'description' => 'Uji lewat preview internal, rapikan kode, lalu publikasikan URL ke pengguna.',
+                    'title' => 'Masuk dan mulai build',
+                    'description' => 'Setelah akun aktif, login ke dashboard dan mulai membuat landing page atau aplikasi baru.',
                 ],
+            ],
+
+            // Pricing
+            'pricing_section_tag' => static::get('pricing_section_tag', '[ Akses Platform ]'),
+            'pricing_title' => static::get('pricing_title', 'Pilih Paket Builder Anda'),
+            'pricing_subtitle' => static::get('pricing_subtitle', 'Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.'),
+            'pricing_starter_title' => static::get('pricing_starter_title', 'Starter'),
+            'pricing_starter_subtitle' => static::get('pricing_starter_subtitle', 'Untuk eksplorasi kekuatan AI.'),
+            'pricing_starter_price' => static::get('pricing_starter_price', 'Rp 0'),
+            'pricing_starter_features' => json_decode(static::get('pricing_starter_features', ''), true) ?: [
+                '10x Generate AI per bulan',
+                'Akses Editor Visual Dasar',
+                'Domain nusantartech.site',
+            ],
+            'pricing_pro_title' => static::get('pricing_pro_title', 'Pro Builder'),
+            'pricing_pro_subtitle' => static::get('pricing_pro_subtitle', 'Solusi lengkap untuk profesional.'),
+            'pricing_pro_price' => static::get('pricing_pro_price', 'Rp 149k'),
+            'pricing_pro_period' => static::get('pricing_pro_period', '/bln'),
+            'pricing_pro_features' => json_decode(static::get('pricing_pro_features', ''), true) ?: [
+                'Unlimited Generate AI',
+                'Export Kode (HTML/React/Tailwind)',
+                'Custom Domain (.com/.id)',
+                'Integrasi Database',
             ],
 
             // Jasa Agensi
             'agency_badge' => static::get('agency_badge', 'Opsi Terima Beres'),
             'agency_title' => static::get('agency_title', 'Tidak Punya Waktu Membuat Sendiri?'),
-            'agency_description' => static::get('agency_description', 'Selain platform AI Builder, tim studio agensi internal kami juga melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.'),
+            'agency_description' => static::get('agency_description', 'Selain platform AI Builder, Nusantartech juga memiliki Tim Studio Agensi Internal. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.'),
 
             // Terms
             'terms_tag' => static::get('terms_tag', '// terms & conditions'),
