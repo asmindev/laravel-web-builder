@@ -29,6 +29,7 @@ import {
     Eye,
     FileArchive,
     Code2,
+    Database,
     Terminal,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -415,6 +416,11 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                                 <DropdownMenuItem asChild>
                                                     <a href={`/projects/${project.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
                                                         <FileArchive className="size-4 text-emerald-500" /> Export Full ZIP (MySQL)
+                                                    </a>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <a href={`/projects/${project.slug}/export-db`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                        <Database className="size-4 text-cyan-500" /> Download Database SQL (MySQL Dump)
                                                     </a>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>

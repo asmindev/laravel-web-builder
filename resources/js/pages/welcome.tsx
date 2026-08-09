@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import {
-    Sparkles,
-    Terminal,
-    Wand2,
-    Cpu,
-    CheckCircle2,
-    Layers,
-    Code2,
-    Globe,
-    Users,
-    CreditCard,
-    Check,
-    Briefcase,
     ArrowRight,
-    Moon,
-    Sun,
-    Menu,
-    X,
+    Briefcase,
+    Check,
+    CheckCircle2,
     ChevronRight,
-    LayoutTemplate,
-    Twitter,
+    Code2,
+    Cpu,
+    CreditCard,
     Github,
-    Linkedin
+    Globe,
+    Layers,
+    LayoutTemplate,
+    Linkedin,
+    Menu,
+    Moon,
+    Sparkles,
+    Sun,
+    Terminal,
+    Twitter,
+    Users,
+    Wand2,
+    X,
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface FiturItem {
     tag: string;
@@ -43,10 +43,24 @@ interface TermItem {
     description: string;
 }
 
+export interface PlanItem {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+    price: number | string;
+    price_period: string;
+    project_limit: number;
+    features: string[] | null;
+    is_active: boolean;
+    is_popular: boolean;
+    sort_order: number;
+}
+
 interface LandingContent {
     app_name?: string;
     admin_whatsapp?: string;
-    
+
     hero_badge?: string;
     hero_title_1?: string;
     hero_title_2?: string;
@@ -88,11 +102,62 @@ interface LandingContent {
     terms_items?: TermItem[];
 }
 
-export default function Welcome({ auth, landing_content, app_settings }: { auth: any; landing_content?: LandingContent; app_settings?: { app_name: string; admin_whatsapp: string } }) {
+export default function Welcome({
+    auth,
+    landing_content,
+    app_settings,
+    plans,
+}: {
+    auth: any;
+    landing_content?: LandingContent;
+    app_settings?: { app_name: string; admin_whatsapp: string };
+    plans?: PlanItem[];
+}) {
     const content = landing_content || {};
     const appName = content.app_name || app_settings?.app_name || 'NUSANTARTECH';
     const adminWhatsapp = content.admin_whatsapp || app_settings?.admin_whatsapp || '6281234567890';
     const cleanWaNumber = adminWhatsapp.replace(/[^0-9]/g, '');
+
+    const dbPlans: PlanItem[] =
+        plans && plans.length > 0
+            ? plans
+            : [
+                  {
+                      id: 1,
+                      name: content.pricing_starter_title || 'Starter',
+                      slug: 'starter',
+                      description: content.pricing_starter_subtitle || 'Untuk eksplorasi kekuatan AI.',
+                      price: content.pricing_starter_price || '0',
+                      price_period: '/bln',
+                      project_limit: 2,
+                      features: content.pricing_starter_features || [
+                          '10x Generate AI per bulan',
+                          'Akses Editor Visual Dasar',
+                          'Domain nusantartech.site',
+                      ],
+                      is_active: true,
+                      is_popular: false,
+                      sort_order: 1,
+                  },
+                  {
+                      id: 2,
+                      name: content.pricing_pro_title || 'Pro Builder',
+                      slug: 'pro',
+                      description: content.pricing_pro_subtitle || 'Solusi lengkap untuk profesional.',
+                      price: content.pricing_pro_price || '149000',
+                      price_period: content.pricing_pro_period || '/bln',
+                      project_limit: 10,
+                      features: content.pricing_pro_features || [
+                          'Unlimited Generate AI',
+                          'Export Kode (HTML/React/Tailwind)',
+                          'Custom Domain (.com/.id)',
+                          'Integrasi Database',
+                      ],
+                      is_active: true,
+                      is_popular: true,
+                      sort_order: 2,
+                  },
+              ];
 
     const [isDark, setIsDark] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -100,9 +165,11 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
     const [agencyName, setAgencyName] = useState('');
     const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
-    const defaultPrompt = content.hero_prompt_demo || "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
+    const defaultPrompt =
+        content.hero_prompt_demo ||
+        'Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...';
     const [activePrompt, setActivePrompt] = useState(defaultPrompt);
-    const logoUrl = "/images/logo.webp";
+    const logoUrl = (content as any).logo_url || (app_settings as any)?.logo_url || '/images/logo.webp';
 
     // Typing effect simulation
     useEffect(() => {
@@ -139,53 +206,83 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
     const suggestions = content.hero_prompt_suggestions || ['Toko Sepatu Sneakers', 'Klinik Gigi Premium'];
 
     return (
-        <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
+        <div
+            className={`relative min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-700 antialiased transition-colors duration-500 selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] dark:bg-[#030712] dark:text-gray-300 ${isDark ? 'dark' : ''}`}
+        >
             <Head title={`${appName} — Generate Website dengan Prompt`} />
 
             {/* Background Patterns */}
-            <div className="fixed inset-0 bg-grid-light dark:bg-grid-dark bg-[length:32px_32px] sm:bg-[length:40px_40px] opacity-[0.4] dark:opacity-[0.04] pointer-events-none z-0 transition-opacity duration-500" />
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] md:w-[800px] h-[300px] sm:h-[500px] bg-[#2cb1bc] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[120px] sm:blur-[200px] opacity-[0.05] dark:opacity-[0.08] pointer-events-none z-0 transition-opacity duration-500" />
+            <div className="bg-grid-light dark:bg-grid-dark pointer-events-none fixed inset-0 z-0 bg-[length:32px_32px] opacity-[0.4] transition-opacity duration-500 sm:bg-[length:40px_40px] dark:opacity-[0.04]" />
+            <div className="pointer-events-none fixed top-0 left-1/2 z-0 h-[300px] w-[350px] -translate-x-1/2 rounded-full bg-[#2cb1bc] opacity-[0.05] mix-blend-multiply blur-[120px] filter transition-opacity duration-500 sm:h-[500px] sm:w-[600px] sm:blur-[200px] md:w-[800px] dark:opacity-[0.08] dark:mix-blend-screen" />
 
             {/* Header / Navbar */}
-            <header className="fixed w-full top-0 z-50 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl transition-all duration-300 border-b border-slate-200/50 dark:border-white/5">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between">
-                    
+            <header className="fixed top-0 z-50 w-full border-b border-slate-200/50 bg-white/75 backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-[#0f172a]/65">
+                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4">
                     {/* Logo Header */}
-                    <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
-                        <img src={logoUrl} alt={`${appName} Logo`} className="h-9 sm:h-11 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform" />
+                    <Link href="/" className="group flex items-center gap-2.5 transition-transform active:scale-95 sm:gap-3">
+                        <img
+                            src={logoUrl}
+                            alt={`${appName} Logo`}
+                            className="h-9 w-auto shrink-0 object-contain transition-transform group-hover:scale-105 sm:h-11"
+                        />
                         <div className="flex flex-col">
-                            <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white uppercase">{appName}</span>
-                            <span className="text-[8px] sm:text-[10px] font-mono text-primary font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> {app_settings?.app_version || 'V2'} AI Builder
+                            <span className="text-base leading-none font-extrabold tracking-tight text-slate-900 uppercase sm:text-xl dark:text-white">
+                                {appName}
+                            </span>
+                            <span className="mt-0.5 flex items-center gap-1 font-mono text-[8px] font-bold tracking-[0.2em] text-primary uppercase sm:text-[10px]">
+                                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> {app_settings?.app_version || 'V2'} AI Builder
                             </span>
                         </div>
                     </Link>
 
                     {/* Desktop Menu */}
-                    <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#fitur">Fitur AI</a>
-                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
-                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#harga">Langganan</a>
-                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#terms">Terms</a>
+                    <nav className="hidden items-center gap-6 md:flex lg:gap-8">
+                        <a
+                            className="text-sm font-semibold text-slate-600 transition-colors hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white"
+                            href="#fitur"
+                        >
+                            Fitur AI
+                        </a>
+                        <a
+                            className="text-sm font-semibold text-slate-600 transition-colors hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white"
+                            href="#cara-kerja"
+                        >
+                            Cara Kerja
+                        </a>
+                        <a
+                            className="text-sm font-semibold text-slate-600 transition-colors hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white"
+                            href="#harga"
+                        >
+                            Langganan
+                        </a>
+                        <a
+                            className="text-sm font-semibold text-slate-600 transition-colors hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white"
+                            href="#terms"
+                        >
+                            Terms
+                        </a>
                         <div className="h-4 w-px bg-slate-300 dark:bg-[#1e293b]" />
-                        <a className="text-sm font-semibold text-[#ff8a5c] hover:text-[#e86a38] transition-colors flex items-center gap-1.5" href="#jasa">
-                            <LayoutTemplate className="w-4 h-4" /> Jasa Agensi
+                        <a
+                            className="flex items-center gap-1.5 text-sm font-semibold text-[#ff8a5c] transition-colors hover:text-[#e86a38]"
+                            href="#jasa"
+                        >
+                            <LayoutTemplate className="h-4 w-4" /> Jasa Agensi
                         </a>
                     </nav>
 
                     {/* Header Actions */}
-                    <div className="hidden md:flex items-center gap-3 lg:gap-4">
+                    <div className="hidden items-center gap-3 md:flex lg:gap-4">
                         <button
                             onClick={() => setIsDark(!isDark)}
-                            className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-yellow-400 transition-all hover:scale-105 active:scale-95 focus:outline-none"
+                            className="rounded-full bg-slate-100 p-2.5 text-slate-600 transition-all hover:scale-105 hover:bg-slate-200 focus:outline-none active:scale-95 dark:bg-slate-800 dark:text-yellow-400 dark:hover:bg-slate-700"
                             aria-label="Toggle Dark Mode"
                         >
-                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                         </button>
-                        
+
                         <Link
-                            href={auth?.user ? "/dashboard" : "/login"}
-                            className="text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 px-5 lg:px-6 py-2.5 rounded-full transition-all shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95"
+                            href={auth?.user ? '/dashboard' : '/login'}
+                            className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] hover:bg-slate-800 hover:shadow-lg active:scale-95 lg:px-6 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                         >
                             Masuk ke Dashboard
                         </Link>
@@ -195,45 +292,70 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                     <div className="flex items-center gap-2 sm:gap-3 md:hidden">
                         <button
                             onClick={() => setIsDark(!isDark)}
-                            className="p-2 sm:p-2.5 rounded-full bg-slate-100 active:bg-slate-200 dark:bg-slate-800 dark:active:bg-slate-700 text-slate-600 dark:text-yellow-400 transition-colors focus:outline-none"
+                            className="rounded-full bg-slate-100 p-2 text-slate-600 transition-colors focus:outline-none active:bg-slate-200 sm:p-2.5 dark:bg-slate-800 dark:text-yellow-400 dark:active:bg-slate-700"
                         >
-                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                         </button>
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="p-2 rounded-xl text-slate-900 dark:text-white focus:outline-none active:bg-slate-200 dark:active:bg-slate-800 transition-colors"
+                            className="rounded-xl p-2 text-slate-900 transition-colors focus:outline-none active:bg-slate-200 dark:text-white dark:active:bg-slate-800"
                             aria-label="Open Menu"
                         >
-                            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </button>
                     </div>
                 </div>
 
                 {/* Mobile Menu Dropdown */}
                 {mobileMenuOpen && (
-                    <div className="absolute top-full left-0 w-full bg-white/95 dark:bg-[#0f172a]/95 border-b border-slate-200/80 dark:border-[#1e293b]/80 flex flex-col px-6 py-6 gap-4 md:hidden shadow-2xl backdrop-blur-2xl z-50">
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#fitur">
+                    <div className="absolute top-full left-0 z-50 flex w-full flex-col gap-4 border-b border-slate-200/80 bg-white/95 px-6 py-6 shadow-2xl backdrop-blur-2xl md:hidden dark:border-[#1e293b]/80 dark:bg-[#0f172a]/95">
+                        <a
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between py-1 text-base font-semibold text-slate-800 transition-colors hover:text-[#2cb1bc] dark:text-gray-200"
+                            href="#fitur"
+                        >
                             <span>Fitur AI</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                            <ChevronRight className="h-4 w-4 text-slate-400" />
                         </a>
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#cara-kerja">
+                        <a
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between py-1 text-base font-semibold text-slate-800 transition-colors hover:text-[#2cb1bc] dark:text-gray-200"
+                            href="#cara-kerja"
+                        >
                             <span>Cara Kerja</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                            <ChevronRight className="h-4 w-4 text-slate-400" />
                         </a>
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#harga">
+                        <a
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between py-1 text-base font-semibold text-slate-800 transition-colors hover:text-[#2cb1bc] dark:text-gray-200"
+                            href="#harga"
+                        >
                             <span>Langganan</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                            <ChevronRight className="h-4 w-4 text-slate-400" />
                         </a>
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#terms">
+                        <a
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between py-1 text-base font-semibold text-slate-800 transition-colors hover:text-[#2cb1bc] dark:text-gray-200"
+                            href="#terms"
+                        >
                             <span>Terms &amp; Conditions</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                            <ChevronRight className="h-4 w-4 text-slate-400" />
                         </a>
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-[#ff8a5c] py-1 flex items-center justify-between" href="#jasa">
-                            <span className="flex items-center gap-2"><LayoutTemplate className="w-4 h-4" /> Jasa Agensi (Kustom)</span>
-                            <ChevronRight className="w-4 h-4 text-[#ff8a5c]" />
+                        <a
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between py-1 text-base font-semibold text-[#ff8a5c]"
+                            href="#jasa"
+                        >
+                            <span className="flex items-center gap-2">
+                                <LayoutTemplate className="h-4 w-4" /> Jasa Agensi (Kustom)
+                            </span>
+                            <ChevronRight className="h-4 w-4 text-[#ff8a5c]" />
                         </a>
-                        <hr className="border-slate-200 dark:border-slate-800/80 my-1" />
-                        <Link href={auth?.user ? "/dashboard" : "/login"} className="text-center text-sm font-bold bg-slate-900 dark:bg-white text-white dark:text-black py-3.5 rounded-xl active:scale-95 transition-transform shadow-md">
+                        <hr className="my-1 border-slate-200 dark:border-slate-800/80" />
+                        <Link
+                            href={auth?.user ? '/dashboard' : '/login'}
+                            className="rounded-xl bg-slate-900 py-3.5 text-center text-sm font-bold text-white shadow-md transition-transform active:scale-95 dark:bg-white dark:text-black"
+                        >
                             Masuk ke Dashboard
                         </Link>
                     </div>
@@ -241,57 +363,61 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
             </header>
 
             {/* Hero Main Content */}
-            <main className="relative pt-28 sm:pt-36 pb-16 lg:pt-48 lg:pb-32 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-                        
+            <main className="relative z-10 pt-28 pb-16 sm:pt-36 lg:pt-48 lg:pb-32">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
                         {/* Hero Text Content */}
-                        <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[10px] sm:text-xs font-mono font-bold text-[#2cb1bc] mb-1 backdrop-blur-md">
-                                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                        <div className="space-y-6 text-center sm:space-y-8 lg:text-left">
+                            <div className="mb-1 inline-flex items-center gap-2 rounded-full border border-[#2cb1bc]/30 bg-[#2cb1bc]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold text-[#2cb1bc] backdrop-blur-md sm:px-4 sm:py-2 sm:text-xs">
+                                <Sparkles className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
                                 {content.hero_badge || 'Engine Generasi Ke-3 Tersedia'}
                             </div>
-                            
-                            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
-                                {content.hero_title_1 || 'Ketik Idenya,'}<br />
-                                {content.hero_title_2 || 'AI Kami Buat'}<br />
+
+                            <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.1] md:text-6xl lg:text-[4.2rem] dark:text-white">
+                                {content.hero_title_1 || 'Ketik Idenya,'}
+                                <br />
+                                {content.hero_title_2 || 'AI Kami Buat'}
+                                <br />
                                 <span className="bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] bg-clip-text text-transparent">
                                     {content.hero_title_highlight || 'Websitenya.'}
                                 </span>
                             </h1>
-                            
-                            <p className="text-slate-600 dark:text-gray-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                {content.hero_subtitle || 'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'}
+
+                            <p className="mx-auto max-w-xl text-base leading-relaxed font-medium text-slate-600 sm:text-lg md:text-xl lg:mx-0 dark:text-gray-400">
+                                {content.hero_subtitle ||
+                                    'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'}
                             </p>
-                            
+
                             {/* AI Prompt Input Simulation */}
-                            <div className="pt-2 max-w-xl mx-auto lg:mx-0">
-                                <div className="bg-white dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712] border border-slate-200 dark:border-[#2cb1bc]/30 rounded-2xl p-2 flex items-center gap-2 sm:gap-3 shadow-xl">
-                                    <div className="pl-2.5 sm:pl-3 text-[#2cb1bc] shrink-0">
-                                        <Terminal className="w-5 h-5 sm:w-6 sm:h-6" />
+                            <div className="mx-auto max-w-xl pt-2 lg:mx-0">
+                                <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl sm:gap-3 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
+                                    <div className="shrink-0 pl-2.5 text-[#2cb1bc] sm:pl-3">
+                                        <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div className="w-full text-left bg-transparent text-slate-800 dark:text-white text-xs sm:text-sm focus:outline-none font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
+                                    <div className="flex min-h-[38px] w-full items-center overflow-hidden bg-transparent py-1.5 text-left font-mono text-xs text-slate-800 focus:outline-none sm:text-sm dark:text-white">
                                         <span className="break-all">{typingText}</span>
-                                        <span className="w-1.5 h-4 bg-[#2cb1bc] ml-1 inline-block animate-pulse" />
+                                        <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#2cb1bc]" />
                                     </div>
                                     <Link
-                                        href={auth?.user ? "/dashboard" : "/login"}
-                                        className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)] shrink-0 flex items-center justify-center"
+                                        href={auth?.user ? '/dashboard' : '/login'}
+                                        className="flex shrink-0 items-center justify-center rounded-xl bg-[#2cb1bc] p-3 text-white shadow-[0_4px_15px_rgba(44,177,188,0.3)] transition-all hover:bg-[#239099] active:scale-95 sm:p-3.5 dark:text-[#030712] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)]"
                                         aria-label="Jalankan Prompt AI"
                                     >
-                                        <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                        <Wand2 className="h-4 w-4 sm:h-5 sm:w-5" />
                                     </Link>
                                 </div>
 
                                 {/* Prompt Suggestions */}
-                                <div className="mt-3.5 flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono text-slate-500 dark:text-gray-500 justify-center lg:justify-start items-center">
+                                <div className="mt-3.5 flex flex-wrap items-center justify-center gap-1.5 font-mono text-[10px] text-slate-500 sm:gap-2 sm:text-xs lg:justify-start dark:text-gray-500">
                                     <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
                                     {suggestions.map((sug, i) => (
                                         <button
                                             key={i}
                                             type="button"
-                                            onClick={() => setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`)}
-                                            className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 transition-all bg-white/50 dark:bg-transparent"
+                                            onClick={() =>
+                                                setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`)
+                                            }
+                                            className="rounded-md border border-slate-200 bg-white/50 px-2 py-1 transition-all hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 dark:border-slate-800 dark:bg-transparent"
                                         >
                                             "{sug}"
                                         </button>
@@ -301,82 +427,101 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                         </div>
 
                         {/* Hero Interactive 3D Orbit Visual */}
-                        <div className="relative h-[320px] sm:h-[450px] lg:h-[520px] flex items-center justify-center mt-6 lg:mt-0">
-                            <div className="relative w-full max-w-[280px] sm:max-w-md aspect-square flex items-center justify-center">
-                                
-                                <div className="absolute w-32 h-32 sm:w-40 sm:h-40 bg-[#2cb1bc] rounded-full blur-[50px] sm:blur-[60px] animate-pulse" />
+                        <div className="relative mt-6 flex h-[320px] items-center justify-center sm:h-[450px] lg:mt-0 lg:h-[520px]">
+                            <div className="relative flex aspect-square w-full max-w-[280px] items-center justify-center sm:max-w-md">
+                                <div className="absolute h-32 w-32 animate-pulse rounded-full bg-[#2cb1bc] blur-[50px] sm:h-40 sm:w-40 sm:blur-[60px]" />
 
-                                <div className="absolute w-[78%] h-[78%] rounded-full border border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30 border-dashed animate-spin" style={{ animationDuration: '18s' }} />
-                                <div className="absolute w-[98%] h-[98%] rounded-full border border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20 border-dotted animate-spin" style={{ animationDuration: '22s', animationDirection: 'reverse' }}>
-                                    <div className="absolute top-0 left-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#ff8a5c] rounded-full shadow-[0_0_10px_#ff8a5c] -translate-x-1/2 -translate-y-1/2" />
-                                    <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-[#2cb1bc] rounded-full shadow-[0_0_10px_#2cb1bc] -translate-x-1/2 translate-y-1/2" />
-                                    <div className="absolute top-1/2 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#a6f4fa] rounded-full shadow-[0_0_8px_#a6f4fa] translate-x-1/2 -translate-y-1/2" />
+                                <div
+                                    className="absolute h-[78%] w-[78%] animate-spin rounded-full border border-dashed border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30"
+                                    style={{ animationDuration: '18s' }}
+                                />
+                                <div
+                                    className="absolute h-[98%] w-[98%] animate-spin rounded-full border border-dotted border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20"
+                                    style={{ animationDuration: '22s', animationDirection: 'reverse' }}
+                                >
+                                    <div className="absolute top-0 left-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff8a5c] shadow-[0_0_10px_#ff8a5c] sm:h-3 sm:w-3" />
+                                    <div className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 translate-y-1/2 rounded-full bg-[#2cb1bc] shadow-[0_0_10px_#2cb1bc]" />
+                                    <div className="absolute top-1/2 -right-1 h-2 w-2 translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a6f4fa] shadow-[0_0_8px_#a6f4fa] sm:h-2.5 sm:w-2.5" />
                                 </div>
 
                                 {/* Central Logo Frame */}
-                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl dark:shadow-[0_0_50px_rgba(44,177,188,0.25)] z-20 bg-black group">
-                                    <img src={logoUrl} alt={`${appName} Core AI`} className="w-full h-full object-cover transform scale-110 group-hover:scale-125 transition-transform duration-1000 ease-out" />
-                                    
-                                    <div className="absolute inset-0 z-30 pointer-events-none mix-blend-screen">
-                                        <div className="w-full h-8 bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent animate-bounce" />
+                                <div className="group relative z-20 h-36 w-36 overflow-hidden rounded-full border-4 border-white bg-black shadow-2xl sm:h-52 sm:w-52 sm:border-[6px] dark:border-[#030712] dark:shadow-[0_0_50px_rgba(44,177,188,0.25)]">
+                                    <img
+                                        src={logoUrl}
+                                        alt={`${appName} Core AI`}
+                                        className="h-full w-full scale-110 transform object-cover transition-transform duration-1000 ease-out group-hover:scale-125"
+                                    />
+
+                                    <div className="pointer-events-none absolute inset-0 z-30 mix-blend-screen">
+                                        <div className="h-8 w-full animate-bounce bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent" />
                                     </div>
-                                    
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)] z-10 pointer-events-none" />
+
+                                    <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)]" />
                                 </div>
 
                                 {/* Floating UI Elements */}
-                                <div className="absolute top-2 sm:top-8 -left-2 sm:-left-6 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#2cb1bc] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg animate-bounce" style={{ animationDuration: '4s' }}>
-                                    <Cpu className="w-4 h-4 sm:w-5 sm:h-5 text-[#2cb1bc] animate-pulse" />
-                                    <div className="text-[9px] sm:text-xs font-mono">
-                                        <p className="text-slate-800 dark:text-white font-bold">Menyusun Layout...</p>
+                                <div
+                                    className="absolute top-2 -left-2 z-30 flex animate-bounce items-center gap-2.5 rounded-xl border border-l-2 border-slate-200/50 border-l-[#2cb1bc] bg-white/75 p-2.5 shadow-lg backdrop-blur-xl sm:top-8 sm:-left-6 sm:gap-3 sm:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
+                                    style={{ animationDuration: '4s' }}
+                                >
+                                    <Cpu className="h-4 w-4 animate-pulse text-[#2cb1bc] sm:h-5 sm:w-5" />
+                                    <div className="font-mono text-[9px] sm:text-xs">
+                                        <p className="font-bold text-slate-800 dark:text-white">Menyusun Layout...</p>
                                         <p className="text-[#2cb1bc]">CSS Grid Applied</p>
                                     </div>
                                 </div>
-                                
-                                <div className="absolute bottom-6 sm:bottom-12 -right-2 sm:-right-8 bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-2.5 sm:p-3 rounded-xl border-l-2 border-l-[#ff8a5c] border border-slate-200/50 dark:border-white/10 flex items-center gap-2.5 sm:gap-3 z-30 shadow-lg animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }}>
-                                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#ff8a5c]" />
-                                    <div className="text-[9px] sm:text-xs font-mono">
-                                        <p className="text-slate-800 dark:text-white font-bold">Aset Dimuat</p>
+
+                                <div
+                                    className="absolute -right-2 bottom-6 z-30 flex animate-bounce items-center gap-2.5 rounded-xl border border-l-2 border-slate-200/50 border-l-[#ff8a5c] bg-white/75 p-2.5 shadow-lg backdrop-blur-xl sm:-right-8 sm:bottom-12 sm:gap-3 sm:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
+                                    style={{ animationDuration: '4s', animationDelay: '2s' }}
+                                >
+                                    <CheckCircle2 className="h-4 w-4 text-[#ff8a5c] sm:h-5 sm:w-5" />
+                                    <div className="font-mono text-[9px] sm:text-xs">
+                                        <p className="font-bold text-slate-800 dark:text-white">Aset Dimuat</p>
                                         <p className="text-slate-500 dark:text-gray-400">Opt: WebP, 0.4s</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </main>
 
             {/* Section Fitur AI */}
-            <section id="fitur" className="py-16 sm:py-24 bg-white dark:bg-[#0a0d14] border-y border-slate-200 dark:border-white/5 relative z-10 transition-colors duration-500">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <section
+                id="fitur"
+                className="relative z-10 border-y border-slate-200 bg-white py-16 transition-colors duration-500 sm:py-24 dark:border-white/5 dark:bg-[#0a0d14]"
+            >
+                <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                     <div className="mb-12 sm:mb-16">
-                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                        <div className="mb-3 flex items-center gap-2 font-mono text-xs">
                             <span className="text-[#2cb1bc]">{content.fitur_section_tag || '// fitur'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                        <h2 className="text-left text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
                             {content.fitur_title || 'Yang Anda dapatkan'}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
-                            {content.fitur_subtitle || 'Fokus pada alur kerja inti yang paling sering dipakai untuk membangun dan mengelola project berbasis Node.js.'}
+                        <p className="mt-3 max-w-3xl text-left text-base text-slate-600 sm:text-lg dark:text-slate-400">
+                            {content.fitur_subtitle ||
+                                'Fokus pada alur kerja inti yang paling sering dipakai untuk membangun dan mengelola project berbasis Node.js.'}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
                         {(content.fitur_items || []).map((item, idx) => {
                             const IconComponent = fiturIcons[idx % fiturIcons.length];
                             return (
-                                <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                                            <IconComponent className="w-5 h-5" />
+                                <div
+                                    key={idx}
+                                    className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#2cb1bc]/50 dark:border-white/5 dark:bg-[#111520] dark:shadow-none"
+                                >
+                                    <div className="mb-6 flex items-center justify-between">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 transition-transform group-hover:scale-110">
+                                            <IconComponent className="h-5 w-5" />
                                         </div>
-                                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">{item.tag}</span>
+                                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">{item.tag}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">{item.title}</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                        {item.description}
-                                    </p>
+                                    <h3 className="mb-2.5 text-lg font-bold tracking-tight text-slate-900 dark:text-slate-200">{item.title}</h3>
+                                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{item.description}</p>
                                 </div>
                             );
                         })}
@@ -385,33 +530,37 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
             </section>
 
             {/* Section Cara Kerja */}
-            <section id="cara-kerja" className="py-16 sm:py-24 relative z-10 transition-colors duration-500 dark:bg-[#0a0d14] border-b border-slate-200 dark:border-white/5">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <section
+                id="cara-kerja"
+                className="relative z-10 border-b border-slate-200 py-16 transition-colors duration-500 sm:py-24 dark:border-white/5 dark:bg-[#0a0d14]"
+            >
+                <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                     <div className="mb-14 sm:mb-20">
-                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                        <div className="mb-3 flex items-center gap-2 font-mono text-xs">
                             <span className="text-[#2cb1bc]">{content.cara_kerja_tag || '// cara kerja'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                        <h2 className="text-left text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
                             {content.cara_kerja_title || 'Tiga langkah untuk mulai'}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
-                            {content.cara_kerja_subtitle || 'Alurnya dibuat singkat supaya user awam tetap bisa mulai tanpa banyak penyesuaian teknis.'}
+                        <p className="mt-3 max-w-3xl text-left text-base text-slate-600 sm:text-lg dark:text-slate-400">
+                            {content.cara_kerja_subtitle ||
+                                'Alurnya dibuat singkat supaya user awam tetap bisa mulai tanpa banyak penyesuaian teknis.'}
                         </p>
                     </div>
 
                     <div className="relative mt-4 sm:mt-8">
-                        <div className="hidden md:block absolute top-[24px] left-6 right-6 h-[1px] bg-slate-200 dark:bg-white/10 z-0" />
-                        <div className="block md:hidden absolute top-6 bottom-6 left-[23px] w-[1px] bg-slate-200 dark:bg-white/10 z-0" />
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 relative z-10">
+                        <div className="absolute top-[24px] right-6 left-6 z-0 hidden h-[1px] bg-slate-200 md:block dark:bg-white/10" />
+                        <div className="absolute top-6 bottom-6 left-[23px] z-0 block w-[1px] bg-slate-200 md:hidden dark:bg-white/10" />
+
+                        <div className="relative z-10 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-12">
                             {(content.cara_kerja_steps || []).map((step, idx) => (
-                                <div key={idx} className="relative flex md:block items-start gap-5 md:gap-0">
-                                    <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">
+                                <div key={idx} className="relative flex items-start gap-5 md:block md:gap-0">
+                                    <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white font-mono text-lg font-bold text-[#ff8a5c] shadow-sm md:mb-6 dark:border-[#ff8a5c]/40 dark:bg-[#0a0d14]">
                                         {step.step || idx + 1}
                                     </div>
                                     <div>
-                                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">{step.title}</h3>
-                                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">{step.description}</p>
+                                        <h3 className="mb-2 text-lg font-bold text-slate-900 sm:mb-3 sm:text-xl dark:text-slate-200">{step.title}</h3>
+                                        <p className="text-sm leading-relaxed text-slate-600 md:pr-4 dark:text-slate-400">{step.description}</p>
                                     </div>
                                 </div>
                             ))}
@@ -421,133 +570,138 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
             </section>
 
             {/* Section Akses Platform / Harga */}
-            <section id="harga" className="py-16 sm:py-24 relative z-10 transition-colors duration-500">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-                        <div className="text-[#ff8a5c] font-mono text-xs font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
-                            <CreditCard className="w-4 h-4" />
+            <section id="harga" className="relative z-10 py-16 transition-colors duration-500 sm:py-24">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
+                        <div className="mb-3 flex items-center justify-center gap-2 font-mono text-xs font-bold tracking-widest text-[#ff8a5c] uppercase">
+                            <CreditCard className="h-4 w-4" />
                             {content.pricing_section_tag || '[ Akses Platform ]'}
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
                             {content.pricing_title || 'Pilih Paket Builder Anda'}
                         </h2>
-                        <p className="text-slate-600 dark:text-gray-400 mt-3 text-sm sm:text-base">
+                        <p className="mt-3 text-sm text-slate-600 sm:text-base dark:text-gray-400">
                             {content.pricing_subtitle || 'Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.'}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
-                        {/* Free Tier */}
-                        <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-8 rounded-3xl flex flex-col relative shadow-lg">
-                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                                {content.pricing_starter_title || 'Starter'}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">
-                                {content.pricing_starter_subtitle || 'Untuk eksplorasi kekuatan AI.'}
-                            </p>
-                            <div className="my-5 sm:my-6">
-                                <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-                                    {content.pricing_starter_price || 'Rp 0'}
-                                </span>
-                            </div>
-                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
-                                {(content.pricing_starter_features || ['10x Generate AI per bulan', 'Akses Editor Visual Dasar', 'Domain nusantartech.site']).map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
-                                        <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0">
-                                            <Check className="w-3 h-3 text-[#2cb1bc]" />
-                                        </div>
-                                        <span>{feat}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link
-                                href={auth?.user ? "/dashboard" : "/login"}
-                                className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm"
+                    <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2`}>
+                        {dbPlans.map((plan) => (
+                            <div
+                                key={plan.slug}
+                                className={`relative flex flex-col rounded-3xl p-6 shadow-lg transition-all sm:p-8 ${
+                                    plan.is_popular
+                                        ? 'border-2 border-[#2cb1bc] bg-slate-900 shadow-2xl md:-translate-y-2 dark:bg-[#0a0f1d] dark:shadow-[0_0_40px_rgba(44,177,188,0.15)]'
+                                        : 'border border-slate-200 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-[#0f172a]/65'
+                                }`}
                             >
-                                Masuk ke Dashboard
-                            </Link>
-                        </div>
-
-                        {/* Pro Tier (Highlighted) */}
-                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative transform md:-translate-y-4 shadow-2xl dark:shadow-[0_0_40px_rgba(44,177,188,0.15)]">
-                            <div className="absolute -top-3.5 right-6 sm:right-8 bg-[#2cb1bc] text-slate-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest py-1 px-3.5 sm:py-1.5 sm:px-4 rounded-full shadow-lg">
-                                Populer
+                                {plan.is_popular && (
+                                    <div className="absolute -top-3.5 right-6 rounded-full bg-[#2cb1bc] px-3.5 py-1 text-[10px] font-extrabold tracking-widest text-slate-900 uppercase shadow-lg sm:right-8 sm:px-4 sm:py-1.5 sm:text-[11px]">
+                                        Populer
+                                    </div>
+                                )}
+                                <h3 className={`text-xl font-bold sm:text-2xl ${plan.is_popular ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                                    {plan.name}
+                                </h3>
+                                <p
+                                    className={`mt-1 text-xs font-medium sm:text-sm ${plan.is_popular ? 'text-[#a6f4fa]' : 'text-slate-500 dark:text-gray-400'}`}
+                                >
+                                    {plan.description || 'Paket pilihan tepat untuk Anda.'}
+                                </p>
+                                <div className="my-5 sm:my-6">
+                                    <span
+                                        className={`text-3xl font-black tracking-tight sm:text-4xl ${plan.is_popular ? 'text-[#2cb1bc]' : 'text-slate-900 dark:text-white'}`}
+                                    >
+                                        {Number(plan.price) === 0 ? 'Rp 0' : `Rp ${Number(plan.price).toLocaleString('id-ID')}`}
+                                    </span>
+                                    <span className="text-xs font-medium text-gray-400 sm:text-sm">{plan.price_period}</span>
+                                </div>
+                                <div className="mb-4 flex items-center gap-1.5 text-xs font-bold text-primary">
+                                    <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Limit: {plan.project_limit} Upload Proyek
+                                </div>
+                                <ul className="mb-8 flex-1 space-y-3 sm:mb-10 sm:space-y-3.5">
+                                    {(plan.features || []).map((feat, i) => (
+                                        <li
+                                            key={i}
+                                            className={`flex items-center gap-2.5 text-xs font-medium sm:text-sm ${plan.is_popular ? 'text-gray-200' : 'text-slate-700 dark:text-gray-300'}`}
+                                        >
+                                            <div
+                                                className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${plan.is_popular ? 'bg-[#2cb1bc] text-slate-900' : 'bg-[#2cb1bc]/20 text-[#2cb1bc]'}`}
+                                            >
+                                                <Check className="h-2.5 w-2.5" />
+                                            </div>
+                                            <span>{feat}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link
+                                    href={auth?.user ? '/dashboard' : '/login'}
+                                    className={`w-full rounded-xl px-4 py-3 text-center text-xs font-extrabold transition-all sm:text-sm ${
+                                        plan.is_popular
+                                            ? 'bg-[#2cb1bc] text-slate-900 shadow-[0_0_20px_rgba(44,177,188,0.4)] hover:bg-[#239099] active:scale-95'
+                                            : 'border-2 border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    {plan.price > 0 ? 'Pilih Paket' : 'Mulai Gratis'}
+                                </Link>
                             </div>
-                            <h3 className="text-xl sm:text-2xl font-bold text-white">
-                                {content.pricing_pro_title || 'Pro Builder'}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-[#a6f4fa] mt-1 font-medium">
-                                {content.pricing_pro_subtitle || 'Solusi lengkap untuk profesional.'}
-                            </p>
-                            <div className="my-5 sm:my-6">
-                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">
-                                    {content.pricing_pro_price || 'Rp 149k'}
-                                </span>
-                                <span className="text-gray-400 font-medium text-sm sm:text-base">
-                                    {content.pricing_pro_period || ' /bln'}
-                                </span>
-                            </div>
-                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
-                                {(content.pricing_pro_features || ['Unlimited Generate AI', 'Export Kode (HTML/React/Tailwind)', 'Custom Domain (.com/.id)', 'Integrasi Database']).map((feat, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
-                                        <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0">
-                                            <Check className="w-3 h-3 text-slate-900" />
-                                        </div>
-                                        <span>{feat}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Link
-                                href={auth?.user ? "/dashboard" : "/login"}
-                                className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-slate-900 transition-all font-extrabold text-sm shadow-[0_0_20px_rgba(44,177,188,0.4)]"
-                            >
-                                Berlangganan Pro
-                            </Link>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
             {/* Section Jasa Agensi */}
-            <section id="jasa" className="py-16 sm:py-24 border-y border-slate-200 dark:border-[#1e293b] bg-slate-100 dark:bg-[#060a13] relative z-10 overflow-hidden transition-colors duration-500">
-                <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#ff8a5c] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] sm:blur-[150px] opacity-[0.05] dark:opacity-[0.08] pointer-events-none" />
+            <section
+                id="jasa"
+                className="relative z-10 overflow-hidden border-y border-slate-200 bg-slate-100 py-16 transition-colors duration-500 sm:py-24 dark:border-[#1e293b] dark:bg-[#060a13]"
+            >
+                <div className="pointer-events-none absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#ff8a5c] opacity-[0.05] mix-blend-multiply blur-[100px] filter sm:h-[500px] sm:w-[500px] sm:blur-[150px] dark:opacity-[0.08] dark:mix-blend-screen" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-300 dark:border-[#1e293b] rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 shadow-lg">
-                        <div className="md:w-3/5 space-y-4 sm:space-y-6 text-left">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff8a5c]/10 border border-[#ff8a5c]/30 text-[10px] sm:text-[11px] font-mono font-bold text-[#e86a38] dark:text-[#ff8a5c]">
-                                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {content.agency_badge || 'Opsi Terima Beres'}
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <div className="flex flex-col items-center justify-between gap-8 rounded-[1.5rem] border border-slate-300 bg-white/75 p-6 shadow-lg backdrop-blur-xl sm:rounded-[2rem] sm:p-10 md:flex-row md:gap-12 md:p-14 dark:border-[#1e293b] dark:bg-[#0f172a]/65">
+                        <div className="space-y-4 text-left sm:space-y-6 md:w-3/5">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-[#ff8a5c]/30 bg-[#ff8a5c]/10 px-3 py-1.5 font-mono text-[10px] font-bold text-[#e86a38] sm:text-[11px] dark:text-[#ff8a5c]">
+                                <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> {content.agency_badge || 'Opsi Terima Beres'}
                             </div>
-                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            <h3 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
                                 {content.agency_title || 'Tidak Punya Waktu Membuat Sendiri?'}
                             </h3>
-                            <p className="text-slate-600 dark:text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed">
-                                {content.agency_description || `Selain platform AI Builder, ${appName} juga memiliki Tim Studio Agensi Internal. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.`}
+                            <p className="text-sm leading-relaxed text-slate-600 sm:text-base md:text-lg dark:text-gray-400">
+                                {content.agency_description ||
+                                    `Selain platform AI Builder, ${appName} juga memiliki Tim Studio Agensi Internal. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.`}
                             </p>
                         </div>
-                        <div className="md:w-2/5 w-full flex flex-col gap-4">
-                            <form onSubmit={handleWhatsAppAgency} className="bg-white dark:bg-slate-900/60 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                                <h4 className="font-bold text-slate-900 dark:text-white mb-3 sm:mb-4 text-xs sm:text-sm font-mono uppercase tracking-wider">Konsultasi Proyek Kustom</h4>
+                        <div className="flex w-full flex-col gap-4 md:w-2/5">
+                            <form
+                                onSubmit={handleWhatsAppAgency}
+                                className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/60"
+                            >
+                                <h4 className="mb-3 font-mono text-xs font-bold tracking-wider text-slate-900 uppercase sm:mb-4 sm:text-sm dark:text-white">
+                                    Konsultasi Proyek Kustom
+                                </h4>
                                 <input
                                     type="text"
                                     placeholder="Nama Anda"
                                     value={agencyName}
                                     onChange={(e) => setAgencyName(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#ff8a5c] dark:text-white transition-colors"
+                                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs transition-colors focus:border-[#ff8a5c] focus:outline-none sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-white"
                                 />
                                 <select
                                     value={agencyType}
                                     onChange={(e) => setAgencyType(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#ff8a5c] text-slate-600 dark:text-gray-300 transition-colors"
+                                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-600 transition-colors focus:border-[#ff8a5c] focus:outline-none sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-gray-300"
                                 >
                                     <option value="Jenis Website: Company Profile">Jenis Website: Company Profile</option>
                                     <option value="Jenis Website: Toko Online">Jenis Website: Toko Online</option>
                                     <option value="Jenis Website: Landing Page">Jenis Website: Landing Page</option>
                                     <option value="Jenis Website: Sistem Web Kustom">Jenis Website: Sistem Web Kustom</option>
                                 </select>
-                                <button type="submit" className="w-full py-3 bg-[#ff8a5c] hover:bg-[#e86a38] active:scale-95 text-white font-bold rounded-xl transition-all text-xs sm:text-sm flex items-center justify-center gap-2 group shadow-md">
+                                <button
+                                    type="submit"
+                                    className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#ff8a5c] py-3 text-xs font-bold text-white shadow-md transition-all hover:bg-[#e86a38] active:scale-95 sm:text-sm"
+                                >
                                     <span>Hubungi via WhatsApp</span>
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </button>
                             </form>
                         </div>
@@ -556,28 +710,35 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
             </section>
 
             {/* Section Terms & Conditions */}
-            <section id="terms" className="py-16 sm:py-24 relative z-10 transition-colors duration-500 border-y border-slate-200 dark:border-white/5 dark:bg-[#0a0d14]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <section
+                id="terms"
+                className="relative z-10 border-y border-slate-200 py-16 transition-colors duration-500 sm:py-24 dark:border-white/5 dark:bg-[#0a0d14]"
+            >
+                <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
                     <div className="mb-10 sm:mb-12">
-                        <div className="font-mono text-xs mb-3 flex items-center gap-2">
+                        <div className="mb-3 flex items-center gap-2 font-mono text-xs">
                             <span className="text-[#2cb1bc]">{content.terms_tag || '// terms & conditions'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                        <h2 className="text-left text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
                             {content.terms_title || 'Terms & Conditions'}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
-                            {content.terms_subtitle || 'Gunakan bagian ini untuk menaruh aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab.'}
+                        <p className="mt-3 max-w-3xl text-left text-base text-slate-600 sm:text-lg dark:text-slate-400">
+                            {content.terms_subtitle ||
+                                'Gunakan bagian ini untuk menaruh aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab.'}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                    <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-3">
                         {(content.terms_items || []).map((term, idx) => (
-                            <div key={idx} className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
-                                <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">{term.number || `§${idx + 1}`}</span>
-                                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">{term.title}</h3>
-                                <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                                    {term.description}
-                                </p>
+                            <div
+                                key={idx}
+                                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 dark:border-white/5 dark:bg-[#111520]"
+                            >
+                                <span className="mb-4 block font-mono text-xs text-slate-500 sm:mb-6 dark:text-slate-600">
+                                    {term.number || `§${idx + 1}`}
+                                </span>
+                                <h3 className="mb-3 text-base font-bold text-slate-900 sm:text-lg dark:text-slate-200">{term.title}</h3>
+                                <p className="text-xs leading-relaxed text-slate-600 sm:text-sm dark:text-slate-400">{term.description}</p>
                             </div>
                         ))}
                     </div>
@@ -585,29 +746,33 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
             </section>
 
             {/* Footer */}
-            <footer className="py-10 sm:py-12 bg-white dark:bg-[#0a0d14] border-t border-slate-200 dark:border-white/10 relative z-10 transition-colors duration-500">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <footer className="relative z-10 border-t border-slate-200 bg-white py-10 transition-colors duration-500 sm:py-12 dark:border-white/10 dark:bg-[#0a0d14]">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <div className="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:text-left">
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-[#1e293b] bg-black flex items-center justify-center overflow-hidden shrink-0">
-                                <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-cover" />
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-black sm:h-10 sm:w-10 dark:border-[#1e293b]">
+                                <img src={logoUrl} alt={`${appName} Logo`} className="h-full w-full object-cover" />
                             </div>
-                            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-lg sm:text-xl uppercase">{appName}</span>
+                            <span className="text-lg font-extrabold tracking-tight text-slate-900 uppercase sm:text-xl dark:text-white">
+                                {appName}
+                            </span>
                         </div>
 
                         <div className="text-center md:text-right">
-                            <div className="flex items-center justify-center md:justify-end gap-5 mb-3.5">
-                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="Twitter">
-                                    <Twitter className="w-5 h-5" />
+                            <div className="mb-3.5 flex items-center justify-center gap-5 md:justify-end">
+                                <a href="#" className="p-1 text-slate-400 transition-colors hover:text-[#ff8a5c]" aria-label="Twitter">
+                                    <Twitter className="h-5 w-5" />
                                 </a>
-                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="GitHub">
-                                    <Github className="w-5 h-5" />
+                                <a href="#" className="p-1 text-slate-400 transition-colors hover:text-[#ff8a5c]" aria-label="GitHub">
+                                    <Github className="h-5 w-5" />
                                 </a>
-                                <a href="#" className="text-slate-400 hover:text-[#ff8a5c] transition-colors p-1" aria-label="LinkedIn">
-                                    <Linkedin className="w-5 h-5" />
+                                <a href="#" className="p-1 text-slate-400 transition-colors hover:text-[#ff8a5c]" aria-label="LinkedIn">
+                                    <Linkedin className="h-5 w-5" />
                                 </a>
                             </div>
-                            <p className="text-slate-500 text-xs sm:text-sm">&copy; {new Date().getFullYear()} {appName}. All rights reserved.</p>
+                            <p className="text-xs text-slate-500 sm:text-sm">
+                                &copy; {new Date().getFullYear()} {appName}. All rights reserved.
+                            </p>
                         </div>
                     </div>
                 </div>

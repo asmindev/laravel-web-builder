@@ -1,4 +1,4 @@
-import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings, Users } from 'lucide-react';
+import { FolderOpen, GalleryVerticalEnd, LayoutDashboard, Settings, Users, CreditCard } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -21,10 +21,11 @@ import { Link, usePage } from '@inertiajs/react';
 import { Can } from '@/components/can';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { auth, recent_projects, projects, app_settings } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[]; app_settings?: { app_name: string; app_version?: string; admin_whatsapp: string } }>().props;
+    const { auth, recent_projects, projects, app_settings } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[]; app_settings?: { app_name: string; app_version?: string; admin_whatsapp: string; logo_url?: string } }>().props;
     const userRecentProjects = recent_projects && recent_projects.length > 0 ? recent_projects : (projects || []);
     const appName = app_settings?.app_name || 'Web Builder';
     const appVersion = app_settings?.app_version || 'V2';
+    const logoUrl = app_settings?.logo_url || '/images/logo.webp';
 
     const navMain = [
         {
@@ -47,7 +48,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuButton size="lg" asChild tooltip={appName} className="h-auto py-2 hover:bg-transparent focus-visible:bg-transparent">
                             <Link href={route('dashboard')} className="flex flex-col items-center justify-center text-center w-full gap-2.5 group-data-[collapsible=icon]:py-1">
                                 <img
-                                    src="/images/logo.webp"
+                                    src={logoUrl}
                                     alt={`${appName} Logo`}
                                     className="h-20 w-auto object-contain shrink-0 transition-transform duration-200 hover:scale-105 group-data-[collapsible=icon]:h-8"
                                 />
@@ -85,6 +86,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     <Link href={route('admin.users.index')} className="font-medium">
                                         <Users className="size-4" />
                                         <span>Kelola User</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild tooltip="Kelola Paket">
+                                    <Link href={route('admin.plans.index')} className="font-medium">
+                                        <CreditCard className="size-4" />
+                                        <span>Kelola Paket</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

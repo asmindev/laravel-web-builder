@@ -16,11 +16,11 @@
     <meta property="og:url" content="{{ url('/') }}">
     <meta property="og:title" content="{{ config('app.name', 'Nusantara Engine') }}">
     <meta property="og:description" content="AI-Powered Web Application Builder. Generate, preview, and manage full-stack web applications instantly.">
-    <meta property="og:image" content="{{ asset('images/logo.webp') }}">
-    <meta property="twitter:image" content="{{ asset('images/logo.webp') }}">
+    <meta property="og:image" content="{{ asset(ltrim(\App\Models\Setting::getLogoUrl(), '/')) }}">
+    <meta property="twitter:image" content="{{ asset(ltrim(\App\Models\Setting::getLogoUrl(), '/')) }}">
 
-    <link rel="icon" href="/favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="icon" href="{{ \App\Models\Setting::getFaviconUrl() }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ \App\Models\Setting::getFaviconUrl() }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

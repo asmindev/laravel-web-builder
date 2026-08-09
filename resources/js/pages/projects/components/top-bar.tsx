@@ -1,4 +1,4 @@
-import { Save, Eye, Globe, Loader2, FileCode, Download, Sparkles, Trash2, ChevronDown, FileArchive, Code2 } from 'lucide-react';
+import { Save, Eye, Globe, Loader2, FileCode, Download, Sparkles, Trash2, ChevronDown, FileArchive, Code2, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -64,6 +64,11 @@ export function TopBar({
                         <DropdownMenuItem asChild>
                             <a href={`/projects/${project.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer font-medium">
                                 <FileArchive className="size-4 text-emerald-500" /> Full Project ZIP (MySQL)
+                            </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <a href={`/projects/${project.slug}/export-db`} className="flex items-center gap-2 cursor-pointer text-xs">
+                                <Database className="size-4 text-cyan-500" /> Database SQL (MySQL Dump)
                             </a>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>

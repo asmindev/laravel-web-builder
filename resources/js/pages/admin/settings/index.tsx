@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, router, usePage } from '@inertiajs/react';
+import AdminLayout from '@/layouts/admin-layout';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
-    Save,
-    Settings,
-    Phone,
+    Briefcase,
     Building2,
     CheckCircle2,
-    MessageSquare,
-    Sparkles,
+    CreditCard,
+    FileText,
     Layers,
     ListOrdered,
-    Briefcase,
-    FileText,
-    CreditCard
+    MessageSquare,
+    Phone,
+    Save,
+    Settings,
+    Sparkles,
 } from 'lucide-react';
+import { useState } from 'react';
 
 interface FiturItem {
     tag: string;
@@ -43,7 +43,11 @@ interface LandingSettings {
     app_name: string;
     app_version: string;
     admin_whatsapp: string;
-    
+    app_logo?: string | null;
+    app_favicon?: string | null;
+    logo_url?: string;
+    favicon_url?: string;
+
     // Hero
     hero_badge: string;
     hero_title_1: string;
@@ -79,6 +83,12 @@ interface LandingSettings {
     pricing_pro_period: string;
     pricing_pro_features: string[];
 
+    // Plan Project Upload Limits
+    plan_limit_starter: number;
+    plan_limit_basic: number;
+    plan_limit_pro: number;
+    plan_limit_business: number;
+
     // Jasa Agensi
     agency_badge: string;
     agency_title: string;
@@ -98,13 +108,13 @@ interface SettingsProps {
 export default function AdminSettingsIndex({ settings }: SettingsProps) {
     const flash = usePage<{ flash?: { type?: string; content?: string } }>().props.flash;
     const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'fitur' | 'cara_kerja' | 'pricing' | 'jasa' | 'terms'>('general');
-    
+
     // Form State
     const [form, setForm] = useState<LandingSettings>({
         app_name: settings.app_name || 'Nusantara Engine',
         app_version: settings.app_version || 'V2',
         admin_whatsapp: settings.admin_whatsapp || '6281234567890',
-        
+
         hero_badge: settings.hero_badge || 'Engine Generasi Ke-3 Tersedia',
         hero_title_1: settings.hero_title_1 || 'Ketik Idenya,',
         hero_title_2: settings.hero_title_2 || 'AI Kami Buat',
@@ -135,6 +145,11 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
         pricing_pro_price: settings.pricing_pro_price || 'Rp 149k',
         pricing_pro_period: settings.pricing_pro_period || '/bln',
         pricing_pro_features: settings.pricing_pro_features || [],
+
+        plan_limit_starter: settings.plan_limit_starter ?? 2,
+        plan_limit_basic: settings.plan_limit_basic ?? 5,
+        plan_limit_pro: settings.plan_limit_pro ?? 10,
+        plan_limit_business: settings.plan_limit_business ?? 15,
 
         agency_badge: settings.agency_badge || 'Opsi Terima Beres',
         agency_title: settings.agency_title || 'Tidak Punya Waktu Membuat Sendiri?',
@@ -174,15 +189,11 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
         e.preventDefault();
         setIsSubmitting(true);
 
-        router.post(
-            route('admin.settings.update'),
-            form as any,
-            {
-                preserveScroll: true,
-                preserveState: true,
-                onFinish: () => setIsSubmitting(false),
-            }
-        );
+        router.post(route('admin.settings.update'), form as any, {
+            preserveScroll: true,
+            preserveState: true,
+            onFinish: () => setIsSubmitting(false),
+        });
     };
 
     const cleanWaNumber = form.admin_whatsapp.replace(/[^0-9]/g, '');
@@ -203,9 +214,9 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
 
             <div className="max-w-5xl space-y-6">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div className="space-y-1">
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                             <Settings className="size-6 text-primary" /> Pengaturan Konten Landing Page
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -213,19 +224,14 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                         </p>
                     </div>
 
-                    <Button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        className="gap-1.5 shrink-0"
-                    >
+                    <Button type="button" onClick={handleSubmit} disabled={isSubmitting} className="shrink-0 gap-1.5">
                         <Save className="size-4" /> {isSubmitting ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
                     </Button>
                 </div>
 
                 {/* Flash Success Alert */}
                 {flash?.content && flash.type === 'success' && (
-                    <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-600 dark:text-emerald-400 text-sm font-semibold">
+                    <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                         <CheckCircle2 className="size-5 shrink-0" />
                         <span>{flash.content}</span>
                     </div>
@@ -234,7 +240,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                 <form onSubmit={handleSubmit}>
                     <div className="w-full space-y-6">
                         {/* Tab Buttons Bar */}
-                        <div className="grid grid-cols-2 md:grid-cols-7 gap-1.5 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-100 p-1.5 md:grid-cols-7 dark:border-slate-800 dark:bg-slate-900">
                             {tabs.map((tab) => {
                                 const IconComp = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -243,10 +249,10 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         key={tab.id}
                                         type="button"
                                         onClick={() => setActiveTab(tab.id as any)}
-                                        className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-semibold transition-all ${
+                                        className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-all ${
                                             isActive
-                                                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-slate-700'
-                                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                                ? 'border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white'
+                                                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                                         }`}
                                     >
                                         <IconComp className={`size-3.5 ${isActive ? 'text-primary' : ''}`} />
@@ -306,18 +312,17 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-slate-50/50 dark:bg-slate-900/50 border-dashed">
+                                {/* Preview WhatsApp Card */}
+                                <Card className="border-dashed bg-slate-50/50 dark:bg-slate-900/50">
                                     <CardHeader className="pb-2">
-                                        <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                                        <CardTitle className="flex items-center gap-1.5 text-sm font-semibold">
                                             <MessageSquare className="size-4 text-emerald-500" /> Preview WhatsApp Link
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-3 text-xs">
                                         <div className="rounded-lg border bg-background p-3 font-mono text-[11px] break-all">
                                             <span className="text-muted-foreground">URL:</span>
-                                            <div className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                                                https://wa.me/{cleanWaNumber}
-                                            </div>
+                                            <div className="font-semibold text-emerald-600 dark:text-emerald-400">https://wa.me/{cleanWaNumber}</div>
                                         </div>
                                         <a
                                             href={`https://wa.me/${cleanWaNumber}?text=Halo%20Admin%20${encodeURIComponent(form.app_name)},%20saya%20butuh%20bantuan`}
@@ -327,6 +332,123 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         >
                                             <MessageSquare className="size-3.5" /> Uji Coba WhatsApp
                                         </a>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Card Identitas Visual (Logo & Favicon) */}
+                                <Card className="md:col-span-3">
+                                    <CardHeader>
+                                        <CardTitle className="text-base">Identitas Visual (Logo &amp; Favicon)</CardTitle>
+                                        <CardDescription>
+                                            Ubah Logo dan Favicon aplikasi. Jika diupload, sistem akan menggunakan file baru. Anda juga dapat mengembalikan ke file statis default kapan saja.
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="grid gap-6 md:grid-cols-2">
+                                        {/* Item 1: Logo */}
+                                        <div className="space-y-4 rounded-xl border p-4 bg-slate-50/50 dark:bg-slate-900/40">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Logo Aplikasi</h4>
+                                                    <p className="text-[11px] text-muted-foreground">Default: /images/logo.webp</p>
+                                                </div>
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${settings.app_logo ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>
+                                                    {settings.app_logo ? 'Custom Upload' : 'Default Statis'}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-4 border p-3 rounded-lg bg-background">
+                                                <div className="size-16 rounded-lg bg-slate-900 flex items-center justify-center overflow-hidden border p-1 shrink-0">
+                                                    <img src={settings.logo_url || '/images/logo.webp'} alt="Logo Preview" className="max-h-full max-w-full object-contain" />
+                                                </div>
+                                                <div className="space-y-1 text-xs">
+                                                    <p className="font-semibold text-slate-900 dark:text-white">Preview Logo Aktif</p>
+                                                    <p className="font-mono text-[10px] text-muted-foreground break-all">{settings.logo_url || '/images/logo.webp'}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="logo_input" className="text-xs font-semibold">Upload Logo Baru (Format: PNG, WEBP, SVG)</Label>
+                                                <Input
+                                                    id="logo_input"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const formData = new FormData();
+                                                            formData.append('logo', file);
+                                                            router.post(route('admin.settings.upload-logo'), formData);
+                                                        }
+                                                    }}
+                                                    className="h-9 text-xs cursor-pointer"
+                                                />
+                                            </div>
+
+                                            {settings.app_logo && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => router.post(route('admin.settings.reset-logo'))}
+                                                    className="w-full text-xs text-amber-600 hover:text-amber-700 border-amber-500/30"
+                                                >
+                                                    Kembalikan ke Logo Statis Default
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        {/* Item 2: Favicon */}
+                                        <div className="space-y-4 rounded-xl border p-4 bg-slate-50/50 dark:bg-slate-900/40">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Favicon Aplikasi</h4>
+                                                    <p className="text-[11px] text-muted-foreground">Default: /favicon.png</p>
+                                                </div>
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${settings.app_favicon ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>
+                                                    {settings.app_favicon ? 'Custom Upload' : 'Default Statis'}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-4 border p-3 rounded-lg bg-background">
+                                                <div className="size-16 rounded-lg bg-slate-900 flex items-center justify-center overflow-hidden border p-2 shrink-0">
+                                                    <img src={settings.favicon_url || '/favicon.png'} alt="Favicon Preview" className="size-8 object-contain" />
+                                                </div>
+                                                <div className="space-y-1 text-xs">
+                                                    <p className="font-semibold text-slate-900 dark:text-white">Preview Favicon Aktif</p>
+                                                    <p className="font-mono text-[10px] text-muted-foreground break-all">{settings.favicon_url || '/favicon.png'}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="favicon_input" className="text-xs font-semibold">Upload Favicon Baru (Format: ICO, PNG, SVG)</Label>
+                                                <Input
+                                                    id="favicon_input"
+                                                    type="file"
+                                                    accept="image/*,.ico"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const formData = new FormData();
+                                                            formData.append('favicon', file);
+                                                            router.post(route('admin.settings.upload-favicon'), formData);
+                                                        }
+                                                    }}
+                                                    className="h-9 text-xs cursor-pointer"
+                                                />
+                                            </div>
+
+                                            {settings.app_favicon && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => router.post(route('admin.settings.reset-favicon'))}
+                                                    className="w-full text-xs text-amber-600 hover:text-amber-700 border-amber-500/30"
+                                                >
+                                                    Kembalikan ke Favicon Statis Default
+                                                </Button>
+                                            )}
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -441,8 +563,8 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         <div className="grid gap-4 md:grid-cols-2">
                                             {form.fitur_items.map((item, idx) => (
                                                 <Card key={idx} className="bg-slate-50/50 dark:bg-slate-900/40">
-                                                    <CardHeader className="py-3 px-4">
-                                                        <CardTitle className="text-xs font-bold uppercase text-primary">
+                                                    <CardHeader className="px-4 py-3">
+                                                        <CardTitle className="text-xs font-bold text-primary uppercase">
                                                             Kartu Fitur #{idx + 1}
                                                         </CardTitle>
                                                     </CardHeader>
@@ -452,7 +574,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                                             <Input
                                                                 value={item.tag}
                                                                 onChange={(e) => handleFiturChange(idx, 'tag', e.target.value)}
-                                                                className="h-8 text-xs font-mono"
+                                                                className="h-8 font-mono text-xs"
                                                             />
                                                         </div>
                                                         <div>
@@ -522,8 +644,8 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         <div className="grid gap-4 md:grid-cols-3">
                                             {form.cara_kerja_steps.map((step, idx) => (
                                                 <Card key={idx} className="bg-slate-50/50 dark:bg-slate-900/40">
-                                                    <CardHeader className="py-3 px-4">
-                                                        <CardTitle className="text-xs font-bold uppercase text-[#ff8a5c]">
+                                                    <CardHeader className="px-4 py-3">
+                                                        <CardTitle className="text-xs font-bold text-[#ff8a5c] uppercase">
                                                             Langkah #{step.step || idx + 1}
                                                         </CardTitle>
                                                     </CardHeader>
@@ -554,12 +676,15 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                             </Card>
                         )}
 
-                        {/* TAB 5: Pricing */}
+                        {/* TAB 5: Harga / Paket */}
                         {activeTab === 'pricing' && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base">Section Harga & Paket Langganan (#harga)</CardTitle>
-                                    <CardDescription>Atur judul section dan isi fitur untuk Paket Starter & Pro Builder.</CardDescription>
+                                    <CardTitle className="text-base">Section Harga &amp; Paket Langganan (#harga)</CardTitle>
+                                    <CardDescription>
+                                        Atur judul &amp; deskripsi header section harga landing page. Untuk mengelola harga, limit proyek, dan fitur
+                                        tiap paket, silakan gunakan menu <strong>Kelola Paket</strong>.
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="grid gap-4 md:grid-cols-3">
@@ -590,86 +715,25 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         />
                                     </div>
 
-                                    <div className="grid gap-6 md:grid-cols-2 pt-2">
-                                        {/* Starter Card Setting */}
-                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40">
-                                            <CardHeader className="py-3 px-4">
-                                                <CardTitle className="text-xs font-bold uppercase text-slate-700 dark:text-slate-200">
-                                                    Paket Starter (Gratis)
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-3 p-4 pt-0">
-                                                <div>
-                                                    <Label className="text-[11px]">Nama Paket</Label>
-                                                    <Input
-                                                        value={form.pricing_starter_title}
-                                                        onChange={(e) => handleChange('pricing_starter_title', e.target.value)}
-                                                        className="h-8 text-xs font-bold"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="text-[11px]">Subtitle Paket</Label>
-                                                    <Input
-                                                        value={form.pricing_starter_subtitle}
-                                                        onChange={(e) => handleChange('pricing_starter_subtitle', e.target.value)}
-                                                        className="h-8 text-xs"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="text-[11px]">Harga</Label>
-                                                    <Input
-                                                        value={form.pricing_starter_price}
-                                                        onChange={(e) => handleChange('pricing_starter_price', e.target.value)}
-                                                        className="h-8 text-xs font-mono font-bold"
-                                                    />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Pro Card Setting */}
-                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-primary/40">
-                                            <CardHeader className="py-3 px-4">
-                                                <CardTitle className="text-xs font-bold uppercase text-primary">
-                                                    Paket Pro Builder (Berbayar)
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-3 p-4 pt-0">
-                                                <div>
-                                                    <Label className="text-[11px]">Nama Paket</Label>
-                                                    <Input
-                                                        value={form.pricing_pro_title}
-                                                        onChange={(e) => handleChange('pricing_pro_title', e.target.value)}
-                                                        className="h-8 text-xs font-bold"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label className="text-[11px]">Subtitle Paket</Label>
-                                                    <Input
-                                                        value={form.pricing_pro_subtitle}
-                                                        onChange={(e) => handleChange('pricing_pro_subtitle', e.target.value)}
-                                                        className="h-8 text-xs"
-                                                    />
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div>
-                                                        <Label className="text-[11px]">Harga</Label>
-                                                        <Input
-                                                            value={form.pricing_pro_price}
-                                                            onChange={(e) => handleChange('pricing_pro_price', e.target.value)}
-                                                            className="h-8 text-xs font-mono font-bold text-primary"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="text-[11px]">Periode</Label>
-                                                        <Input
-                                                            value={form.pricing_pro_period}
-                                                            onChange={(e) => handleChange('pricing_pro_period', e.target.value)}
-                                                            className="h-8 text-xs font-mono"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                    {/* Direct Banner link to Kelola Paket */}
+                                    <div className="space-y-3 rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-5">
+                                        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                                            <div>
+                                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                                                    <Sparkles className="size-4 text-amber-500" /> Pengelolaan Paket &amp; Limit Proyek
+                                                </h4>
+                                                <p className="mt-1 text-xs text-muted-foreground">
+                                                    Daftar paket (Starter, Basic, Pro, Business, dsb.), limit proyek, harga, dan fitur kini dikelola
+                                                    secara dinamis di halaman <strong>Kelola Paket</strong>.
+                                                </p>
+                                            </div>
+                                            <Link
+                                                href={route('admin.plans.index')}
+                                                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow transition-colors hover:bg-primary/90"
+                                            >
+                                                Buka Menu Kelola Paket &rarr;
+                                            </Link>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -755,8 +819,8 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         <div className="grid gap-4 md:grid-cols-3">
                                             {form.terms_items.map((term, idx) => (
                                                 <Card key={idx} className="bg-slate-50/50 dark:bg-slate-900/40">
-                                                    <CardHeader className="py-3 px-4">
-                                                        <CardTitle className="text-xs font-bold uppercase text-slate-500">
+                                                    <CardHeader className="px-4 py-3">
+                                                        <CardTitle className="text-xs font-bold text-slate-500 uppercase">
                                                             Pasal {term.number || `§${idx + 1}`}
                                                         </CardTitle>
                                                     </CardHeader>
@@ -789,11 +853,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                     </div>
 
                     <div className="mt-6 flex justify-end">
-                        <Button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="gap-1.5"
-                        >
+                        <Button type="submit" disabled={isSubmitting} className="gap-1.5">
                             <Save className="size-4" /> {isSubmitting ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
                         </Button>
                     </div>

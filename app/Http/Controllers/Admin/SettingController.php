@@ -66,6 +66,12 @@ class SettingController extends Controller
             'pricing_pro_period' => 'nullable|string|max:50',
             'pricing_pro_features' => 'nullable|array',
 
+            // Dynamic Plan Project Limits
+            'plan_limit_starter' => 'required|integer|min:1|max:9999',
+            'plan_limit_basic' => 'required|integer|min:1|max:9999',
+            'plan_limit_pro' => 'required|integer|min:1|max:9999',
+            'plan_limit_business' => 'required|integer|min:1|max:9999',
+
             // Jasa Agensi
             'agency_badge' => 'nullable|string|max:255',
             'agency_title' => 'nullable|string|max:255',

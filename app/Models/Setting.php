@@ -26,12 +26,34 @@ class Setting extends Model
         );
     }
 
+    public static function getLogoUrl(): string
+    {
+        $uploaded = static::get('app_logo');
+        if ($uploaded && file_exists(public_path(ltrim($uploaded, '/')))) {
+            return $uploaded;
+        }
+        return '/images/logo.webp';
+    }
+
+    public static function getFaviconUrl(): string
+    {
+        $uploaded = static::get('app_favicon');
+        if ($uploaded && file_exists(public_path(ltrim($uploaded, '/')))) {
+            return $uploaded;
+        }
+        return '/favicon.png';
+    }
+
     public static function getLandingContent(): array
     {
         return [
             'app_name' => static::get('app_name', 'Nusantara Engine'),
             'app_version' => static::get('app_version', 'V2'),
             'admin_whatsapp' => static::get('admin_whatsapp', '6281234567890'),
+            'app_logo' => static::get('app_logo', null),
+            'app_favicon' => static::get('app_favicon', null),
+            'logo_url' => static::getLogoUrl(),
+            'favicon_url' => static::getFaviconUrl(),
             
             // Hero
             'hero_badge' => static::get('hero_badge', 'Engine Generasi Ke-3 Tersedia'),
@@ -94,7 +116,7 @@ class Setting extends Model
                 ],
             ],
 
-            // Pricing
+            // Pricing & Plan Limits
             'pricing_section_tag' => static::get('pricing_section_tag', '[ Akses Platform ]'),
             'pricing_title' => static::get('pricing_title', 'Pilih Paket Builder Anda'),
             'pricing_subtitle' => static::get('pricing_subtitle', 'Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.'),
@@ -116,6 +138,12 @@ class Setting extends Model
                 'Custom Domain (.com/.id)',
                 'Integrasi Database',
             ],
+
+            // Plan Project Limits
+            'plan_limit_starter' => (int) static::get('plan_limit_starter', '2'),
+            'plan_limit_basic' => (int) static::get('plan_limit_basic', '5'),
+            'plan_limit_pro' => (int) static::get('plan_limit_pro', '10'),
+            'plan_limit_business' => (int) static::get('plan_limit_business', '15'),
 
             // Jasa Agensi
             'agency_badge' => static::get('agency_badge', 'Opsi Terima Beres'),

@@ -44,6 +44,10 @@ class HandleInertiaRequests extends Middleware
                 'app_name' => \App\Models\Setting::get('app_name', 'Nusantara Engine'),
                 'app_version' => \App\Models\Setting::get('app_version', 'V2'),
                 'admin_whatsapp' => \App\Models\Setting::get('admin_whatsapp', '6281234567890'),
+                'app_logo' => \App\Models\Setting::get('app_logo', null),
+                'app_favicon' => \App\Models\Setting::get('app_favicon', null),
+                'logo_url' => \App\Models\Setting::getLogoUrl(),
+                'favicon_url' => \App\Models\Setting::getFaviconUrl(),
             ],
             'flash' => fn() => [
                 'type' => session()->has('error')

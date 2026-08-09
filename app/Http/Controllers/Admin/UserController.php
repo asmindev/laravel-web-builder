@@ -63,7 +63,7 @@ class UserController extends Controller
                 'plan' => $planFilter ?? 'all',
             ],
             'roles' => Role::pluck('name')->toArray(),
-            'plans' => ['starter', 'basic', 'pro', 'business'],
+            'plans' => \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get(),
         ]);
     }
 
@@ -136,7 +136,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|string|exists:roles,name',
-            'plan' => 'required|string|in:starter,basic,pro,business',
+            'plan' => 'required|string|exists:plans,slug',
         ]);
 
         $user = User::create([
@@ -158,7 +158,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'password' => 'nullable|string|min:8',
             'role' => 'required|string|exists:roles,name',
-            'plan' => 'required|string|in:starter,basic,pro,business',
+            'plan' => 'required|string|exists:plans,slug',
         ]);
 
         $userData = [

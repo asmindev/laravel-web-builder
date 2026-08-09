@@ -3,7 +3,7 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, FileCode, FolderOpen, Globe, ShieldAlert, Ban, CheckCircle, MoreHorizontal, FileArchive, Code2, Edit3, Eye } from 'lucide-react';
+import { ArrowLeft, FileCode, FolderOpen, Globe, ShieldAlert, Ban, CheckCircle, MoreHorizontal, FileArchive, Code2, Edit3, Eye, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
@@ -61,13 +61,13 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
     const getPlanBadge = (plan: string) => {
         switch (plan) {
             case 'starter':
-                return <Badge variant="outline" className="border-slate-300 text-slate-700 dark:text-slate-300">Starter (2 Proyek)</Badge>;
+                return <Badge variant="outline" className="border-slate-300 text-slate-700 dark:text-slate-300">Starter</Badge>;
             case 'basic':
-                return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">Basic (5 Proyek)</Badge>;
+                return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">Basic</Badge>;
             case 'pro':
-                return <Badge className="bg-primary text-primary-foreground font-bold">Pro (10 Proyek)</Badge>;
+                return <Badge className="bg-primary text-primary-foreground font-bold">Pro</Badge>;
             case 'business':
-                return <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold">Business (15 Proyek)</Badge>;
+                return <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold">Business</Badge>;
             default:
                 return <Badge variant="outline">{plan}</Badge>;
         }
@@ -254,6 +254,11 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
                                                         <DropdownMenuItem asChild>
                                                             <a href={`/projects/${p.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
                                                                 <FileArchive className="size-4 text-emerald-500" /> Export Full ZIP (MySQL)
+                                                            </a>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <a href={`/projects/${p.slug}/export-db`} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <Database className="size-4 text-cyan-500" /> Export Database SQL (MySQL)
                                                             </a>
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem asChild>

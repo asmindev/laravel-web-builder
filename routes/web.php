@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AIController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\FileController;
@@ -19,6 +20,7 @@ Route::any('/app/{slug}/{path?}', PreviewProxyController::class)
 Route::get('/', function () {
     return \Inertia\Inertia::render('welcome', [
         'landing_content' => \App\Models\Setting::getLandingContent(),
+        'plans' => \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get(),
     ]);
 })->name('home');
 
@@ -44,7 +46,12 @@ Route::middleware('auth')->group(function () {
         Route::post('projects/{project}/toggle-suspend', [AdminUserController::class, 'toggleProjectSuspend'])->name('projects.toggle-suspend');
         Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+        Route::post('settings/upload-logo', [\App\Http\Controllers\SettingUploadController::class, 'uploadLogo'])->name('settings.upload-logo');
+        Route::post('settings/reset-logo', [\App\Http\Controllers\SettingUploadController::class, 'resetLogo'])->name('settings.reset-logo');
+        Route::post('settings/upload-favicon', [\App\Http\Controllers\SettingUploadController::class, 'uploadFavicon'])->name('settings.upload-favicon');
+        Route::post('settings/reset-favicon', [\App\Http\Controllers\SettingUploadController::class, 'resetFavicon'])->name('settings.reset-favicon');
         Route::resource('users', AdminUserController::class);
+        Route::resource('plans', AdminPlanController::class);
     });
 
     // Projects
@@ -82,6 +89,7 @@ Route::middleware('auth')->group(function () {
     // Export / Import
     Route::get('/projects/{project:slug}/export-json', [PublishController::class, 'exportJson'])->name('projects.export-json');
     Route::get('/projects/{project:slug}/export-zip', [PublishController::class, 'exportZip'])->name('projects.export-zip');
+    Route::get('/projects/{project:slug}/export-db', [PublishController::class, 'exportDb'])->name('projects.export-db');
     Route::get('/projects/{project:slug}/export-file', [PublishController::class, 'exportFile'])->name('projects.export-file');
     Route::post('/projects/import', [PublishController::class, 'import'])->name('projects.import');
 

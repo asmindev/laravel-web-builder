@@ -82,6 +82,26 @@ class PublishController extends Controller
         return response()->download($path, $filename)->deleteFileAfterSend();
     }
 
+    public function exportDb(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $sqliteDbPath = base_path("node-engine/storage/{$project->slug}.db");
+        $converter = app(\App\Services\SQLiteToMySQLConverter::class);
+        $mysqlDumpSql = $converter->convertToMySQLDump($sqliteDbPath);
+
+        $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'database';
+        $timestamp = now()->format('YmdHis');
+        $filename = "{$safeName}_database_{$timestamp}.sql";
+
+        return response($mysqlDumpSql, 200, [
+            'Content-Type' => 'application/sql',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
     public function exportFile(Project $project, Request $request)
     {
         if ($project->user_id !== auth()->id()) {

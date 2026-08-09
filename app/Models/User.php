@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(Project::class);
     }
 
+    public function planDetails()
+    {
+        return $this->belongsTo(Plan::class, 'plan', 'slug');
+    }
+
     /**
      * Get maximum project upload limit based on plan or admin role
      */
@@ -63,13 +68,16 @@ class User extends Authenticatable
             return 999999;
         }
 
-        return match ($this->plan) {
-            'starter' => 2,
-            'basic' => 5,
-            'pro' => 10,
-            'business' => 15,
-            default => 2,
-        };
+        if ($this->planDetails) {
+            return $this->planDetails->project_limit;
+        }
+
+        $planObj = \App\Models\Plan::where('slug', $this->plan)->first();
+        if ($planObj) {
+            return $planObj->project_limit;
+        }
+
+        return (int) \App\Models\Setting::get("plan_limit_{$this->plan}", '2');
     }
 
     /**
@@ -89,6 +97,10 @@ class User extends Authenticatable
      */
     public function getPlanNameAttribute(): string
     {
+        if ($this->planDetails) {
+            return $this->planDetails->name;
+        }
+
         return ucfirst($this->plan ?? 'starter');
     }
 }

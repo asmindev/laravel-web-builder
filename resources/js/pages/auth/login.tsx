@@ -6,8 +6,9 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowLeft, Eye, EyeOff, Sun, Moon } from 'lucide-react';
 
 export default function Login() {
-    const appSettings = usePage<{ app_settings?: { app_name?: string } }>().props.appSettings;
+    const appSettings = usePage<PageProps & { appSettings?: { app_name: string; admin_whatsapp: string; logo_url?: string } }>().props.appSettings;
     const appName = appSettings?.app_name || 'Nusantara Engine';
+    const logoUrl = appSettings?.logo_url || '/images/logo.webp';
 
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -80,7 +81,7 @@ export default function Login() {
                     <div className="space-y-4 text-center">
                         <Link href="/" className="inline-block group">
                             <img
-                                src="/images/logo.webp"
+                                src={logoUrl}
                                 alt={`${appName} Logo`}
                                 className="mx-auto h-32 md:h-36 w-auto object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
                             />
@@ -174,12 +175,18 @@ export default function Login() {
                         </Button>
                     </form>
 
-                    {/* Footer Register Link */}
+                    {/* Footer Admin Notice */}
                     <div className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
-                        Belum punya akun?{' '}
-                        <Link href={route('register')} className="font-bold text-primary hover:underline">
-                            Daftar Sekarang
-                        </Link>
+                        Belum punya akun? Hubungi{' '}
+                        <a
+                            href={`https://wa.me/${(appSettings?.admin_whatsapp || '6281234567890').replace(/[^0-9]/g, '')}?text=Halo%20Admin,%20saya%20ingin%20membuat%20akun%20baru`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-primary hover:underline"
+                        >
+                            Admin
+                        </a>{' '}
+                        untuk pendaftaran.
                     </div>
                 </div>
             </div>

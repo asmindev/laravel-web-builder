@@ -57,6 +57,10 @@ PROMPT;
     private function enhanceViaGemini(string $appName, string $appDescription): string
     {
         $apiKey = (string) config('services.gemini.key');
+        Log::info('Enhancing prompt via Gemini', [
+        'app_name' => $appName,
+            'api_key_present' => $apiKey !== '',
+        ]);
 
         if ($apiKey === '') {
             return SystemInstruction::forFallbackPrompt($appName, $appDescription);
