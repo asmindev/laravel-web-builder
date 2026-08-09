@@ -53,9 +53,10 @@ export function FileTree({
     const [dragOver, setDragOver] = useState<string | null>(null);
     const [dragging, setDragging] = useState<string | null>(null);
 
-    // Dialog States for Folder Delete / Move
+    // Dialog / Inline States for Folder Operations
     const [folderToDelete, setFolderToDelete] = useState<{ name: string; files: ProjectFile[] } | null>(null);
-    const [folderToRename, setFolderToRename] = useState<{ oldName: string; newName: string } | null>(null);
+    const [editingFolder, setEditingFolder] = useState<string | null>(null);
+    const [editingFolderValue, setEditingFolderValue] = useState<string>('');
 
     // Root files = files with no folder prefix
     const rootFiles = files.filter((f) => !f.path.includes('/'));
@@ -70,6 +71,18 @@ export function FileTree({
     });
 
     const allFolderNames = Array.from(new Set([...folders.map((f) => f.name), ...implicitFolderNames]));
+
+    const startRenameFolder = (folderName: string) => {
+        setEditingFolder(folderName);
+        setEditingFolderValue(folderName);
+    };
+
+    const submitRenameFolder = (oldName: string) => {
+        if (editingFolderValue.trim() && editingFolderValue.trim() !== oldName) {
+            onRenameFolderByName(oldName, editingFolderValue.trim());
+        }
+        setEditingFolder(null);
+    };
 
     // ── Native HTML5 drag handlers ──
 
@@ -200,6 +213,7 @@ export function FileTree({
                 const dirFiles = files.filter((f) => f.path.startsWith(folderName + '/'));
                 const dbFolder = folders.find((f) => f.name === folderName);
                 const isFolderActive = activeFile?.startsWith(folderName + '/');
+                const isEditingThisFolder = editingFolder === folderName;
 
                 return (
                     <div
@@ -224,32 +238,57 @@ export function FileTree({
                                         )}
                                         style={{ paddingLeft: '10px' }}
                                     >
-                                        <div className="flex items-center gap-2 truncate">
-                                            <Folder className="size-4 text-amber-500 shrink-0" />
-                                            <span className="truncate">{folderName}</span>
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-normal text-muted-foreground">
-                                                {dirFiles.length}
-                                            </span>
-                                        </div>
+                                        {isEditingThisFolder ? (
+                                            <div className="flex items-center gap-1.5 flex-1 pr-2">
+                                                <Folder className="size-4 text-amber-500 shrink-0" />
+                                                <Input
+                                                    value={editingFolderValue}
+                                                    onChange={(e) => setEditingFolderValue(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            submitRenameFolder(folderName);
+                                                        } else if (e.key === 'Escape') {
+                                                            setEditingFolder(null);
+                                                        }
+                                                    }}
+                                                    onBlur={() => submitRenameFolder(folderName)}
+                                                    className="h-6 py-0 px-1 text-xs font-semibold font-mono border-primary bg-background w-36"
+                                                    autoFocus
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 truncate">
+                                                <Folder className="size-4 text-amber-500 shrink-0" />
+                                                <span className="truncate">{folderName}</span>
+                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-normal text-muted-foreground">
+                                                    {dirFiles.length}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="size-6 p-0 hover:bg-accent text-muted-foreground hover:text-foreground shrink-0"
-                                                onClick={(e) => e.stopPropagation()}
-                                                title="Menu Folder"
-                                            >
-                                                <MoreHorizontal className="size-3.5" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
+                                        {!isEditingThisFolder && (
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-6 p-0 hover:bg-accent text-muted-foreground hover:text-foreground shrink-0"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    title="Menu Folder"
+                                                >
+                                                    <MoreHorizontal className="size-3.5" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                        )}
                                     </div>
                                 </ContextMenuTrigger>
                                 <ContextMenuContent className="w-52">
                                     <ContextMenuItem onClick={() => onNewFileInFolder(folderName)}>
                                         <Plus className="size-3.5 text-primary" /> Buat File di Folder ini
                                     </ContextMenuItem>
-                                    <ContextMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })}>
+                                    <ContextMenuItem onClick={() => startRenameFolder(folderName)}>
                                         <Pencil className="size-3.5 text-indigo-500" /> Pindahkan / Rename Folder
                                     </ContextMenuItem>
                                     <ContextMenuSeparator />
@@ -266,7 +305,7 @@ export function FileTree({
                                 <DropdownMenuItem onClick={() => onNewFileInFolder(folderName)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
                                     <Plus className="size-4 text-primary" /> Buat File di Folder ini
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                <DropdownMenuItem onClick={() => startRenameFolder(folderName)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
                                     <Pencil className="size-4 text-indigo-500" /> Pindahkan / Rename Folder
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
@@ -339,55 +378,6 @@ export function FileTree({
                                 }}
                             >
                                 Hapus Beserta Isinya
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            {/* Move / Rename Folder Dialog */}
-            {folderToRename && (
-                <Dialog open={!!folderToRename} onOpenChange={(open) => !open && setFolderToRename(null)}>
-                    <DialogContent className="sm:max-w-sm">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                                <Pencil className="size-4 text-primary" /> Pindahkan / Rename Folder
-                            </DialogTitle>
-                            <DialogDescription className="text-xs">
-                                Ubah nama folder <strong>"{folderToRename.oldName}"</strong>. Seluruh path file di dalamnya akan diperbarui secara otomatis.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-2 py-2">
-                            <Label className="text-xs font-semibold">Nama / Path Folder Baru</Label>
-                            <Input
-                                value={folderToRename.newName}
-                                onChange={(e) => setFolderToRename({ ...folderToRename, newName: e.target.value })}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        onRenameFolderByName(folderToRename.oldName, folderToRename.newName);
-                                        setFolderToRename(null);
-                                    }
-                                }}
-                                placeholder="misal: pages atau src/views"
-                                className="h-8 text-xs font-mono"
-                                autoFocus
-                            />
-                        </div>
-                        <DialogFooter className="flex gap-2 sm:justify-end">
-                            <Button variant="outline" size="sm" onClick={() => setFolderToRename(null)}>
-                                Batal
-                            </Button>
-                            <Button
-                                size="sm"
-                                className="font-bold"
-                                disabled={!folderToRename.newName.trim() || folderToRename.newName === folderToRename.oldName}
-                                onClick={() => {
-                                    onRenameFolderByName(folderToRename.oldName, folderToRename.newName);
-                                    setFolderToRename(null);
-                                }}
-                            >
-                                Simpan Perubahan
                             </Button>
                         </DialogFooter>
                     </DialogContent>
