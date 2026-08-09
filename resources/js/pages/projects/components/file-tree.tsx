@@ -152,9 +152,9 @@ export function FileTree({
                             onClick={() => onSelect(fp)}
                             onKeyDown={(e) => e.key === 'Enter' && onSelect(fp)}
                             className={cn(
-                                'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-left text-xs font-medium transition-all duration-150',
+                                'relative flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-left text-xs font-medium transition-all duration-150',
                                 isActive && !isDragging
-                                    ? 'bg-primary/15 text-primary font-bold border-l-2 border-primary shadow-xs'
+                                    ? 'bg-primary/15 text-primary font-bold shadow-xs before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-primary before:rounded-r-full'
                                     : 'text-foreground/80 hover:bg-accent hover:text-foreground',
                                 isDragging && 'opacity-40 ring-2 ring-dashed ring-primary',
                                 dragging ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
