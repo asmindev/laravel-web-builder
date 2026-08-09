@@ -124,8 +124,8 @@ export default function ProjectShow({ project }: ShowProps) {
                     onReorder={f.handleReorder}
                     onDropOnFolder={f.handleDropOnFolder}
                     onNewFileInFolder={f.handleNewFileInFolder}
-                    onRenameFolder={f.handleRenameFolder}
-                    onDeleteFolder={f.handleDeleteFolder}
+                    onRenameFolderByName={f.handleRenameFolderByName}
+                    onDeleteFolderByName={f.handleDeleteFolderByName}
                 />
 
                 <RenameDialog

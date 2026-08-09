@@ -7,6 +7,17 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { EXT_ICONS, getExt } from '@/lib/file-utils';
 import type { ProjectFile, ProjectFolder } from '@/types/project';
@@ -23,17 +34,21 @@ interface FileTreeProps {
     onReorder: (dir: string, reordered: ProjectFile[]) => void;
     onDropOnFolder: (filePath: string, targetDir: string) => void;
     onNewFileInFolder: (dir: string) => void;
-    onRenameFolder: (folderId: number) => void;
-    onDeleteFolder: (folderId: number) => void;
+    onRenameFolderByName: (folderName: string, newName: string) => void;
+    onDeleteFolderByName: (folderName: string) => void;
 }
 
 export function FileTree({
     files, folders, activeFile, onSelect, onDelete, onDuplicate, onRename, onMove,
-    onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolder, onDeleteFolder,
+    onReorder, onDropOnFolder, onNewFileInFolder, onRenameFolderByName, onDeleteFolderByName,
 }: FileTreeProps) {
     const dragSource = useRef<string | null>(null);
     const [dragOver, setDragOver] = useState<string | null>(null);
     const [dragging, setDragging] = useState<string | null>(null);
+
+    // Dialog States for Folder Delete / Move
+    const [folderToDelete, setFolderToDelete] = useState<{ name: string; files: ProjectFile[] } | null>(null);
+    const [folderToRename, setFolderToRename] = useState<{ oldName: string; newName: string } | null>(null);
 
     // Root files = files with no folder prefix
     const rootFiles = files.filter((f) => !f.path.includes('/'));
@@ -182,7 +197,7 @@ export function FileTree({
                 )}
             >
                 <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
-                    <Folder className="size-3" />
+                    <Folder className="size-3 text-amber-500" />
                     root
                 </div>
                 <div className="space-y-0.5">
@@ -206,14 +221,168 @@ export function FileTree({
                             dragOver === folderName && 'bg-primary/15 ring-2 ring-primary/40',
                         )}
                     >
-                        <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
-                            <Folder className="size-3" />
-                            {folderName}
+                        <ContextMenu>
+                            <ContextMenuTrigger asChild>
+                                <div className="group flex w-full items-center justify-between px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent/40 rounded-md cursor-pointer">
+                                    <div className="flex items-center gap-1.5 truncate">
+                                        <Folder className="size-3.5 text-amber-500 shrink-0" />
+                                        <span className="font-semibold text-foreground truncate">{folderName}</span>
+                                        <span className="text-[10px] text-muted-foreground font-normal">({dirFiles.length})</span>
+                                    </div>
+                                    <div className="hidden group-hover:flex items-center gap-1 shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onNewFileInFolder(folderName);
+                                            }}
+                                            className="p-1 hover:text-primary transition-colors"
+                                            title="Buat File di Folder Ini"
+                                        >
+                                            <Plus className="size-3 text-primary" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setFolderToRename({ oldName: folderName, newName: folderName });
+                                            }}
+                                            className="p-1 hover:text-indigo-500 transition-colors"
+                                            title="Pindahkan / Rename Folder"
+                                        >
+                                            <Pencil className="size-3 text-indigo-500" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setFolderToDelete({ name: folderName, files: dirFiles });
+                                            }}
+                                            className="p-1 hover:text-red-500 transition-colors"
+                                            title="Hapus Folder"
+                                        >
+                                            <Trash2 className="size-3 text-red-500" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </ContextMenuTrigger>
+                            <ContextMenuContent>
+                                <ContextMenuItem onClick={() => onNewFileInFolder(folderName)}>
+                                    <Plus className="size-3.5 text-primary" /> Buat File di Folder ini
+                                </ContextMenuItem>
+                                <ContextMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })}>
+                                    <Pencil className="size-3.5 text-indigo-500" /> Pindahkan / Rename Folder
+                                </ContextMenuItem>
+                                <ContextMenuSeparator />
+                                <ContextMenuItem
+                                    onClick={() => setFolderToDelete({ name: folderName, files: dirFiles })}
+                                    variant="destructive"
+                                >
+                                    <Trash2 className="size-3.5 text-red-500" /> Hapus Folder (Beserta Isinya)
+                                </ContextMenuItem>
+                            </ContextMenuContent>
+                        </ContextMenu>
+
+                        <div className="space-y-0.5">
+                            {dirFiles.map((file) => renderFile(file, 1))}
                         </div>
-                        {dirFiles.map((file) => renderFile(file, 1))}
                     </div>
                 );
             })}
+
+            {/* Delete Folder Alert Dialog */}
+            {folderToDelete && (
+                <Dialog open={!!folderToDelete} onOpenChange={(open) => !open && setFolderToDelete(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                                <Trash2 className="size-5" /> Hapus Folder "{folderToDelete.name}"?
+                            </DialogTitle>
+                            <DialogDescription className="text-xs space-y-2 pt-2">
+                                <span>
+                                    Tindakan ini akan <strong>menghapus folder ini secara permanen</strong> beserta{' '}
+                                    <strong>{folderToDelete.files.length} file</strong> yang ada di dalamnya:
+                                </span>
+                                {folderToDelete.files.length > 0 && (
+                                    <div className="max-h-36 overflow-y-auto rounded-md border bg-muted/50 p-2 space-y-1 font-mono text-[11px] mt-2">
+                                        {folderToDelete.files.map((file) => (
+                                            <div key={file.path} className="flex items-center gap-1.5 text-muted-foreground">
+                                                <FileCode className="size-3 text-sky-500 shrink-0" />
+                                                <span className="truncate">{file.path}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                            <Button variant="outline" size="sm" onClick={() => setFolderToDelete(null)}>
+                                Batal
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                className="font-bold bg-red-600 hover:bg-red-700 text-white"
+                                onClick={() => {
+                                    onDeleteFolderByName(folderToDelete.name);
+                                    setFolderToDelete(null);
+                                }}
+                            >
+                                Hapus Beserta Isinya
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
+
+            {/* Move / Rename Folder Dialog */}
+            {folderToRename && (
+                <Dialog open={!!folderToRename} onOpenChange={(open) => !open && setFolderToRename(null)}>
+                    <DialogContent className="sm:max-w-sm">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Pencil className="size-4 text-primary" /> Pindahkan / Rename Folder
+                            </DialogTitle>
+                            <DialogDescription className="text-xs">
+                                Ubah nama folder <strong>"{folderToRename.oldName}"</strong>. Seluruh path file di dalamnya akan diperbarui secara otomatis.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-2 py-2">
+                            <Label className="text-xs font-semibold">Nama / Path Folder Baru</Label>
+                            <Input
+                                value={folderToRename.newName}
+                                onChange={(e) => setFolderToRename({ ...folderToRename, newName: e.target.value })}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        onRenameFolderByName(folderToRename.oldName, folderToRename.newName);
+                                        setFolderToRename(null);
+                                    }
+                                }}
+                                placeholder="misal: pages atau src/views"
+                                className="h-8 text-xs font-mono"
+                                autoFocus
+                            />
+                        </div>
+                        <DialogFooter className="flex gap-2 sm:justify-end">
+                            <Button variant="outline" size="sm" onClick={() => setFolderToRename(null)}>
+                                Batal
+                            </Button>
+                            <Button
+                                size="sm"
+                                className="font-bold"
+                                disabled={!folderToRename.newName.trim() || folderToRename.newName === folderToRename.oldName}
+                                onClick={() => {
+                                    onRenameFolderByName(folderToRename.oldName, folderToRename.newName);
+                                    setFolderToRename(null);
+                                }}
+                            >
+                                Simpan Perubahan
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     );
 }
