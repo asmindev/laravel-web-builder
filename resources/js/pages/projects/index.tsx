@@ -79,35 +79,37 @@ export default function ProjectIndex({ projects }: IndexProps) {
         }
     }, []);
 
-    const handleEnhancePrompt = () => {
+    const handleEnhancePrompt = async () => {
         if (!name || !description) return;
         setEnhancing(true);
         setEnhancedPrompt(null);
 
-        router.post(
-            route('ai.enhance-prompt'),
-            {
-                app_name: name,
-                app_description: description,
-                app_type: template === 'landing' ? 'landing' : 'nodejs',
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    const result = (page.props as any)?.enhanced_prompt;
-                    if (result) {
-                        setEnhancedPrompt(result);
-                    }
+        try {
+            const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '';
+
+            const res = await fetch(route('ai.enhance-prompt'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
                 },
-                onError: (errs) => {
-                    console.error('Failed to enhance prompt', errs);
-                },
-                onFinish: () => {
-                    setEnhancing(false);
-                },
-            },
-        );
+                body: JSON.stringify({
+                    app_name: name,
+                    app_description: description,
+                    app_type: template === 'landing' ? 'landing' : 'nodejs',
+                }),
+            });
+
+            const data = await res.json();
+            if (data?.enhanced_prompt) {
+                setEnhancedPrompt(data.enhanced_prompt);
+            }
+        } catch (err) {
+            console.error('Failed to enhance prompt', err);
+        } finally {
+            setEnhancing(false);
+        }
     };
 
     const copyToClipboard = () => {
@@ -205,7 +207,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
             </div>
 
             <Dialog open={showCreate} onOpenChange={setShowCreate}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+                <DialogContent className="max-h-[90vh] min-w-6xl overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Create Project</DialogTitle>
                         <DialogDescription>Name your project, pick a template, or generate a tailored Gemini Prompt.</DialogDescription>
@@ -313,7 +315,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    className="h-7 gap-1 text-xs bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold"
+                                                    className="h-7 gap-1 bg-[#2cb1bc] text-xs font-bold text-slate-900 hover:bg-[#2597a0]"
                                                     asChild
                                                 >
                                                     <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
