@@ -22,9 +22,9 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(): RedirectResponse
     {
-        return Inertia::render('projects/create');
+        return redirect()->route('projects.index', ['create' => 'true']);
     }
 
     public function store(Request $request): RedirectResponse

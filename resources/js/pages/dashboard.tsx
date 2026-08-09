@@ -43,13 +43,13 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-6 flex gap-4">
-                <Button asChild>
-                    <Link href={route('projects.create')}>
-                        <Plus /> New Project
+                <Button asChild className="bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold">
+                    <Link href="/projects?create=true">
+                        <Plus className="size-4" /> Buat Projek
                     </Link>
                 </Button>
                 <Button variant="outline" asChild>
-                    <Link href={route('projects.index')}>View All Projects</Link>
+                    <Link href={route('projects.index')}>Lihat Semua Projek</Link>
                 </Button>
             </div>
         </AdminLayout>

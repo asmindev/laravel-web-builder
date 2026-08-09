@@ -66,6 +66,16 @@ export default function ProjectIndex({ projects }: IndexProps) {
         }
     }, [pageProps.enhanced_prompt]);
 
+    // Auto-open create project modal when URL has ?create=true
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('create') === 'true') {
+                setShowCreate(true);
+            }
+        }
+    }, []);
+
     const handleEnhancePrompt = () => {
         if (!name || !description) return;
         setEnhancing(true);
