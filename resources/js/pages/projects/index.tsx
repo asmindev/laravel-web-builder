@@ -299,16 +299,28 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                             <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                                                 <CheckCircle2 className="size-3.5" /> Prompt Generated!
                                             </span>
-                                            <Button
-                                                type="button"
-                                                variant="secondary"
-                                                size="sm"
-                                                className="h-7 gap-1 text-xs"
-                                                onClick={copyToClipboard}
-                                            >
-                                                {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
-                                                {copied ? 'Copied!' : 'Copy Prompt'}
-                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    className="h-7 gap-1 text-xs"
+                                                    onClick={copyToClipboard}
+                                                >
+                                                    {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+                                                    {copied ? 'Copied!' : 'Copy Prompt'}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="h-7 gap-1 text-xs bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold"
+                                                    asChild
+                                                >
+                                                    <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
+                                                        <ExternalLink className="size-3" /> Buka Gemini
+                                                    </a>
+                                                </Button>
+                                            </div>
                                         </div>
                                         <Textarea value={enhancedPrompt} readOnly className="h-44 resize-none bg-background font-mono text-xs" />
                                     </div>
