@@ -13,8 +13,9 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus, Search, Users, ShieldAlert, ShieldCheck, FolderOpen, Edit, Trash2, Loader2, Sparkles, MessageSquare } from 'lucide-react';
+import { Plus, Search, Users, ShieldAlert, ShieldCheck, FolderOpen, Edit, Trash2, Loader2, Sparkles, MessageSquare, MoreHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface UserItem {
     id: number;
@@ -288,19 +289,28 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                                                 {u.created_at}
                                             </td>
                                             <td className="p-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Button variant="outline" size="sm" asChild className="h-8 gap-1 text-xs text-primary border-primary/40 hover:bg-primary/10">
-                                                        <Link href={route('admin.users.projects', u.id)}>
-                                                            <FolderOpen className="size-3.5" /> Lihat Proyek ({u.projects_count})
-                                                        </Link>
-                                                    </Button>
-                                                    <Button variant="outline" size="sm" onClick={() => openEditModal(u)} className="h-8 gap-1 text-xs">
-                                                        <Edit className="size-3.5" /> Edit
-                                                    </Button>
-                                                    <Button variant="destructive" size="icon-xs" onClick={() => setDeletingUser(u)} title="Hapus User">
-                                                        <Trash2 className="size-3.5" />
-                                                    </Button>
-                                                </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="size-8 p-0">
+                                                            <MoreHorizontal className="size-4" />
+                                                            <span className="sr-only">Buka menu</span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="w-48">
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('admin.users.projects', u.id)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                                <FolderOpen className="size-4 text-primary" /> Lihat Proyek ({u.projects_count})
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => openEditModal(u)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                                            <Edit className="size-4 text-indigo-500" /> Edit User & Paket
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => setDeletingUser(u)} className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-red-600 dark:text-red-400 focus:text-red-600">
+                                                            <Trash2 className="size-4 text-red-500" /> Hapus User
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </td>
                                         </tr>
                                     ))
