@@ -232,7 +232,7 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                         </select>
                     </div>
 
-                    <Button onClick={() => setShowCreate(true)} className="gap-1.5 bg-[#2cb1bc] hover:bg-[#239099] text-slate-900 font-bold">
+                    <Button onClick={() => setShowCreate(true)} className="gap-1.5">
                         <Plus className="size-4" /> Tambah User
                     </Button>
                 </div>
@@ -454,7 +454,7 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                                 </div>
                             </div>
                             <DialogFooter className="mt-6">
-                                <Button type="submit" disabled={updating} className="bg-[#2cb1bc] hover:bg-[#239099] text-slate-900 font-bold">
+                                <Button type="submit" disabled={updating}>
                                     {updating ? <Loader2 className="size-4 animate-spin mr-1" /> : null} Update User &amp; Paket
                                 </Button>
                             </DialogFooter>

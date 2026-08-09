@@ -215,7 +215,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold gap-1.5 shrink-0"
+                        className="gap-1.5 shrink-0"
                     >
                         <Save className="size-4" /> {isSubmitting ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
                     </Button>
@@ -777,7 +777,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold gap-1.5"
+                            className="gap-1.5"
                         >
                             <Save className="size-4" /> {isSubmitting ? 'Menyimpan...' : 'Simpan Semua Perubahan'}
                         </Button>

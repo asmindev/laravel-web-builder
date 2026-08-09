@@ -43,7 +43,7 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-6 flex gap-4">
-                <Button asChild className="bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 font-bold">
+                <Button asChild>
                     <Link href="/projects?create=true">
                         <Plus className="size-4" /> Buat Projek
                     </Link>

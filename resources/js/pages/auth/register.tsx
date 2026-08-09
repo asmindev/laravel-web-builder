@@ -184,7 +184,7 @@ export default function Register() {
 
                         <Button
                             type="submit"
-                            className="w-full h-11 font-bold bg-[#2cb1bc] hover:bg-[#2597a0] text-slate-900 transition-all shadow-lg rounded-xl text-sm mt-2"
+                            className="w-full h-11 font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-lg rounded-xl text-sm mt-2"
                             disabled={processing}
                         >
                             {processing ? 'Membuat akun...' : 'Daftar Akun'}
@@ -194,7 +194,7 @@ export default function Register() {
                     {/* Footer Login Link */}
                     <div className="border-t border-slate-200 dark:border-slate-800 pt-4 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
                         Sudah punya akun?{' '}
-                        <Link href={route('login')} className="font-bold text-[#2cb1bc] hover:underline">
+                        <Link href={route('login')} className="font-bold text-primary hover:underline">
                             Masuk di Sini
                         </Link>
                     </div>
