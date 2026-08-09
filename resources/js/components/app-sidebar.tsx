@@ -41,19 +41,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     return (
         <Sidebar {...props} collapsible="icon">
-            <SidebarHeader className="py-3">
+            <SidebarHeader className="py-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild tooltip={appName} className="h-auto py-2 hover:bg-transparent focus-visible:bg-transparent">
-                            <Link href={route('dashboard')} className="flex flex-col items-center justify-center text-center w-full gap-2 group-data-[collapsible=icon]:py-1">
+                            <Link href={route('dashboard')} className="flex flex-col items-center justify-center text-center w-full gap-2.5 group-data-[collapsible=icon]:py-1">
                                 <img
                                     src="/images/logo.webp"
                                     alt={`${appName} Logo`}
-                                    className="h-12 w-auto object-contain shrink-0 transition-transform duration-200 hover:scale-105 group-data-[collapsible=icon]:h-8"
+                                    className="h-20 w-auto object-contain shrink-0 transition-transform duration-200 hover:scale-105 group-data-[collapsible=icon]:h-8"
                                 />
                                 <div className="flex flex-col items-center leading-tight group-data-[collapsible=icon]:hidden">
-                                    <span className="font-bold text-sm tracking-tight text-sidebar-foreground">{appName}</span>
-                                    <span className="text-[11px] font-medium text-muted-foreground">{appVersion}</span>
+                                    <span className="font-bold text-base tracking-tight text-sidebar-foreground">{appName}</span>
+                                    <span className="text-xs font-medium text-muted-foreground">{appVersion}</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
