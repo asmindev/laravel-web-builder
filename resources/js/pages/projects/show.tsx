@@ -148,6 +148,8 @@ export default function ProjectShow({ project }: ShowProps) {
                         f.setMoveTarget(null);
                         f.setMoveValue('');
                     }}
+                    folders={f.folders}
+                    files={f.files}
                 />
 
                 <div className="flex min-w-0 flex-1 flex-col">
