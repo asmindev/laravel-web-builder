@@ -41,17 +41,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     return (
         <Sidebar {...props} collapsible="icon">
-            <SidebarHeader>
+            <SidebarHeader className="py-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild tooltip={appName}>
-                            <Link href={route('dashboard')}>
-                                <div className="flex items-center justify-center shrink-0">
-                                    <img src="/images/logo.webp" alt={`${appName} Logo`} className="size-8 object-contain" />
-                                </div>
-                                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                                    <span className="font-semibold">{appName}</span>
-                                    <span className="text-xs text-muted-foreground">{appVersion}</span>
+                        <SidebarMenuButton size="lg" asChild tooltip={appName} className="h-auto py-2 hover:bg-transparent focus-visible:bg-transparent">
+                            <Link href={route('dashboard')} className="flex flex-col items-center justify-center text-center w-full gap-2 group-data-[collapsible=icon]:py-1">
+                                <img
+                                    src="/images/logo.webp"
+                                    alt={`${appName} Logo`}
+                                    className="h-12 w-auto object-contain shrink-0 transition-transform duration-200 hover:scale-105 group-data-[collapsible=icon]:h-8"
+                                />
+                                <div className="flex flex-col items-center leading-tight group-data-[collapsible=icon]:hidden">
+                                    <span className="font-bold text-sm tracking-tight text-sidebar-foreground">{appName}</span>
+                                    <span className="text-[11px] font-medium text-muted-foreground">{appVersion}</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
