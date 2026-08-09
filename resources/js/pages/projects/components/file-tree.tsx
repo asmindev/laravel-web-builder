@@ -102,6 +102,14 @@ export function FileTree({
         setDragging(path);
     };
 
+    const onFolderDragStart = (e: React.DragEvent, folderName: string) => {
+        e.stopPropagation();
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', `folder:${folderName}`);
+        dragSource.current = `folder:${folderName}`;
+        setDragging(`folder:${folderName}`);
+    };
+
     const onDragEnd = () => {
         dragSource.current = null;
         setDragging(null);
@@ -116,7 +124,7 @@ export function FileTree({
     const onDropOnFile = (e: React.DragEvent, targetPath: string) => {
         e.preventDefault();
         const source = e.dataTransfer.getData('text/plain') || dragSource.current;
-        if (!source || source === targetPath) return;
+        if (!source || source === targetPath || source.startsWith('folder:')) return;
 
         const sourceDir = source.includes('/') ? source.split('/')[0] : '/';
         const sameDirFiles = sourceDir === '/' ? rootFiles : files.filter((f) => f.path.startsWith(sourceDir + '/'));
@@ -134,11 +142,33 @@ export function FileTree({
         setDragOver(null);
     };
 
-    const onDropToFolder = (e: React.DragEvent, dir: string) => {
+    const onDropToFolder = (e: React.DragEvent, targetDir: string) => {
         e.preventDefault();
         const source = e.dataTransfer.getData('text/plain') || dragSource.current;
-        if (source) {
-            onDropOnFolder(source, dir);
+        if (!source) return;
+
+        if (source.startsWith('folder:')) {
+            const sourceFolder = source.replace('folder:', '');
+            if (sourceFolder === targetDir) {
+                setDragOver(null);
+                return;
+            }
+            if (targetDir !== '/' && targetDir.startsWith(sourceFolder + '/')) {
+                toast.error('Tidak bisa memindahkan folder ke dalam dirinya sendiri');
+                setDragOver(null);
+                return;
+            }
+
+            const folderBaseName = sourceFolder.split('/').pop()!;
+            const newFolderName = targetDir === '/'
+                ? folderBaseName
+                : `${targetDir}/${folderBaseName}`;
+
+            if (newFolderName !== sourceFolder) {
+                onRenameFolderByName(sourceFolder, newFolderName);
+            }
+        } else {
+            onDropOnFolder(source, targetDir);
         }
         setDragOver(null);
     };
@@ -223,6 +253,7 @@ export function FileTree({
                 const dbFolder = folders.find((f) => f.name === folderName);
                 const isFolderActive = activeFile?.startsWith(folderName + '/');
                 const isEditingThisFolder = editingFolder === folderName;
+                const isFolderDragging = dragging === `folder:${folderName}`;
 
                 return (
                     <div
@@ -239,11 +270,16 @@ export function FileTree({
                             <ContextMenu>
                                 <ContextMenuTrigger asChild>
                                     <div
+                                        draggable
+                                        onDragStart={(e) => onFolderDragStart(e, folderName)}
+                                        onDragEnd={onDragEnd}
                                         className={cn(
                                             'flex w-full items-center justify-between py-1.5 pr-2 text-xs font-semibold rounded-md cursor-pointer transition-all duration-150',
                                             isFolderActive
                                                 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
-                                                : 'text-foreground/90 hover:bg-accent hover:text-foreground'
+                                                : 'text-foreground/90 hover:bg-accent hover:text-foreground',
+                                            isFolderDragging && 'opacity-40 ring-2 ring-dashed ring-amber-500',
+                                            dragging ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
                                         )}
                                         style={{ paddingLeft: '10px' }}
                                     >
