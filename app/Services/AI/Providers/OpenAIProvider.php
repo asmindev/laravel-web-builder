@@ -19,7 +19,7 @@ final class OpenAIProvider implements ProviderInterface
     private const int TIMEOUT_SECONDS = 120;
 
     private const string SYSTEM_INSTRUCTION = <<<'PROMPT'
-You are a senior fullstack web developer generating ready-to-run Node.js/HTML/EJS project templates. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.
+You are a senior fullstack web developer generating ready-to-run Node.js/HTML/EJS project templates. EVERY generated Node.js application MUST include a Login page, session auth, and automatically seed a default admin user into DB: username/email: "admin", password: "admin123", role: "admin". Show default login credentials (admin | admin123) clearly in the UI login view. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.
 PROMPT;
 
     public function __construct(
