@@ -1,28 +1,32 @@
-import { useState, useEffect } from 'react';
-import AdminLayout from '@/layouts/admin-layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-} from '@/components/ui/dialog';
-import { Head, router, usePage } from '@inertiajs/react';
-import { Plus, Search, ExternalLink, Globe, FileCode, MoreHorizontal, FolderOpen, Layout, Terminal, Loader2, Sparkles, Copy, CheckCircle2, Check, ShieldAlert } from 'lucide-react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
+import AdminLayout from '@/layouts/admin-layout';
 import type { Project } from '@/types/project';
+import { Head, router, usePage } from '@inertiajs/react';
+import {
+    Check,
+    CheckCircle2,
+    Copy,
+    ExternalLink,
+    FileCode,
+    FolderOpen,
+    Globe,
+    Layout,
+    Loader2,
+    MoreHorizontal,
+    Plus,
+    Search,
+    ShieldAlert,
+    Sparkles,
+    Terminal,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface IndexProps {
     projects: Project[];
@@ -45,8 +49,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
     const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
     const filtered = projects.filter((p) => {
-        const match = p.name.toLowerCase().includes(search.toLowerCase()) ||
-            (p.description || '').toLowerCase().includes(search.toLowerCase());
+        const match = p.name.toLowerCase().includes(search.toLowerCase()) || (p.description || '').toLowerCase().includes(search.toLowerCase());
         if (!match) return false;
         if (filter === 'published') return p.published;
         if (filter === 'draft') return !p.published;
@@ -80,7 +83,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
         if (!name || !description) return;
         setEnhancing(true);
         setEnhancedPrompt(null);
-        
+
         router.post(
             route('ai.enhance-prompt'),
             {
@@ -103,7 +106,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                 onFinish: () => {
                     setEnhancing(false);
                 },
-            }
+            },
         );
     };
 
@@ -118,41 +121,50 @@ export default function ProjectIndex({ projects }: IndexProps) {
     const handleCreate = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
-        router.post(route('projects.store'), { name, description, template }, {
-            onSuccess: () => {
-                setShowCreate(false);
-                setName('');
-                setDescription('');
-                setTemplate('landing');
-                setEnhancedPrompt(null);
-                setErrors({});
+        router.post(
+            route('projects.store'),
+            { name, description, template },
+            {
+                onSuccess: () => {
+                    setShowCreate(false);
+                    setName('');
+                    setDescription('');
+                    setTemplate('landing');
+                    setEnhancedPrompt(null);
+                    setErrors({});
+                },
+                onError: (errs) => {
+                    setErrors(errs);
+                },
+                onFinish: () => setProcessing(false),
             },
-            onError: (errs) => {
-                setErrors(errs);
-            },
-            onFinish: () => setProcessing(false),
-        });
+        );
     };
 
     return (
-        <AdminLayout header={<h2 className="text-xl font-semibold leading-tight">Projects</h2>}>
+        <AdminLayout header={<h2 className="text-xl leading-tight font-semibold">Projects</h2>}>
             <Head title="Projects" />
 
             {/* Quota Limit Warning Banner */}
             {auth?.user && auth.user.can_create_project === false && (
-                <div className="mb-6 rounded-xl border border-[#ff8a5c]/40 bg-[#ff8a5c]/10 p-4 text-[#e86a38] dark:text-[#ff8a5c] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#ff8a5c]/40 bg-[#ff8a5c]/10 p-4 text-[#e86a38] shadow-sm sm:flex-row sm:items-center dark:text-[#ff8a5c]">
                     <div className="flex items-center gap-3">
                         <Sparkles className="size-5 shrink-0" />
                         <div>
-                            <p className="font-bold text-sm">Batas Proyek Tercapai ({auth.user.projects_count} / {auth.user.project_limit} Proyek — Paket {auth.user.plan_name})</p>
-                            <p className="text-xs opacity-90">Anda telah mencapai batas maksimal upload proyek untuk paket Anda. Upgrade ke Basic, Pro, atau Business untuk menambah kuota proyek.</p>
+                            <p className="text-sm font-bold">
+                                Batas Proyek Tercapai ({auth.user.projects_count} / {auth.user.project_limit} Proyek — Paket {auth.user.plan_name})
+                            </p>
+                            <p className="text-xs opacity-90">
+                                Anda telah mencapai batas maksimal upload proyek untuk paket Anda. Upgrade ke Basic, Pro, atau Business untuk menambah
+                                kuota proyek.
+                            </p>
                         </div>
                     </div>
                     <a
-                        href={`https://wa.me/${((usePage<{ app_settings?: { admin_whatsapp: string } }>().props.app_settings?.admin_whatsapp) || '6281234567890').replace(/[^0-9]/g, '')}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20paket%20proyek%20saya`}
+                        href={`https://wa.me/${(usePage<{ app_settings?: { admin_whatsapp: string } }>().props.app_settings?.admin_whatsapp || '6281234567890').replace(/[^0-9]/g, '')}?text=Halo%20Admin,%20saya%20ingin%20upgrade%20paket%20proyek%20saya`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="shrink-0 rounded-lg bg-[#ff8a5c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#e86a38] transition-colors"
+                        className="shrink-0 rounded-lg bg-[#ff8a5c] px-4 py-2 text-xs font-bold text-white shadow transition-colors hover:bg-[#e86a38]"
                     >
                         Hubungi Admin (Upgrade)
                     </a>
@@ -161,18 +173,17 @@ export default function ProjectIndex({ projects }: IndexProps) {
 
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative max-w-sm flex-1">
-                    <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search projects..."
-                        className="pl-8"
-                    />
+                    <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search projects..." className="pl-8" />
                 </div>
                 <div className="flex items-center gap-2">
                     {auth?.user && (
-                        <div className="mr-2 hidden md:block text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-muted border border-border">
-                            Kuotamu: <span className="text-[#2cb1bc]">{auth.user.projects_count} / {auth.user.project_limit} Proyek</span> ({auth.user.plan_name})
+                        <div className="mr-2 hidden rounded-full border border-border bg-muted px-3 py-1.5 font-mono text-xs font-semibold md:block">
+                            Kuotamu:{' '}
+                            <span className="font-bold text-primary">
+                                {auth.user.projects_count} / {auth.user.project_limit} Proyek
+                            </span>{' '}
+                            ({auth.user.plan_name})
                         </div>
                     )}
                     {(['all', 'published', 'draft'] as const).map((f) => (
@@ -194,7 +205,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
             </div>
 
             <Dialog open={showCreate} onOpenChange={setShowCreate}>
-                <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
                     <DialogHeader>
                         <DialogTitle>Create Project</DialogTitle>
                         <DialogDescription>Name your project, pick a template, or generate a tailored Gemini Prompt.</DialogDescription>
@@ -237,7 +248,9 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                                 template === tpl.id ? 'border-primary ring-1 ring-primary' : ''
                                             }`}
                                         >
-                                            <div className={`mt-0.5 rounded-md border p-1.5 ${template === tpl.id ? 'bg-primary text-primary-foreground' : ''}`}>
+                                            <div
+                                                className={`mt-0.5 rounded-md border p-1.5 ${template === tpl.id ? 'bg-primary text-primary-foreground' : ''}`}
+                                            >
                                                 <tpl.icon className="size-4" />
                                             </div>
                                             <div>
@@ -250,7 +263,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                             </div>
 
                             {/* Gemini Prompt Enhancer Action Section */}
-                            <div className="rounded-xl border bg-muted/40 p-4 space-y-3">
+                            <div className="space-y-3 rounded-xl border bg-muted/40 p-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-xs font-semibold text-primary">
                                         <Sparkles className="size-4 text-amber-500" />
@@ -260,7 +273,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        className="h-8 text-xs gap-1.5"
+                                        className="h-8 gap-1.5 text-xs"
                                         disabled={!name || !description || enhancing}
                                         onClick={handleEnhancePrompt}
                                     >
@@ -276,31 +289,28 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                     </Button>
                                 </div>
                                 <p className="text-xs text-muted-foreground">
-                                    Gemini akan secara otomatis merancang skema database, workflow, dan strict rules engine ke dalam satu Master Prompt khusus yang siap di-copy.
+                                    Gemini akan secara otomatis merancang skema database, workflow, dan strict rules engine ke dalam satu Master
+                                    Prompt khusus yang siap di-copy.
                                 </p>
 
                                 {enhancedPrompt && (
                                     <div className="mt-3 space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                            <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                                                 <CheckCircle2 className="size-3.5" /> Prompt Generated!
                                             </span>
                                             <Button
                                                 type="button"
                                                 variant="secondary"
                                                 size="sm"
-                                                className="h-7 text-xs gap-1"
+                                                className="h-7 gap-1 text-xs"
                                                 onClick={copyToClipboard}
                                             >
                                                 {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
                                                 {copied ? 'Copied!' : 'Copy Prompt'}
                                             </Button>
                                         </div>
-                                        <Textarea
-                                            value={enhancedPrompt}
-                                            readOnly
-                                            className="h-44 text-xs font-mono bg-background resize-none"
-                                        />
+                                        <Textarea value={enhancedPrompt} readOnly className="h-44 resize-none bg-background font-mono text-xs" />
                                     </div>
                                 )}
                             </div>
@@ -319,14 +329,10 @@ export default function ProjectIndex({ projects }: IndexProps) {
                     <CardContent className="flex flex-col items-center gap-4 py-16">
                         <FolderOpen className="size-12 text-muted-foreground" />
                         <div className="text-center">
-                            <CardTitle className="mb-1">
-                                {search || filter !== 'all' ? 'No matching projects' : 'No projects yet'}
-                            </CardTitle>
-                            <Card>
+                            <CardTitle className="mb-1">{search || filter !== 'all' ? 'No matching projects' : 'No projects yet'}</CardTitle>
+                            <Card className="p-4">
                                 <CardDescription>
-                                    {search || filter !== 'all'
-                                        ? 'Try a different search or filter.'
-                                        : 'Create your first project to get started.'}
+                                    {search || filter !== 'all' ? 'Try a different search or filter.' : 'Create your first project to get started.'}
                                 </CardDescription>
                             </Card>
                         </div>
@@ -340,7 +346,10 @@ export default function ProjectIndex({ projects }: IndexProps) {
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {filtered.map((project) => (
-                        <Card key={project.id} className={`group flex flex-col justify-between ${project.is_suspended ? 'border-red-500/50 bg-red-500/5 dark:bg-red-950/10' : ''}`}>
+                        <Card
+                            key={project.id}
+                            className={`group flex flex-col justify-between ${project.is_suspended ? 'border-red-500/50 bg-red-500/5 dark:bg-red-950/10' : ''}`}
+                        >
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="space-y-1">
@@ -353,13 +362,11 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                                 </a>
                                             )}
                                         </CardTitle>
-                                        {project.description && (
-                                            <CardDescription className="line-clamp-2">{project.description}</CardDescription>
-                                        )}
+                                        {project.description && <CardDescription className="line-clamp-2">{project.description}</CardDescription>}
                                     </div>
 
                                     {project.is_suspended ? (
-                                        <Badge variant="destructive" className="bg-red-600 text-white font-bold text-[10px] shrink-0 animate-pulse">
+                                        <Badge variant="destructive" className="shrink-0 animate-pulse bg-red-600 text-[10px] font-bold text-white">
                                             Pelanggaran
                                         </Badge>
                                     ) : (
@@ -399,7 +406,7 @@ export default function ProjectIndex({ projects }: IndexProps) {
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 {project.is_suspended && (
-                                    <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-300 space-y-1.5">
+                                    <div className="space-y-1.5 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-300">
                                         <div className="flex items-center gap-1.5 font-bold text-red-600 dark:text-red-400">
                                             <ShieldAlert className="size-4 shrink-0" />
                                             <span>Ditangguhkan (Pelanggaran)</span>
@@ -408,20 +415,23 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                             Aplikasi ditangguhkan oleh Admin karena melanggar Syarat & Ketentuan Layanan.
                                         </p>
                                         {project.suspension_reason && (
-                                            <div className="text-[11px] font-mono bg-red-500/15 p-2 rounded border border-red-500/20 italic">
+                                            <div className="rounded border border-red-500/20 bg-red-500/15 p-2 font-mono text-[11px] italic">
                                                 Alasan: "{project.suspension_reason}"
                                             </div>
                                         )}
                                     </div>
                                 )}
 
-                                <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-2">
+                                <div className="flex items-center justify-between border-t pt-2 text-xs text-muted-foreground">
                                     <span className="flex items-center gap-1">
                                         <FileCode className="size-3" /> {project.files_count ?? 0} files
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Globe className="size-3" />
-                                        <Badge variant={project.is_suspended ? 'destructive' : project.published ? 'default' : 'secondary'} className="px-1.5 py-0 text-[10px]">
+                                        <Badge
+                                            variant={project.is_suspended ? 'destructive' : project.published ? 'default' : 'secondary'}
+                                            className="px-1.5 py-0 text-[10px]"
+                                        >
                                             {project.is_suspended ? 'Suspended' : project.published ? 'Published' : 'Draft'}
                                         </Badge>
                                     </span>
@@ -438,8 +448,8 @@ export default function ProjectIndex({ projects }: IndexProps) {
                     <DialogHeader>
                         <DialogTitle>Delete Project</DialogTitle>
                         <DialogDescription>
-                            Are you absolutely sure you want to delete <strong>{deletingProject?.name}</strong>?
-                            This action cannot be undone and will permanently delete all files and configuration associated with this project.
+                            Are you absolutely sure you want to delete <strong>{deletingProject?.name}</strong>? This action cannot be undone and will
+                            permanently delete all files and configuration associated with this project.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-4 gap-2 sm:gap-0">

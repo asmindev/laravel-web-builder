@@ -142,7 +142,7 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
             case 'basic':
                 return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">Basic (5 Proyek)</Badge>;
             case 'pro':
-                return <Badge className="bg-[#2cb1bc] text-slate-900 font-bold">Pro (10 Proyek)</Badge>;
+                return <Badge className="bg-primary text-primary-foreground font-bold">Pro (10 Proyek)</Badge>;
             case 'business':
                 return <Badge className="bg-[#ff8a5c] text-white font-bold">Business (15 Proyek)</Badge>;
             default:
@@ -180,7 +180,7 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground">Total Proyek</CardTitle>
-                            <FolderOpen className="size-4 text-[#2cb1bc]" />
+                            <FolderOpen className="size-4 text-primary" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{users.data.reduce((acc, u) => acc + u.projects_count, 0)}</div>
@@ -278,9 +278,9 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                                             <td className="p-4">
                                                 <Link
                                                     href={route('admin.users.projects', u.id)}
-                                                    className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold hover:text-[#2cb1bc] hover:underline transition-colors"
+                                                    className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold hover:text-primary hover:underline transition-colors"
                                                 >
-                                                    <FolderOpen className="size-3.5 text-[#2cb1bc]" />
+                                                    <FolderOpen className="size-3.5 text-primary" />
                                                     {u.projects_count} / {u.project_limit} Proyek
                                                 </Link>
                                             </td>
@@ -289,7 +289,7 @@ export default function UserIndex({ users, filters, roles, plans }: IndexProps) 
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Button variant="outline" size="sm" asChild className="h-8 gap-1 text-xs text-[#2cb1bc] border-[#2cb1bc]/40 hover:bg-[#2cb1bc]/10">
+                                                    <Button variant="outline" size="sm" asChild className="h-8 gap-1 text-xs text-primary border-primary/40 hover:bg-primary/10">
                                                         <Link href={route('admin.users.projects', u.id)}>
                                                             <FolderOpen className="size-3.5" /> Lihat Proyek ({u.projects_count})
                                                         </Link>

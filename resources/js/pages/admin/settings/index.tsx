@@ -204,7 +204,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                            <Settings className="size-6 text-[#2cb1bc]" /> Pengaturan Konten Landing Page
+                            <Settings className="size-6 text-primary" /> Pengaturan Konten Landing Page
                         </h1>
                         <p className="text-sm text-muted-foreground">
                             Kelola seluruh teks, judul hero, fitur, cara kerja, harga paket, jasa agensi, dan syarat ketentuan landing page.
@@ -247,7 +247,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                     >
-                                        <IconComp className={`size-3.5 ${isActive ? 'text-[#2cb1bc]' : ''}`} />
+                                        <IconComp className={`size-3.5 ${isActive ? 'text-primary' : ''}`} />
                                         <span>{tab.label}</span>
                                     </button>
                                 );
@@ -427,7 +427,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                             {form.fitur_items.map((item, idx) => (
                                                 <Card key={idx} className="bg-slate-50/50 dark:bg-slate-900/40">
                                                     <CardHeader className="py-3 px-4">
-                                                        <CardTitle className="text-xs font-bold uppercase text-[#2cb1bc]">
+                                                        <CardTitle className="text-xs font-bold uppercase text-primary">
                                                             Kartu Fitur #{idx + 1}
                                                         </CardTitle>
                                                     </CardHeader>
@@ -612,9 +612,9 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                         </Card>
 
                                         {/* Pro Card Setting */}
-                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-[#2cb1bc]/40">
+                                        <Card className="bg-slate-50/50 dark:bg-slate-900/40 border-primary/40">
                                             <CardHeader className="py-3 px-4">
-                                                <CardTitle className="text-xs font-bold uppercase text-[#2cb1bc]">
+                                                <CardTitle className="text-xs font-bold uppercase text-primary">
                                                     Paket Pro Builder (Berbayar)
                                                 </CardTitle>
                                             </CardHeader>
@@ -641,7 +641,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                                         <Input
                                                             value={form.pricing_pro_price}
                                                             onChange={(e) => handleChange('pricing_pro_price', e.target.value)}
-                                                            className="h-8 text-xs font-mono font-bold text-[#2cb1bc]"
+                                                            className="h-8 text-xs font-mono font-bold text-primary"
                                                         />
                                                     </div>
                                                     <div>

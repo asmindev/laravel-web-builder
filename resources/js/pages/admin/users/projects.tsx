@@ -64,7 +64,7 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
             case 'basic':
                 return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">Basic (5 Proyek)</Badge>;
             case 'pro':
-                return <Badge className="bg-[#2cb1bc] text-slate-900 font-bold">Pro (10 Proyek)</Badge>;
+                return <Badge className="bg-primary text-primary-foreground font-bold">Pro (10 Proyek)</Badge>;
             case 'business':
                 return <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold">Business (15 Proyek)</Badge>;
             default:
@@ -140,7 +140,7 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
                     <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="flex size-11 items-center justify-center rounded-xl bg-[#2cb1bc]/10 text-[#2cb1bc] font-bold text-base uppercase">
+                                <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary font-bold text-base uppercase">
                                     {targetUser.name ? targetUser.name.slice(0, 2) : 'US'}
                                 </div>
                                 <div>
@@ -198,7 +198,7 @@ export default function UserProjects({ targetUser, userProjects, projects: legac
                                     className={`flex flex-col justify-between transition-all shadow-sm ${
                                         p.is_suspended 
                                             ? 'border-red-500/50 bg-red-500/5 dark:bg-red-950/10' 
-                                            : 'hover:border-[#2cb1bc]/50'
+                                            : 'hover:border-primary/50'
                                     }`}
                                 >
                                     <CardHeader className="pb-3">
