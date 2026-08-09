@@ -4,6 +4,7 @@ namespace App\Services\AI\Providers;
 
 use App\Services\AI\GenerationResult;
 use App\Services\AI\ProviderInterface;
+use App\Services\AI\SystemInstruction;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -18,10 +19,6 @@ final class OpenAIProvider implements ProviderInterface
 
     private const int TIMEOUT_SECONDS = 120;
 
-    private const string SYSTEM_INSTRUCTION = <<<'PROMPT'
-You are a senior fullstack web developer generating ready-to-run Node.js/HTML/EJS project templates. EVERY generated Node.js application MUST include a Login page, session auth, and automatically seed a default admin user into DB: username/email: "admin", password: "admin123", role: "admin". Show default login credentials (admin | admin123) clearly in the UI login view. Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.
-PROMPT;
-
     public function __construct(
         private readonly string $apiKey,
     ) {}
@@ -30,12 +27,14 @@ PROMPT;
     public function generate(string $prompt): GenerationResult
     {
         try {
+            $systemInstruction = SystemInstruction::forCodeGenerator();
+
             $response = Http::withToken($this->apiKey)
                 ->timeout(self::TIMEOUT_SECONDS)
                 ->post(self::API_URL, [
                     'model'    => self::MODEL,
                     'messages' => [
-                        ['role' => 'system', 'content' => self::SYSTEM_INSTRUCTION],
+                        ['role' => 'system', 'content' => $systemInstruction],
                         ['role' => 'user',   'content' => $prompt],
                     ],
                     'response_format' => ['type' => 'json_object'],
