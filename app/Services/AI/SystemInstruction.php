@@ -27,14 +27,21 @@ A. FOR LANDING PAGES / STATIC SITES:
 
 B. FOR FULLSTACK NODE.JS / WEB APPS:
 1. EVERY generated Node.js application MUST include a Login page, session authentication (express-session & bcryptjs), and protected routes.
-2. The database initialization function `initDB()` in `app.js` MUST AUTOMATICALLY SEED / CREATE A DEFAULT ADMIN USER into the `users` table if not existing:
-   - Username / Email: `admin` (or `admin@app.com`)
-   - Password: `admin123` (or `Admin123`) (hashed with bcryptjs or disupported directly)
-   - Role: `admin`
+2. The database initialization function `initDB()` in `app.js` MUST CREATE A DEFAULT ADMIN USER account.
+   ATURAN STRUKTUR TABEL `users`:
+   Tabel `users` WAJIB memiliki kedua kolom `name` dan `email` serta `username`:
+   `CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), username VARCHAR(255), password VARCHAR(255), role VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
+   Saat seeding/checking admin:
+   `SELECT id FROM users WHERE email = 'admin' OR username = 'admin' OR name = 'admin'`
 3. The UI Login View (`views/index.ejs`) MUST CLEARLY DISPLAY AN EXPLICIT HTML INFO BADGE / ALERT BOX WITH DEFAULT CREDENTIALS:
    <div class="alert alert-info">Default Login: Username: <b>admin</b> | Password: <b>admin123</b></div>
    AND set default input attributes `value="admin"` and `value="admin123"` on the login form inputs.
-4. EVERY HTML/EJS view MUST USE TAILWIND CSS v4 CDN (<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>). Tailwind CSS v4 is STRICTLY MANDATORY.
+4. ATURAN PENGGUNAAN AGREGASI / TANGGAL DATABASE (SQLITE COMPATIBILITY):
+   Sistem runtime menggunakan SQLite shim yang TIDAK MENDUKUNG fungsi spesifik MySQL seperti `MONTH(col)`, `YEAR(col)`, atau `CURRENT_DATE()`.
+   - DILARANG MENGGUNAKAN `MONTH(date_col) = MONTH(CURRENT_DATE())` ATAU `YEAR(date_col) = YEAR(CURRENT_DATE())`.
+   - Gunakan pendekatan JavaScript / strftime / DATE filter yang kompatibel:
+     Contoh di SQL query: `WHERE date_col >= DATE('now', 'start of month')` atau ambil data dengan SQL standar `SELECT * FROM table` lalu lakukan filter agregasi tanggal di sisi JavaScript (Node.js).
+5. EVERY HTML/EJS view MUST USE TAILWIND CSS v4 CDN (<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>). Tailwind CSS v4 is STRICTLY MANDATORY.
 
 Return ONLY valid JSON with "files" as an object of {filename: content} and "config" as an object with title/description.
 PROMPT;
@@ -70,12 +77,16 @@ Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANP
    - Nama Aplikasi & Tujuan Bisnis Utama yang spesifik (sesuai dengan: {$appName} - {$appDescription}).
    - Target User & Peran Hak Akses (misal: Admin, Staff, Pelanggan). Jelaskan spesifik apa yang bisa dilakukan masing-masing role.
 
-2. RANCANGAN SKEMA DATABASE TERSTRUKTUR & DEFAULT ADMIN SEEDER (MySQL / SQLite Shim Compatible)
+80. 2. RANCANGAN SKEMA DATABASE TERSTRUKTUR & DEFAULT ADMIN SEEDER (MySQL / SQLite Shim Compatible)
    - Daftarkan secara spesifik setiap nama tabel beserta kolom, tipe data, dan tujuannya yang sangat relevan dengan bisnis.
-   - Wajib ada tabel `users`: (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), role VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP).
-   - Di fungsi `initDB()`, WAJIB tambahkan logika otomatis check & insert default user admin: `username/email: admin`, `password: admin123` (hashed via bcryptjs), `role: admin`.
+   - WAJIB TABEL `users` MEMILIKI KOLOM `name` DAN `email` KEDUA-DUANYA:
+     `CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), role VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
+   - Di fungsi `initDB()`, WAJIB tambahkan logika otomatis check & insert default user admin dengan query yang aman:
+     `SELECT id FROM users WHERE email = 'admin' OR name = 'admin'`
    - Rancang minimal 3-5 tabel utama yang saling berelasi untuk mendukung logika bisnis aplikasi ini.
    - Aturan Wajib: Primary key WAJIB menggunakan sintaks: `id INT AUTO_INCREMENT PRIMARY KEY`.
+   - DILARANG GUNAKAN FUNGSI SPESIFIK MYSQL DALAM QUERY SQL (seperti `MONTH()`, `YEAR()`, `CURRENT_DATE()`):
+     SQLite shim tidak mendukung fungsi tersebut. Gunakan filter tanggal standar `WHERE created_at >= DATE('now', 'start of month')` atau lakukan agregasi bulan/tahun di sisi JavaScript Node.js.
 
 3. DAFTAR API ENDPOINTS EXPRESS.JS (LENGKAP DENGAN PAYLOAD & LOGIKA BISNIS)
    - Auth API (WAJIB ADA):
@@ -136,10 +147,13 @@ WAJIB menyediakan Halaman Login & Sistem Autentikasi dengan peran hak akses: Adm
 ## 2. SKEMA DATABASE TERSTRUKTUR & AUTO-SEED ADMIN (MySQL / SQLite Compatible):
 Buatkan fungsi `initDB()` di app.js yang secara otomatis mengeksekusi tabel-tabel berikut dan MENG-INSERT AKUN ADMIN DEFAULT jika belum ada:
 - `users`: (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), role VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
-  * OTOMATIS SEED ADMIN: email/username: `admin`, password: `admin123` (hashed via bcryptjs), role: `admin`.
+  * OTOMATIS SEED ADMIN: Buat kolom `email` dan `name` di tabel users, lalu cek admin dengan `SELECT id FROM users WHERE email = 'admin' OR name = 'admin'`.
 - `items/services`: (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), category VARCHAR(100), price DECIMAL(12,2), stock_or_duration INT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 - `transactions/orders`: (id INT AUTO_INCREMENT PRIMARY KEY, code VARCHAR(100), customer_name VARCHAR(255), total_amount DECIMAL(12,2), status VARCHAR(50), payment_status VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 - `transaction_details`: (id INT AUTO_INCREMENT PRIMARY KEY, transaction_id INT, item_id INT, qty INT, price DECIMAL(12,2), subtotal DECIMAL(12,2))
+
+* ATURAN QUERY AGREGASI (SQLITE SHIM COMPATIBILITY):
+DILARANG menggunakan fungsi spesifik MySQL seperti `MONTH(col)`, `YEAR(col)`, `CURRENT_DATE()`. Gunakan filter tanggal ANSI SQL biasa atau hitung agregasi tanggal di sisi JavaScript (Node.js).
 
 ## 3. EXPRESS.JS REST API ENDPOINTS:
 - Auth (WAJIB): POST /api/auth/register, POST /api/auth/login (login dengan admin | admin123), POST /api/auth/logout, GET /api/auth/me
