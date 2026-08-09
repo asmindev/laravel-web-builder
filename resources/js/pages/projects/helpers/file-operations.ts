@@ -13,9 +13,12 @@ export function generateDuplicatePath(path: string, existingFiles: ProjectFile[]
 }
 
 export function buildMovePath(target: string, dest: string): string {
-    return dest.endsWith('/')
-        ? dest + target.split('/').pop()
-        : dest + '/' + target.split('/').pop();
+    const fileName = target.split('/').pop()!;
+    if (!dest || dest === '/') {
+        return fileName;
+    }
+    const cleanDest = dest.replace(/^\//, '').replace(/\/$/, '');
+    return `${cleanDest}/${fileName}`;
 }
 
 export function getFileGroup(file: ProjectFile): string {

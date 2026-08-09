@@ -292,14 +292,32 @@ export function useProjectFiles(project: Project) {
     };
 
     const handleMoveFile = () => {
-        if (!moveTarget || !moveValue) return;
+        if (!moveTarget) return;
         const newPath = buildMovePath(moveTarget, moveValue);
+        if (newPath === moveTarget) {
+            setMoveTarget(null);
+            setMoveValue('');
+            return;
+        }
         if (files.some((f) => f.path === newPath)) {
             toast.error('File already exists at destination');
             return;
         }
         const source = files.find((f) => f.path === moveTarget);
         if (!source) return;
+
+        // Optimistic UI update: update state immediately
+        setFiles((prev) =>
+            prev
+                .filter((f) => f.path !== moveTarget)
+                .concat({ ...source, path: newPath }),
+        );
+        setOpenTabs((prev) => prev.map((p) => (p === moveTarget ? newPath : p)));
+        if (activeFile === moveTarget) setActiveAndOpen(newPath);
+
+        const currentTarget = moveTarget;
+        setMoveTarget(null);
+        setMoveValue('');
 
         router.post(route('projects.files.store', project.slug), {
             path: newPath,
@@ -308,25 +326,20 @@ export function useProjectFiles(project: Project) {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                router.delete(route('projects.files.destroy', [project.slug, moveTarget]), {
+                router.delete(route('projects.files.destroy', [project.slug, currentTarget]), {
                     preserveState: true,
                     preserveScroll: true,
-                    onSuccess: () => {
-                        setFiles((prev) =>
-                            prev
-                                .filter((f) => f.path !== moveTarget)
-                                .concat({ ...source, path: newPath }),
-                        );
-                        setOpenTabs((prev) => prev.map((p) => (p === moveTarget ? newPath : p)));
-                        if (activeFile === moveTarget) setActiveAndOpen(newPath);
-                        setMoveTarget(null);
-                        setMoveValue('');
-                        toast.success('Moved');
+                    onSuccess: (page) => {
+                        const updatedFiles = (page.props.project as Project)?.files ?? [];
+                        setFiles(updatedFiles);
+                        toast.success(`Moved to ${newPath}`);
                     },
-                    onError: () => toast.error('Failed to move'),
                 });
             },
-            onError: () => toast.error('Failed to move'),
+            onError: () => {
+                toast.error('Failed to move file');
+                router.reload({ preserveState: true, preserveScroll: true });
+            },
         });
     };
 
