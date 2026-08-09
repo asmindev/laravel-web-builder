@@ -62,17 +62,17 @@ export function TopBar({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
-                            <a href={route('projects.export-zip', project.slug)} className="flex items-center gap-2 cursor-pointer font-medium">
+                            <a href={`/projects/${project.slug}/export-zip`} className="flex items-center gap-2 cursor-pointer font-medium">
                                 <FileArchive className="size-4 text-emerald-500" /> Full Project ZIP (MySQL)
                             </a>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <a href={route('projects.export-file', { project: project.slug, type: 'nodejs' })} className="flex items-center gap-2 cursor-pointer text-xs">
+                            <a href={`/projects/${project.slug}/export-file?type=nodejs`} className="flex items-center gap-2 cursor-pointer text-xs">
                                 <FileCode className="size-4 text-indigo-500" /> File Node.js (index.js)
                             </a>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <a href={route('projects.export-file', { project: project.slug, type: 'index' })} className="flex items-center gap-2 cursor-pointer text-xs">
+                            <a href={`/projects/${project.slug}/export-file?type=index`} className="flex items-center gap-2 cursor-pointer text-xs">
                                 <Code2 className="size-4 text-amber-500" /> File Index (views/index)
                             </a>
                         </DropdownMenuItem>
