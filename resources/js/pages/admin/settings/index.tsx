@@ -41,6 +41,7 @@ interface TermItem {
 
 interface LandingSettings {
     app_name: string;
+    app_version: string;
     admin_whatsapp: string;
     
     // Hero
@@ -101,6 +102,7 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
     // Form State
     const [form, setForm] = useState<LandingSettings>({
         app_name: settings.app_name || 'Nusantara Engine',
+        app_version: settings.app_version || 'V2',
         admin_whatsapp: settings.admin_whatsapp || '6281234567890',
         
         hero_badge: settings.hero_badge || 'Engine Generasi Ke-3 Tersedia',
@@ -272,6 +274,19 @@ export default function AdminSettingsIndex({ settings }: SettingsProps) {
                                                 value={form.app_name}
                                                 onChange={(e) => handleChange('app_name', e.target.value)}
                                                 placeholder="Contoh: Nusantara Engine"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="app_version" className="flex items-center gap-1.5 font-semibold">
+                                                <Sparkles className="size-4 text-amber-500" /> Versi Aplikasi
+                                            </Label>
+                                            <Input
+                                                id="app_version"
+                                                value={form.app_version}
+                                                onChange={(e) => handleChange('app_version', e.target.value)}
+                                                placeholder="Contoh: V2 atau v2.0"
                                                 required
                                             />
                                         </div>

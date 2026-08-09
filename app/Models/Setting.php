@@ -30,6 +30,7 @@ class Setting extends Model
     {
         return [
             'app_name' => static::get('app_name', 'Nusantara Engine'),
+            'app_version' => static::get('app_version', 'V2'),
             'admin_whatsapp' => static::get('admin_whatsapp', '6281234567890'),
             
             // Hero

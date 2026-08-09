@@ -21,9 +21,10 @@ import { Link, usePage } from '@inertiajs/react';
 import { Can } from '@/components/can';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { auth, recent_projects, projects, app_settings } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[]; app_settings?: { app_name: string; admin_whatsapp: string } }>().props;
+    const { auth, recent_projects, projects, app_settings } = usePage<PageProps & { auth?: any; recent_projects?: Project[]; projects?: Project[]; app_settings?: { app_name: string; app_version?: string; admin_whatsapp: string } }>().props;
     const userRecentProjects = recent_projects && recent_projects.length > 0 ? recent_projects : (projects || []);
     const appName = app_settings?.app_name || 'Web Builder';
+    const appVersion = app_settings?.app_version || 'V2';
 
     const navMain = [
         {
@@ -45,12 +46,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild tooltip={appName}>
                             <Link href={route('dashboard')}>
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden shrink-0">
+                                <div className="flex items-center justify-center shrink-0">
                                     <img src="/images/logo.webp" alt={`${appName} Logo`} className="size-8 object-contain" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                                     <span className="font-semibold">{appName}</span>
-                                    <span className="text-xs text-muted-foreground">v1.0.0</span>
+                                    <span className="text-xs text-muted-foreground">{appVersion}</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>

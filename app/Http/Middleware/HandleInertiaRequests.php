@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
             'name' => \App\Models\Setting::get('app_name', config('app.name')),
             'app_settings' => [
                 'app_name' => \App\Models\Setting::get('app_name', 'Nusantara Engine'),
+                'app_version' => \App\Models\Setting::get('app_version', 'V2'),
                 'admin_whatsapp' => \App\Models\Setting::get('admin_whatsapp', '6281234567890'),
             ],
             'flash' => fn() => [

@@ -152,13 +152,11 @@ export default function Welcome({ auth, landing_content, app_settings }: { auth:
                     
                     {/* Logo Header */}
                     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group active:scale-95 transition-transform">
-                        <div className="relative w-8 h-8 sm:w-10 sm:h-10 overflow-hidden rounded-xl bg-black border border-slate-200 dark:border-[#2cb1bc]/40 group-hover:border-[#2cb1bc] group-hover:shadow-[0_0_15px_rgba(44,177,188,0.5)] transition-all shrink-0">
-                            <img src={logoUrl} alt={`${appName} Logo`} className="w-full h-full object-cover" />
-                        </div>
+                        <img src={logoUrl} alt={`${appName} Logo`} className="h-9 sm:h-11 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform" />
                         <div className="flex flex-col">
                             <span className="font-extrabold tracking-tight text-base sm:text-xl leading-none text-slate-900 dark:text-white uppercase">{appName}</span>
-                            <span className="text-[8px] sm:text-[10px] font-mono text-[#2cb1bc] font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#2cb1bc] animate-pulse" /> AI Builder
+                            <span className="text-[8px] sm:text-[10px] font-mono text-primary font-bold tracking-[0.2em] uppercase flex items-center gap-1 mt-0.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> {settings.app_version || 'V2'} AI Builder
                             </span>
                         </div>
                     </Link>

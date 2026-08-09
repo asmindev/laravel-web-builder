@@ -22,6 +22,7 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'app_name' => 'required|string|max:255',
+            'app_version' => 'nullable|string|max:50',
             'admin_whatsapp' => 'required|string|max:50',
             
             // Hero

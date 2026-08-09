@@ -142,17 +142,27 @@ export default function Login() {
                             {errors.password && <p className="text-xs font-semibold text-red-500">{errors.password}</p>}
                         </div>
 
-                        <div className="flex items-center gap-2 pt-1">
-                            <input
-                                id="remember"
-                                type="checkbox"
-                                checked={data.remember}
-                                onChange={(e) => setData('remember', e.target.checked)}
-                                className="h-4 w-4 rounded border-slate-300 text-[#2cb1bc] focus:ring-[#2cb1bc] cursor-pointer"
-                            />
-                            <Label htmlFor="remember" className="text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer">
-                                Ingat saya
-                            </Label>
+                        <div className="flex items-center justify-between pt-1">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="remember"
+                                    type="checkbox"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', e.target.checked)}
+                                    className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                                />
+                                <Label htmlFor="remember" className="text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer">
+                                    Ingat saya
+                                </Label>
+                            </div>
+                            <a
+                                href={`https://wa.me/${(appSettings?.admin_whatsapp || '6281234567890').replace(/[^0-9]/g, '')}?text=Halo%20Admin,%20saya%20lupa%20password%20akun%20saya`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-bold text-primary hover:underline"
+                            >
+                                Reset Password?
+                            </a>
                         </div>
 
                         <Button
