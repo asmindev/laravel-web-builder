@@ -17,7 +17,9 @@ Route::any('/app/{slug}/{path?}', PreviewProxyController::class)
 
 // Public Landing Page
 Route::get('/', function () {
-    return \Inertia\Inertia::render('welcome');
+    return \Inertia\Inertia::render('welcome', [
+        'landing_content' => \App\Models\Setting::getLandingContent(),
+    ]);
 })->name('home');
 
 Route::middleware('auth')->group(function () {

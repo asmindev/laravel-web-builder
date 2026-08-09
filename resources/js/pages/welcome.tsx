@@ -25,9 +25,59 @@ import {
     Linkedin
 } from 'lucide-react';
 
-export default function Welcome({ auth, app_settings }: { auth: any; app_settings?: { app_name: string; admin_whatsapp: string } }) {
-    const appName = app_settings?.app_name || 'NUSANTARTECH';
-    const adminWhatsapp = app_settings?.admin_whatsapp || '6281234567890';
+interface FiturItem {
+    tag: string;
+    title: string;
+    description: string;
+}
+
+interface StepItem {
+    step: string;
+    title: string;
+    description: string;
+}
+
+interface TermItem {
+    number: string;
+    title: string;
+    description: string;
+}
+
+interface LandingContent {
+    app_name?: string;
+    admin_whatsapp?: string;
+    
+    hero_badge?: string;
+    hero_title_1?: string;
+    hero_title_2?: string;
+    hero_title_highlight?: string;
+    hero_subtitle?: string;
+    hero_prompt_demo?: string;
+
+    fitur_section_tag?: string;
+    fitur_title?: string;
+    fitur_subtitle?: string;
+    fitur_items?: FiturItem[];
+
+    cara_kerja_tag?: string;
+    cara_kerja_title?: string;
+    cara_kerja_subtitle?: string;
+    cara_kerja_steps?: StepItem[];
+
+    agency_badge?: string;
+    agency_title?: string;
+    agency_description?: string;
+
+    terms_tag?: string;
+    terms_title?: string;
+    terms_subtitle?: string;
+    terms_items?: TermItem[];
+}
+
+export default function Welcome({ auth, landing_content, app_settings }: { auth: any; landing_content?: LandingContent; app_settings?: { app_name: string; admin_whatsapp: string } }) {
+    const content = landing_content || {};
+    const appName = content.app_name || app_settings?.app_name || 'NUSANTARTECH';
+    const adminWhatsapp = content.admin_whatsapp || app_settings?.admin_whatsapp || '6281234567890';
     const cleanWaNumber = adminWhatsapp.replace(/[^0-9]/g, '');
 
     const [isDark, setIsDark] = useState(true);
@@ -36,12 +86,13 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
     const [agencyName, setAgencyName] = useState('');
     const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
-    const fullText = "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
+    const fullText = content.hero_prompt_demo || "Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...";
     const logoUrl = "/images/logo.webp";
 
     // Typing effect simulation
     useEffect(() => {
         let index = 0;
+        setTypingText('');
         const interval = setInterval(() => {
             if (index < fullText.length) {
                 setTypingText(fullText.slice(0, index + 1));
@@ -51,7 +102,7 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
             }
         }, 30);
         return () => clearInterval(interval);
-    }, []);
+    }, [fullText]);
 
     // Toggle Dark Mode class on html element
     useEffect(() => {
@@ -68,6 +119,8 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
         const text = `Halo ${appName}, saya ${agencyName || 'User'} ingin berkonsultasi mengenai pembuatan ${agencyType}.`;
         window.open(`https://wa.me/${cleanWaNumber}?text=${encodeURIComponent(text)}`, '_blank');
     };
+
+    const fiturIcons = [Layers, Code2, Globe, Users];
 
     return (
         <div className={`min-h-screen font-sans antialiased text-slate-700 bg-slate-50 dark:text-gray-300 dark:bg-[#030712] selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] transition-colors duration-500 overflow-x-hidden relative ${isDark ? 'dark' : ''}`}>
@@ -98,7 +151,6 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                     <nav className="hidden md:flex items-center gap-6 lg:gap-8">
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#fitur">Fitur AI</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#cara-kerja">Cara Kerja</a>
-                        <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#harga">Langganan</a>
                         <a className="text-sm font-semibold text-slate-600 hover:text-[#2cb1bc] dark:text-gray-400 dark:hover:text-white transition-colors" href="#terms">Terms</a>
                         <div className="h-4 w-px bg-slate-300 dark:bg-[#1e293b]" />
                         <a className="text-sm font-semibold text-[#ff8a5c] hover:text-[#e86a38] transition-colors flex items-center gap-1.5" href="#jasa">
@@ -153,10 +205,6 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                             <span>Cara Kerja</span>
                             <ChevronRight className="w-4 h-4 text-slate-400" />
                         </a>
-                        <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#harga">
-                            <span>Langganan</span>
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
-                        </a>
                         <a onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-slate-800 dark:text-gray-200 hover:text-[#2cb1bc] transition-colors py-1 flex items-center justify-between" href="#terms">
                             <span>Terms &amp; Conditions</span>
                             <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -182,62 +230,77 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                         <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[10px] sm:text-xs font-mono font-bold text-[#2cb1bc] mb-1 backdrop-blur-md">
                                 <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                                Engine Generasi Ke-3 Tersedia
+                                {content.hero_badge || 'Engine Generasi Ke-3 Tersedia'}
                             </div>
                             
                             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
-                                Ketik Idenya,<br />
-                                AI Kami Buat<br />
-                                <span className="bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] bg-clip-text text-transparent">Websitenya.</span>
+                                {content.hero_title_1 || 'Ketik Idenya,'}<br />
+                                {content.hero_title_2 || 'AI Kami Buat'}<br />
+                                <span className="bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] bg-clip-text text-transparent">
+                                    {content.hero_title_highlight || 'Websitenya.'}
+                                </span>
                             </h1>
                             
                             <p className="text-slate-600 dark:text-gray-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.
+                                {content.hero_subtitle || 'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'}
                             </p>
                             
                             {/* AI Prompt Input Simulation */}
                             <div className="pt-2 max-w-xl mx-auto lg:mx-0">
                                 <div className="bg-white dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712] border border-slate-200 dark:border-[#2cb1bc]/30 rounded-2xl p-2 flex items-center gap-2 sm:gap-3 shadow-xl">
-                                    <div className="pl-2.5 sm:pl-3 text-[#2cb1bc] shrink-0">
-                                        <Terminal className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    <div className="pl-3 text-[#2cb1bc]">
+                                        <Wand2 className="w-5 h-5 animate-pulse" />
                                     </div>
-                                    <div className="w-full text-left bg-transparent text-slate-800 dark:text-white text-xs sm:text-sm font-mono py-1.5 min-h-[38px] flex items-center overflow-hidden">
+                                    <div className="flex-1 text-left py-1 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 min-h-[40px] flex items-center overflow-hidden">
                                         <span>{typingText}</span>
-                                        <span className="animate-pulse text-[#2cb1bc] font-bold">|</span>
+                                        <span className="w-2 h-4 bg-[#2cb1bc] ml-1 inline-block animate-pulse" />
                                     </div>
-                                    <Link href={auth?.user ? "/dashboard" : "/register"} className="bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-white dark:text-[#030712] p-3 sm:p-3.5 rounded-xl transition-all shadow-[0_4px_15px_rgba(44,177,188,0.3)] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)] shrink-0" aria-label="Jalankan Prompt AI">
-                                        <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                    <Link
+                                        href={auth?.user ? "/dashboard" : "/login"}
+                                        className="shrink-0 bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] hover:opacity-90 active:scale-95 text-slate-900 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5"
+                                    >
+                                        <span>Generate</span>
+                                        <ArrowRight className="w-4 h-4" />
                                     </Link>
                                 </div>
-                                <div className="mt-3.5 flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono text-slate-500 dark:text-gray-500 justify-center lg:justify-start items-center">
-                                    <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
-                                    <button onClick={() => setTypingText("Toko Sepatu Sneakers dengan keranjang belanja")} className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 transition-all bg-white/50 dark:bg-transparent">"Toko Sepatu Sneakers"</button>
-                                    <button onClick={() => setTypingText("Klinik Gigi Premium dengan janji temu online")} className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 hover:border-[#2cb1bc] hover:text-[#2cb1bc] active:scale-95 transition-all bg-white/50 dark:bg-transparent">"Klinik Gigi Premium"</button>
-                                </div>
+                            </div>
+
+                            {/* Trust Badge */}
+                            <div className="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-[#2cb1bc]" /> Instant Node Server</span>
+                                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-[#ff8a5c]" /> Multi-Role RBAC</span>
                             </div>
                         </div>
 
-                        {/* Hero Interactive Orbit Visual */}
-                        <div className="relative h-[320px] sm:h-[450px] lg:h-[520px] flex items-center justify-center mt-6 lg:mt-0">
-                            <div className="relative w-full max-w-[280px] sm:max-w-md aspect-square flex items-center justify-center">
-                                
-                                <div className="absolute w-32 h-32 sm:w-40 sm:h-40 bg-[#2cb1bc] rounded-full blur-[50px] sm:blur-[60px] opacity-40 animate-pulse" />
-
-                                <div className="absolute w-[78%] h-[78%] rounded-full border border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30 border-dashed animate-spin" style={{ animationDuration: '18s' }} />
-                                <div className="absolute w-[98%] h-[98%] rounded-full border border-[#ff8a5c]/30 dark:border-[#ff8a5c]/20 border-dotted animate-spin" style={{ animationDuration: '22s', animationDirection: 'reverse' }}>
-                                    <div className="absolute top-0 left-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#ff8a5c] rounded-full shadow-[0_0_10px_#ff8a5c] -translate-x-1/2 -translate-y-1/2" />
-                                    <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-[#2cb1bc] rounded-full shadow-[0_0_10px_#2cb1bc] -translate-x-1/2 translate-y-1/2" />
-                                    <div className="absolute top-1/2 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[#a6f4fa] rounded-full shadow-[0_0_8px_#a6f4fa] translate-x-1/2 -translate-y-1/2" />
-                                </div>
-
-                                {/* Central Logo Frame */}
-                                <div className="relative w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-[#030712] shadow-2xl dark:shadow-[0_0_50px_rgba(44,177,188,0.25)] z-20 bg-black group">
-                                    <img src={logoUrl} alt="Nusantartech AI Core" className="w-full h-full object-cover transform scale-110 group-hover:scale-125 transition-transform duration-1000 ease-out" />
-                                    
-                                    <div className="absolute inset-0 z-30 pointer-events-none mix-blend-screen">
-                                        <div className="w-full h-8 bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent animate-pulse" />
+                        {/* Hero Interactive Code Preview */}
+                        <div className="relative">
+                            <div className="relative mx-auto max-w-lg lg:max-w-none">
+                                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b101d] shadow-2xl overflow-hidden">
+                                    <div className="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-[#070b14] border-b border-slate-200 dark:border-slate-800">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                                            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                                            <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                                            <span className="ml-2 text-xs font-mono text-slate-400">app.js — Node.js Proxy Engine</span>
+                                        </div>
+                                        <div className="text-[10px] font-mono text-[#2cb1bc] bg-[#2cb1bc]/10 px-2 py-0.5 rounded border border-[#2cb1bc]/20">
+                                            Status: Live
+                                        </div>
                                     </div>
                                     
+                                    <div className="p-4 sm:p-6 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-300 space-y-2 overflow-x-auto">
+                                        <p className="text-slate-400 dark:text-slate-500">// 1. Express Server & Internal Proxy Initialization</p>
+                                        <p><span className="text-purple-600 dark:text-purple-400">const</span> express = <span className="text-[#2cb1bc]">require</span>(<span className="text-emerald-600 dark:text-emerald-400">'express'</span>);</p>
+                                        <p><span className="text-purple-600 dark:text-purple-400">const</span> app = <span className="text-[#2cb1bc]">express</span>();</p>
+                                        <p className="text-slate-400 dark:text-slate-500 pt-2">// 2. Dynamic Preload Project Route Context</p>
+                                        <p>app.<span className="text-[#ff8a5c]">post</span>(<span className="text-emerald-600 dark:text-emerald-400">'/internal/preload'</span>, (req, res) =&gt; &#123;</p>
+                                        <p className="pl-4"><span className="text-[#2cb1bc]">preloadProjectData</span>(req.body.slug, req.body.projectData);</p>
+                                        <p className="pl-4">res.<span className="text-[#2cb1bc]">json</span>(&#123; status: <span className="text-emerald-600 dark:text-emerald-400">'ready'</span> &#125;);</p>
+                                        <p>&#125;);</p>
+                                        <p className="text-slate-400 dark:text-slate-500 pt-2">// 3. Start Live Server Port</p>
+                                        <p>app.<span className="text-[#ff8a5c]">listen</span>(<span className="text-amber-600 dark:text-amber-400">4000</span>, () =&gt; console.<span className="text-[#2cb1bc]">log</span>(<span className="text-emerald-600 dark:text-emerald-400">'Node Engine Ready!'</span>));</p>
+                                    </div>
+
                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)] z-10 pointer-events-none" />
                                 </div>
 
@@ -269,68 +332,34 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
                     <div className="mb-12 sm:mb-16">
                         <div className="font-mono text-xs mb-3 flex items-center gap-2">
-                            <span className="text-[#2cb1bc]">// fitur</span>
+                            <span className="text-[#2cb1bc]">{content.fitur_section_tag || '// fitur'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Yang Anda dapatkan</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Fokus pada alur kerja inti yang paling sering dipakai untuk membangun dan mengelola project berbasis Node.js.</p>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                            {content.fitur_title || 'Yang Anda dapatkan'}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
+                            {content.fitur_subtitle || 'Fokus pada alur kerja inti yang paling sering dipakai untuk membangun dan mengelola project berbasis Node.js.'}
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-                        {/* Fitur 1 */}
-                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                                    <Layers className="w-5 h-5" />
+                        {(content.fitur_items || []).map((item, idx) => {
+                            const IconComponent = fiturIcons[idx % fiturIcons.length];
+                            return (
+                                <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                                            <IconComponent className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">{item.tag}</span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">{item.title}</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                        {item.description}
+                                    </p>
                                 </div>
-                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">project-builder.js</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Project builder</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                Buat landing page atau aplikasi baru dengan struktur file yang langsung siap dipakai.
-                            </p>
-                        </div>
-
-                        {/* Fitur 2 */}
-                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                                    <Code2 className="w-5 h-5" />
-                                </div>
-                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">browser-ide.js</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">IDE browser</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                Edit file utama, jalankan project, lihat log, dan simpan perubahan dari dashboard.
-                            </p>
-                        </div>
-
-                        {/* Fitur 3 */}
-                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                                    <Globe className="w-5 h-5" />
-                                </div>
-                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">publish.sh</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Preview dan publish</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                Aktifkan preview internal dan URL publik saat project sudah siap diuji atau dipresentasikan.
-                            </p>
-                        </div>
-
-                        {/* Fitur 4 */}
-                        <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 hover:border-[#2cb1bc]/50 transition-all duration-300 hover:-translate-y-1 shadow-sm dark:shadow-none group">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-                                    <Users className="w-5 h-5" />
-                                </div>
-                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">users.json</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-200 mb-2.5 tracking-tight">Manajemen user</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                Atur akun user, role, status aktif, password, dan batas project sesuai paket layanan.
-                            </p>
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -340,10 +369,14 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
                     <div className="mb-14 sm:mb-20">
                         <div className="font-mono text-xs mb-3 flex items-center gap-2">
-                            <span className="text-[#2cb1bc]">// cara kerja</span>
+                            <span className="text-[#2cb1bc]">{content.cara_kerja_tag || '// cara kerja'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Tiga langkah untuk mulai</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Alurnya dibuat singkat supaya user awam tetap bisa mulai tanpa banyak penyesuaian teknis.</p>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                            {content.cara_kerja_title || 'Tiga langkah untuk mulai'}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
+                            {content.cara_kerja_subtitle || 'Alurnya dibuat singkat supaya user awam tetap bisa mulai tanpa banyak penyesuaian teknis.'}
+                        </p>
                     </div>
 
                     <div className="relative mt-4 sm:mt-8">
@@ -351,107 +384,17 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                         <div className="block md:hidden absolute top-6 bottom-6 left-[23px] w-[1px] bg-slate-200 dark:bg-white/10 z-0" />
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 relative z-10">
-                            {/* Langkah 1 */}
-                            <div className="relative flex md:block items-start gap-5 md:gap-0">
-                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">1</div>
-                                <div>
-                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Pilih paket</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Tentukan paket sesuai kebutuhan jumlah project dan jenis pekerjaan yang dijalankan.</p>
+                            {(content.cara_kerja_steps || []).map((step, idx) => (
+                                <div key={idx} className="relative flex md:block items-start gap-5 md:gap-0">
+                                    <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">
+                                        {step.step || idx + 1}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">{step.title}</h3>
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">{step.description}</p>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* Langkah 2 */}
-                            <div className="relative flex md:block items-start gap-5 md:gap-0">
-                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">2</div>
-                                <div>
-                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Registrasi akun</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Isi nama lengkap, email, nomor WhatsApp, lalu lanjut ke checkout DOKU untuk menyelesaikan pembayaran.</p>
-                                </div>
-                            </div>
-
-                            {/* Langkah 3 */}
-                            <div className="relative flex md:block items-start gap-5 md:gap-0">
-                                <div className="w-12 h-12 shrink-0 rounded-full border border-slate-300 dark:border-[#ff8a5c]/40 bg-white dark:bg-[#0a0d14] text-[#ff8a5c] flex items-center justify-center font-mono font-bold text-lg md:mb-6 shadow-sm relative z-10">3</div>
-                                <div>
-                                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-200 mb-2 sm:mb-3">Masuk dan mulai build</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed md:pr-4">Setelah akun aktif, login ke dashboard dan mulai membuat landing page atau aplikasi baru.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Section Akses Platform / Harga */}
-            <section id="harga" className="py-16 sm:py-24 relative z-10 transition-colors duration-500">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-                        <div className="text-[#ff8a5c] font-mono text-xs font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
-                            <CreditCard className="w-4 h-4" />
-                            [ Akses Platform ]
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pilih Paket Builder Anda</h2>
-                        <p className="text-slate-600 dark:text-gray-400 mt-3 text-sm sm:text-base">Mulai gratis untuk bereksperimen, tingkatkan ke Pro saat Anda siap meluncurkan bisnis.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
-                        {/* Starter Tier */}
-                        <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/8 flex flex-col relative shadow-sm">
-                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Starter</h3>
-                            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">Untuk eksplorasi kekuatan AI.</p>
-                            <div className="my-5 sm:my-6">
-                                <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Rp 0</span>
-                            </div>
-                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
-                                    10x Generate AI per bulan
-                                </li>
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
-                                    Akses Editor Visual Dasar
-                                </li>
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc]/20 flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-[#2cb1bc]" /></div>
-                                    Domain nusantartech.site
-                                </li>
-                            </ul>
-                            <Link href={auth?.user ? "/dashboard" : "/login"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all font-bold text-sm">
-                                Masuk ke Dashboard
-                            </Link>
-                        </div>
-
-                        {/* Pro Tier */}
-                        <div className="bg-slate-900 dark:bg-[#0a0f1d] border-2 border-[#2cb1bc] p-6 sm:p-8 rounded-3xl flex flex-col relative transform md:-translate-y-4 shadow-2xl">
-                            <div className="absolute -top-3.5 right-6 sm:right-8 bg-[#2cb1bc] text-slate-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest py-1 px-3.5 sm:py-1.5 sm:px-4 rounded-full shadow-lg">
-                                Populer
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold text-white">Pro Builder</h3>
-                            <p className="text-xs sm:text-sm text-[#a6f4fa] mt-1 font-medium">Solusi lengkap untuk profesional.</p>
-                            <div className="my-5 sm:my-6">
-                                <span className="text-4xl sm:text-5xl font-black text-[#2cb1bc] tracking-tight">Rp 149k</span><span className="text-gray-400 font-medium text-sm sm:text-base"> /bln</span>
-                            </div>
-                            <ul className="space-y-3.5 sm:space-y-4 mb-8 sm:mb-10 flex-1">
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Unlimited Generate AI
-                                </li>
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Export Kode (HTML/React/Tailwind)
-                                </li>
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Custom Domain (.com/.id)
-                                </li>
-                                <li className="flex items-center gap-3 text-xs sm:text-sm font-medium text-gray-200">
-                                    <div className="w-5 h-5 rounded-full bg-[#2cb1bc] flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-slate-900" /></div>
-                                    Integrasi Database
-                                </li>
-                            </ul>
-                            <Link href={auth?.user ? "/dashboard" : "/register"} className="w-full text-center py-3 sm:py-3.5 px-4 rounded-xl bg-[#2cb1bc] hover:bg-[#239099] active:scale-95 text-slate-900 transition-all font-extrabold text-sm shadow-[0_0_20px_rgba(44,177,188,0.4)]">
-                                Berlangganan Pro
-                            </Link>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -465,11 +408,13 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                     <div className="bg-white/75 dark:bg-[#0f172a]/65 backdrop-blur-xl border border-slate-300 dark:border-[#1e293b] rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 shadow-lg">
                         <div className="md:w-3/5 space-y-4 sm:space-y-6 text-left">
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ff8a5c]/10 border border-[#ff8a5c]/30 text-[10px] sm:text-[11px] font-mono font-bold text-[#e86a38] dark:text-[#ff8a5c]">
-                                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Opsi Terima Beres
+                                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {content.agency_badge || 'Opsi Terima Beres'}
                             </div>
-                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tidak Punya Waktu Membuat Sendiri?</h3>
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                {content.agency_title || 'Tidak Punya Waktu Membuat Sendiri?'}
+                            </h3>
                             <p className="text-slate-600 dark:text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed">
-                                Selain platform AI Builder, {appName} juga memiliki <strong className="text-slate-900 dark:text-white">Tim Studio Agensi Internal</strong>. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.
+                                {content.agency_description || `Selain platform AI Builder, ${appName} juga memiliki Tim Studio Agensi Internal. Kami melayani pembuatan website kustom dengan tingkat kerumitan tinggi (Company Profile, E-commerce, hingga SaaS). Serahkan pada tim expert kami.`}
                             </p>
                         </div>
                         <div className="md:w-2/5 w-full flex flex-col gap-4">
@@ -507,39 +452,26 @@ export default function Welcome({ auth, app_settings }: { auth: any; app_setting
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
                     <div className="mb-10 sm:mb-12">
                         <div className="font-mono text-xs mb-3 flex items-center gap-2">
-                            <span className="text-[#2cb1bc]">// terms &amp; conditions</span>
+                            <span className="text-[#2cb1bc]">{content.terms_tag || '// terms & conditions'}</span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">Terms &amp; Conditions</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">Gunakan bagian ini untuk menaruh aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab.</p>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight text-left">
+                            {content.terms_title || 'Terms & Conditions'}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 mt-3 text-base sm:text-lg text-left max-w-3xl">
+                            {content.terms_subtitle || 'Gunakan bagian ini untuk menaruh aturan penggunaan layanan, hak dan kewajiban pengguna, serta batas tanggung jawab.'}
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                        {/* T&C 1 */}
-                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§1</span>
-                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Penggunaan layanan</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                                Layanan hanya digunakan untuk keperluan yang sesuai dengan ketentuan, hukum yang berlaku, dan kebijakan internal yang Anda tetapkan.
-                            </p>
-                        </div>
-
-                        {/* T&C 2 */}
-                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§2</span>
-                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Akses akun</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                                Pengguna wajib menjaga kerahasiaan kredensial akun dan bertanggung jawab atas aktivitas yang dilakukan melalui akun tersebut.
-                            </p>
-                        </div>
-
-                        {/* T&C 3 */}
-                        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">§3</span>
-                            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">Pembaruan ketentuan</h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                                Anda dapat memperbarui syarat dan ketentuan sewaktu-waktu selama perubahan tersebut diumumkan dengan jelas kepada pengguna.
-                            </p>
-                        </div>
+                        {(content.terms_items || []).map((term, idx) => (
+                            <div key={idx} className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200 dark:border-white/5 shadow-sm">
+                                <span className="text-xs font-mono text-slate-500 dark:text-slate-600 mb-4 sm:mb-6 block">{term.number || `§${idx + 1}`}</span>
+                                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200 mb-3">{term.title}</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                                    {term.description}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
