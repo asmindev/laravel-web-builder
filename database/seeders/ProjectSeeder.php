@@ -23,19 +23,16 @@ class ProjectSeeder extends Seeder
             ]);
         }
 
-        // 1. Landing page project
+        // 1. Landing page project (Pure Single-File HTML)
         $landing = Project::create([
             'user_id' => $user->id,
-            'name' => 'Landing Page',
+            'name' => 'Landing Page Single-File HTML',
             'slug' => 'landing-page',
-            'description' => 'A modern landing page with hero, features, and contact section.',
+            'description' => 'A modern, fully responsive pure single-file HTML landing page template.',
             'template' => 'landing',
             'config' => [
-                'title' => 'Landing Page',
-                'tagline' => 'Build something amazing today',
-                'primary_color' => '#2563eb',
-                'show_features' => true,
-                'show_contact' => true,
+                'title' => 'Nusantara SaaS',
+                'tagline' => 'Solusi Digital Terbaik untuk Bisnis Anda',
             ],
             'published' => true,
             'published_at' => now(),
@@ -43,94 +40,183 @@ class ProjectSeeder extends Seeder
 
         $landing->files()->createMany([
             [
-                'path' => 'index.ejs',
+                'path' => 'index.html',
                 'content' => '<!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= config.title %></title>
-    <link rel="stylesheet" href="/assets/style.css">
+    <title>Nusantara SaaS — Landing Page</title>
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome v6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #2cb1bc 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo"><%= config.title %></div>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#contact">Contact</a>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc]">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 text-lg font-bold tracking-tight">
+                <i class="fa-solid fa-cube text-[#2cb1bc]"></i>
+                <span>Nusantara<span class="text-[#2cb1bc]">SaaS</span></span>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#features" class="hover:text-white transition-colors">Fitur</a>
+                <a href="#about" class="hover:text-white transition-colors">Tentang Kami</a>
+                <a href="#pricing" class="hover:text-white transition-colors">Harga</a>
+                <a href="#contact" class="hover:text-white transition-colors">Kontak</a>
             </div>
+            <div class="hidden md:flex items-center gap-3">
+                <a href="#contact" class="bg-[#2cb1bc] hover:bg-[#2597a1] text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition-all shadow-lg shadow-[#2cb1bc]/20">Mulai Sekarang</a>
+            </div>
+            <!-- Mobile Drawer Button -->
+            <button id="menu-btn" class="md:hidden text-slate-300 hover:text-white p-2">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </div>
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-slate-800 bg-slate-900 px-4 py-4 space-y-3">
+            <a href="#features" class="block text-sm font-medium text-slate-300 hover:text-white">Fitur</a>
+            <a href="#about" class="block text-sm font-medium text-slate-300 hover:text-white">Tentang Kami</a>
+            <a href="#pricing" class="block text-sm font-medium text-slate-300 hover:text-white">Harga</a>
+            <a href="#contact" class="block text-sm font-medium text-slate-300 hover:text-white">Kontak</a>
+            <a href="#contact" class="inline-block w-full text-center bg-[#2cb1bc] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs">Mulai Sekarang</a>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="container">
-            <h1><%= config.tagline %></h1>
-            <p>Start building your next project with ease. Clean, fast, and fully customizable.</p>
-            <a href="#features" class="btn btn-primary">Get Started</a>
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <span class="inline-flex items-center gap-2 bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[#2cb1bc] px-3.5 py-1.5 rounded-full text-xs font-semibold mb-6">
+                <i class="fa-solid fa-sparkles"></i> Platform AI Generasi Ke-3
+            </span>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight mb-6">
+                Ketik Idenya, <span class="gradient-text">Website Jadi</span> Seketika.
+            </h1>
+            <p class="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-8">
+                Solusi terlengkap untuk membangun landing page HTML murni dan aplikasi web Node.js yang cepat, indah, dan siap pakai tanpa coding rumit.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#contact" class="w-full sm:w-auto bg-[#2cb1bc] hover:bg-[#2597a1] text-slate-950 font-bold px-7 py-3.5 rounded-xl text-sm transition-all shadow-xl shadow-[#2cb1bc]/25 flex items-center justify-center gap-2">
+                    <span>Coba Gratis Sekarang</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="#features" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-semibold px-7 py-3.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-[#2cb1bc] fa-circle-play"></i>
+                    <span>Pelajari Fitur</span>
+                </a>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <% if (config.show_features) { %>
-    <section id="features" class="features">
-        <div class="container">
-            <h2>Features</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Fast</h3>
-                    <p>Lightning-fast performance out of the box.</p>
+    <!-- Feature Cards Section -->
+    <section id="features" class="py-20 bg-slate-900/50 border-t border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold tracking-tight mb-4">Fitur Unggulan Terbaik</h2>
+                <p class="text-slate-400 text-sm md:text-base">Dirancang khusus untuk mendukung performa maksimal dan kemudahan pengelolaan.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl hover:border-[#2cb1bc]/50 transition-all duration-300 group">
+                    <div class="size-12 rounded-xl bg-[#2cb1bc]/10 text-[#2cb1bc] flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Super Cepat</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Performa loading maksimal tanpa beban script berlebih, memastikan kenyamanan pengguna.</p>
                 </div>
-                <div class="card">
-                    <h3>Flexible</h3>
-                    <p>Customize everything to your needs.</p>
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl hover:border-[#2cb1bc]/50 transition-all duration-300 group">
+                    <div class="size-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">100% Responsif</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Tampilan luar biasa indah di semua perangkat, baik smartphone, tablet, maupun desktop.</p>
                 </div>
-                <div class="card">
-                    <h3>Reliable</h3>
-                    <p>Built to scale with your business.</p>
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl hover:border-[#2cb1bc]/50 transition-all duration-300 group">
+                    <div class="size-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-[#2cb1bc] fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Aman &amp; Terpercaya</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Dibangun dengan standar keamanan modern untuk perlindungan data pelanggan Anda.</p>
                 </div>
             </div>
         </div>
     </section>
-    <% } %>
 
-    <% if (config.show_contact) { %>
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Get in Touch</h2>
-            <form>
-                <input type="email" placeholder="Your email" required>
-                <textarea placeholder="Your message" rows="4"></textarea>
-                <button type="submit" class="btn btn-primary">Send</button>
-            </form>
+    <!-- Contact Form Section -->
+    <section id="contact" class="py-20">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3">Hubungi Tim Kami</h2>
+                    <p class="text-slate-400 text-sm">Kirimkan pesan Anda dan kami akan merespons dalam hitungan menit.</p>
+                </div>
+                <form id="contact-form" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Nama Lengkap</label>
+                        <input type="text" required placeholder="John Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2cb1bc] transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Alamat Email</label>
+                        <input type="email" required placeholder="john@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2cb1bc] transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Pesan Anda</label>
+                        <textarea rows="4" required placeholder="Tuliskan kebutuhan Anda..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#2cb1bc] transition-colors"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-[#2cb1bc] hover:bg-[#2597a1] text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-[#2cb1bc]/20">
+                        Kirim Pesan SEKARANG
+                    </button>
+                    <div id="form-alert" class="hidden p-4 rounded-xl text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-center">
+                        <i class="fa-solid fa-circle-check mr-1.5"></i> Pesan Anda berhasil terkirim!
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
-    <% } %>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> <%= config.title %>. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-10 bg-slate-950 text-slate-500 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+            <p>&copy; 2026 NusantaraSaaS. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Embedded JavaScript -->
+    <script>
+        // Mobile Drawer Toggle
+        const menuBtn = document.getElementById("menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener("click", () => {
+                mobileMenu.classList.toggle("hidden");
+            });
+        }
+
+        // Contact Form Interactive Submit Simulation
+        const contactForm = document.getElementById("contact-form");
+        const formAlert = document.getElementById("form-alert");
+        if (contactForm && formAlert) {
+            contactForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                formAlert.classList.remove("hidden");
+                contactForm.reset();
+                setTimeout(() => {
+                    formAlert.classList.add("hidden");
+                }, 4000);
+            });
+        }
+    </script>
 </body>
 </html>',
                 'mime_type' => 'text/html',
-            ],
-            [
-                'path' => 'style.css',
-                'content' => "* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nbody {\n  font-family: system-ui, -apple-system, sans-serif;\n  line-height: 1.6;\n  color: #1a1a2e;\n}\n\n.container {\n  max-width: 1100px;\n  margin: 0 auto;\n  padding: 0 2rem;\n}\n\n.navbar {\n  background: #fff;\n  border-bottom: 1px solid #e5e7eb;\n  padding: 1rem 0;\n  position: sticky;\n  top: 0;\n  z-index: 100;\n}\n\n.navbar .container {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n\n.logo {\n  font-size: 1.5rem;\n  font-weight: 700;\n  color: <%= config.primary_color %>;\n}\n\n.nav-links { display: flex; gap: 2rem; }\n.nav-links a {\n  text-decoration: none;\n  color: #6b7280;\n  font-weight: 500;\n}\n.nav-links a:hover { color: <%= config.primary_color %>; }\n\n.hero {\n  background: linear-gradient(135deg, <%= config.primary_color %>15, #fff);\n  padding: 6rem 0;\n  text-align: center;\n}\n\n.hero h1 {\n  font-size: 3.5rem;\n  margin-bottom: 1rem;\n}\n\n.hero p {\n  font-size: 1.2rem;\n  color: #6b7280;\n  max-width: 600px;\n  margin: 0 auto 2rem;\n}\n\n.btn {\n  display: inline-block;\n  padding: 0.75rem 2rem;\n  border-radius: 8px;\n  text-decoration: none;\n  font-weight: 600;\n  transition: all 0.2s;\n}\n\n.btn-primary {\n  background: <%= config.primary_color %>;\n  color: #fff;\n}\n.btn-primary:hover { opacity: 0.9; }\n\n.features { padding: 4rem 0; }\n.features h2 { text-align: center; margin-bottom: 3rem; font-size: 2rem; }\n.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }\n.card {\n  background: #f9fafb;\n  padding: 2rem;\n  border-radius: 12px;\n}\n.card h3 { margin-bottom: 0.5rem; }\n.card p { color: #6b7280; }\n\n.contact {\n  background: #f3f4f6;\n  padding: 4rem 0;\n}\n.contact h2 { text-align: center; margin-bottom: 2rem; font-size: 2rem; }\n.contact form {\n  max-width: 500px;\n  margin: 0 auto;\n  display: flex;\n  flex-direction: column;\n  gap: 1rem;\n}\n.contact input, .contact textarea {\n  padding: 0.75rem;\n  border: 1px solid #d1d5db;\n  border-radius: 8px;\n  font-family: inherit;\n}\n\nfooter {\n  background: #1a1a2e;\n  color: #fff;\n  text-align: center;\n  padding: 2rem 0;\n}\n\n@media (max-width: 768px) {\n  .grid { grid-template-columns: 1fr; }\n  .hero h1 { font-size: 2.5rem; }\n}",
-                'mime_type' => 'text/css',
-            ],
-            [
-                'path' => 'script.js',
-                'content' => "// Smooth scroll for nav links
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', e => {
-        e.preventDefault();
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
-    });
-});",
-                'mime_type' => 'application/javascript',
             ],
         ]);
 
