@@ -152,14 +152,14 @@ export function FileTree({
                             onClick={() => onSelect(fp)}
                             onKeyDown={(e) => e.key === 'Enter' && onSelect(fp)}
                             className={cn(
-                                'flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-xs font-medium transition-all duration-150',
+                                'flex w-full items-center gap-2 rounded-md py-1.5 pr-2 text-left text-xs font-medium transition-all duration-150',
                                 isActive && !isDragging
                                     ? 'bg-primary/15 text-primary font-bold border-l-2 border-primary shadow-xs'
                                     : 'text-foreground/80 hover:bg-accent hover:text-foreground',
                                 isDragging && 'opacity-40 ring-2 ring-dashed ring-primary',
                                 dragging ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
                             )}
-                            style={{ paddingLeft: `${12 + depth * 12}px` }}
+                            style={{ paddingLeft: `${10 + depth * 12}px` }}
                         >
                             <FileCode className={`size-4 shrink-0 ${EXT_ICONS[getExt(fp)] || 'text-slate-400'}`} />
                             <span className="flex-1 truncate">{fileName}</span>
@@ -190,30 +190,13 @@ export function FileTree({
         );
     };
 
-    return (
-        <div className="space-y-1 text-sm select-none">
-            {/* ── ROOT ── */}
-            <div
-                key="_root_"
-                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
-                onDragLeave={() => setDragOver(null)}
-                onDrop={(e) => onDropToFolder(e, '/')}
-                className={cn(
-                    'rounded-md transition-all',
-                    dragOver === '/' && 'bg-primary/20 ring-2 ring-primary/40',
-                )}
-            >
-                <div className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                    <Folder className="size-3.5 text-amber-500" />
-                    root
-                </div>
-                <div className="space-y-0.5">
-                    {rootFiles.map((file) => renderFile(file, 0))}
-                </div>
-            </div>
+    // Sort folders alphabetically
+    const sortedFolderNames = [...allFolderNames].sort((a, b) => a.localeCompare(b));
 
-            {/* ── FOLDERS (both DB folders & path-derived folders) ── */}
-            {allFolderNames.map((folderName) => {
+    return (
+        <div className="space-y-0.5 text-sm select-none">
+            {/* 1. FOLDERS FIRST (Level 0) */}
+            {sortedFolderNames.map((folderName) => {
                 const dirFiles = files.filter((f) => f.path.startsWith(folderName + '/'));
                 const dbFolder = folders.find((f) => f.name === folderName);
                 const isFolderActive = activeFile?.startsWith(folderName + '/');
@@ -232,12 +215,15 @@ export function FileTree({
                         <DropdownMenu>
                             <ContextMenu>
                                 <ContextMenuTrigger asChild>
-                                    <div className={cn(
-                                        'flex w-full items-center justify-between px-2.5 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all duration-150',
-                                        isFolderActive
-                                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
-                                            : 'text-foreground/90 hover:bg-accent hover:text-foreground'
-                                    )}>
+                                    <div
+                                        className={cn(
+                                            'flex w-full items-center justify-between py-1.5 pr-2 text-xs font-semibold rounded-md cursor-pointer transition-all duration-150',
+                                            isFolderActive
+                                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                                                : 'text-foreground/90 hover:bg-accent hover:text-foreground'
+                                        )}
+                                        style={{ paddingLeft: '10px' }}
+                                    >
                                         <div className="flex items-center gap-2 truncate">
                                             <Folder className="size-4 text-amber-500 shrink-0" />
                                             <span className="truncate">{folderName}</span>
@@ -299,6 +285,20 @@ export function FileTree({
                     </div>
                 );
             })}
+
+            {/* 2. ROOT FILES AFTER FOLDERS (Level 0) */}
+            <div
+                key="_root_"
+                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOver('/'); }}
+                onDragLeave={() => setDragOver(null)}
+                onDrop={(e) => onDropToFolder(e, '/')}
+                className={cn(
+                    'rounded-md transition-all space-y-0.5',
+                    dragOver === '/' && 'bg-primary/20 ring-2 ring-primary/40',
+                )}
+            >
+                {rootFiles.map((file) => renderFile(file, 0))}
+            </div>
 
             {/* Delete Folder Alert Dialog */}
             {folderToDelete && (
