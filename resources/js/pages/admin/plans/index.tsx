@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AdminLayout from '@/layouts/admin-layout';
 import { Head, router, useForm } from '@inertiajs/react';
-import { AlertCircle, Check, CreditCard, Edit, Loader2, Plus, Sparkles, Trash2, X } from 'lucide-react';
+import { AlertCircle, Check, CreditCard, Edit, Loader2, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 export interface PlanItem {
@@ -67,6 +67,8 @@ export default function PlanIndex({ plans }: IndexProps) {
     const handleCreateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         createForm.post(route('admin.plans.store'), {
+            preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
                 setShowCreate(false);
                 createForm.reset();
@@ -96,6 +98,8 @@ export default function PlanIndex({ plans }: IndexProps) {
         if (!editingPlan) return;
 
         editForm.put(route('admin.plans.update', editingPlan.id), {
+            preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
                 setEditingPlan(null);
                 editForm.reset();
@@ -137,15 +141,15 @@ export default function PlanIndex({ plans }: IndexProps) {
                 {/* Header Action Bar */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                             <CreditCard className="size-6 text-primary" /> Daftar Paket Langganan
                         </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="mt-1 text-sm text-muted-foreground">
                             Kelola pilihan paket, kuota upload proyek, harga, dan fitur untuk pengguna.
                         </p>
                     </div>
 
-                    <Button onClick={() => setShowCreate(true)} className="gap-1.5 shrink-0">
+                    <Button onClick={() => setShowCreate(true)} className="shrink-0 gap-1.5">
                         <Plus className="size-4" /> Tambah Paket Baru
                     </Button>
                 </div>
@@ -153,36 +157,37 @@ export default function PlanIndex({ plans }: IndexProps) {
                 {/* Plans Cards Grid */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {plans.map((plan) => (
-                        <Card key={plan.id} className={`flex flex-col justify-between relative transition-all ${plan.is_popular ? 'border-2 border-primary shadow-lg' : ''}`}>
-                            <CardHeader className="pb-3 pt-5">
+                        <Card
+                            key={plan.id}
+                            className={`relative flex flex-col justify-between transition-all ${plan.is_popular ? 'border-2 border-primary shadow-lg' : ''}`}
+                        >
+                            <CardHeader className="pt-5 pb-3">
                                 <div className="flex items-center justify-between gap-2">
                                     <div className="flex items-center gap-1.5">
                                         <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-[10px]">
                                             {plan.is_active ? 'Aktif' : 'Non-aktif'}
                                         </Badge>
                                         {plan.is_popular && (
-                                            <Badge className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[10px] uppercase border-0">
+                                            <Badge className="border-0 bg-amber-500 text-[10px] font-black text-slate-950 uppercase hover:bg-amber-600">
                                                 Populer
                                             </Badge>
                                         )}
                                     </div>
                                     <span className="font-mono text-xs text-muted-foreground">Slug: {plan.slug}</span>
                                 </div>
-                                <CardTitle className="text-xl font-bold mt-2">{plan.name}</CardTitle>
+                                <CardTitle className="mt-2 text-xl font-bold">{plan.name}</CardTitle>
                                 <CardDescription className="line-clamp-2 text-xs">{plan.description || 'Tidak ada deskripsi'}</CardDescription>
                             </CardHeader>
 
-                            <CardContent className="space-y-4 flex-1">
-                                <div className="border-y py-3 space-y-1">
+                            <CardContent className="flex-1 space-y-4">
+                                <div className="space-y-1 border-y py-3">
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-2xl font-black text-slate-900 dark:text-white">
                                             Rp {Number(plan.price).toLocaleString('id-ID')}
                                         </span>
-                                        <span className="text-xs text-muted-foreground font-medium">{plan.price_period}</span>
+                                        <span className="text-xs font-medium text-muted-foreground">{plan.price_period}</span>
                                     </div>
-                                    <div className="text-xs font-semibold text-primary">
-                                        Limit: {plan.project_limit} Upload Proyek
-                                    </div>
+                                    <div className="text-xs font-semibold text-primary">Limit: {plan.project_limit} Upload Proyek</div>
                                 </div>
 
                                 <div className="space-y-2">
@@ -190,7 +195,7 @@ export default function PlanIndex({ plans }: IndexProps) {
                                     <ul className="space-y-1.5 text-xs text-muted-foreground">
                                         {(plan.features || []).map((feat, idx) => (
                                             <li key={idx} className="flex items-center gap-1.5">
-                                                <Check className="size-3.5 text-emerald-500 shrink-0" />
+                                                <Check className="size-3.5 shrink-0 text-emerald-500" />
                                                 <span className="line-clamp-1">{feat}</span>
                                             </li>
                                         ))}
@@ -198,11 +203,16 @@ export default function PlanIndex({ plans }: IndexProps) {
                                 </div>
                             </CardContent>
 
-                            <div className="p-4 pt-0 border-t flex items-center justify-between gap-2 mt-4">
+                            <div className="mt-4 flex items-center justify-between gap-2 border-t p-4 pt-0">
                                 <Button variant="outline" size="sm" onClick={() => openEditModal(plan)} className="w-full gap-1 text-xs">
                                     <Edit className="size-3.5" /> Edit Paket
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => setDeletingPlan(plan)} className="shrink-0 text-red-600 hover:text-red-700 border-red-500/30">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDeletingPlan(plan)}
+                                    className="shrink-0 border-red-500/30 text-red-600 hover:text-red-700"
+                                >
                                     <Trash2 className="size-3.5" />
                                 </Button>
                             </div>
@@ -211,11 +221,14 @@ export default function PlanIndex({ plans }: IndexProps) {
                 </div>
 
                 {/* Create Plan Modal */}
-                <Dialog open={showCreate} onOpenChange={(open) => {
-                    setShowCreate(open);
-                    if (!open) createForm.reset();
-                }}>
-                    <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+                <Dialog
+                    open={showCreate}
+                    onOpenChange={(open) => {
+                        setShowCreate(open);
+                        if (!open) createForm.reset();
+                    }}
+                >
+                    <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle>Tambah Paket Langganan Baru</DialogTitle>
                             <DialogDescription>Buat paket baru untuk mengatur limit proyek, harga, dan fitur.</DialogDescription>
@@ -309,10 +322,16 @@ export default function PlanIndex({ plans }: IndexProps) {
                             </div>
 
                             {/* Features list */}
-                            <div className="space-y-2 pt-2 border-t">
+                            <div className="space-y-2 border-t pt-2">
                                 <div className="flex items-center justify-between">
                                     <Label className="font-bold">Daftar Fitur Paket</Label>
-                                    <Button type="button" variant="outline" size="sm" onClick={() => addFeature(createForm)} className="h-7 text-xs gap-1">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => addFeature(createForm)}
+                                        className="h-7 gap-1 text-xs"
+                                    >
                                         <Plus className="size-3" /> Tambah Fitur
                                     </Button>
                                 </div>
@@ -338,16 +357,18 @@ export default function PlanIndex({ plans }: IndexProps) {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+                            <div className="grid grid-cols-3 gap-4 border-t pt-2">
                                 <div className="flex items-center gap-2">
                                     <input
                                         id="cp-active"
                                         type="checkbox"
                                         checked={createForm.data.is_active}
                                         onChange={(e) => createForm.setData('is_active', e.target.checked)}
-                                        className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
+                                        className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary"
                                     />
-                                    <Label htmlFor="cp-active" className="text-xs font-semibold cursor-pointer">Status Aktif</Label>
+                                    <Label htmlFor="cp-active" className="cursor-pointer text-xs font-semibold">
+                                        Status Aktif
+                                    </Label>
                                 </div>
 
                                 <div className="flex items-center gap-2">
@@ -356,19 +377,23 @@ export default function PlanIndex({ plans }: IndexProps) {
                                         type="checkbox"
                                         checked={createForm.data.is_popular}
                                         onChange={(e) => createForm.setData('is_popular', e.target.checked)}
-                                        className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
+                                        className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary"
                                     />
-                                    <Label htmlFor="cp-popular" className="text-xs font-semibold cursor-pointer">Tandai Populer</Label>
+                                    <Label htmlFor="cp-popular" className="cursor-pointer text-xs font-semibold">
+                                        Tandai Populer
+                                    </Label>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label htmlFor="cp-sort" className="text-xs">Urutan Tampil</Label>
+                                    <Label htmlFor="cp-sort" className="text-xs">
+                                        Urutan Tampil
+                                    </Label>
                                     <Input
                                         id="cp-sort"
                                         type="number"
                                         value={createForm.data.sort_order}
                                         onChange={(e) => createForm.setData('sort_order', Number(e.target.value))}
-                                        className="h-8 text-xs font-mono"
+                                        className="h-8 font-mono text-xs"
                                     />
                                 </div>
                             </div>
@@ -383,13 +408,16 @@ export default function PlanIndex({ plans }: IndexProps) {
                 </Dialog>
 
                 {/* Edit Plan Modal */}
-                <Dialog open={!!editingPlan} onOpenChange={(open) => {
-                    if (!open) {
-                        setEditingPlan(null);
-                        editForm.reset();
-                    }
-                }}>
-                    <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+                <Dialog
+                    open={!!editingPlan}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setEditingPlan(null);
+                            editForm.reset();
+                        }
+                    }}
+                >
+                    <DialogContent className="max-h-[90vh] min-w-4xl overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle>Edit Paket {editingPlan?.name}</DialogTitle>
                             <DialogDescription>Ubah detail paket, batas kuota upload, dan fitur.</DialogDescription>
@@ -472,10 +500,16 @@ export default function PlanIndex({ plans }: IndexProps) {
                             </div>
 
                             {/* Features list */}
-                            <div className="space-y-2 pt-2 border-t">
+                            <div className="space-y-2 border-t pt-2">
                                 <div className="flex items-center justify-between">
                                     <Label className="font-bold">Daftar Fitur Paket</Label>
-                                    <Button type="button" variant="outline" size="sm" onClick={() => addFeature(editForm)} className="h-7 text-xs gap-1">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => addFeature(editForm)}
+                                        className="h-7 gap-1 text-xs"
+                                    >
                                         <Plus className="size-3" /> Tambah Fitur
                                     </Button>
                                 </div>
@@ -501,16 +535,18 @@ export default function PlanIndex({ plans }: IndexProps) {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+                            <div className="grid grid-cols-3 gap-4 border-t pt-2">
                                 <div className="flex items-center gap-2">
                                     <input
                                         id="ep-active"
                                         type="checkbox"
                                         checked={editForm.data.is_active}
                                         onChange={(e) => editForm.setData('is_active', e.target.checked)}
-                                        className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
+                                        className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary"
                                     />
-                                    <Label htmlFor="ep-active" className="text-xs font-semibold cursor-pointer">Status Aktif</Label>
+                                    <Label htmlFor="ep-active" className="cursor-pointer text-xs font-semibold">
+                                        Status Aktif
+                                    </Label>
                                 </div>
 
                                 <div className="flex items-center gap-2">
@@ -519,19 +555,23 @@ export default function PlanIndex({ plans }: IndexProps) {
                                         type="checkbox"
                                         checked={editForm.data.is_popular}
                                         onChange={(e) => editForm.setData('is_popular', e.target.checked)}
-                                        className="h-4 w-4 rounded border-slate-300 text-primary cursor-pointer"
+                                        className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary"
                                     />
-                                    <Label htmlFor="ep-popular" className="text-xs font-semibold cursor-pointer">Tandai Populer</Label>
+                                    <Label htmlFor="ep-popular" className="cursor-pointer text-xs font-semibold">
+                                        Tandai Populer
+                                    </Label>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label htmlFor="ep-sort" className="text-xs">Urutan Tampil</Label>
+                                    <Label htmlFor="ep-sort" className="text-xs">
+                                        Urutan Tampil
+                                    </Label>
                                     <Input
                                         id="ep-sort"
                                         type="number"
                                         value={editForm.data.sort_order}
                                         onChange={(e) => editForm.setData('sort_order', Number(e.target.value))}
-                                        className="h-8 text-xs font-mono"
+                                        className="h-8 font-mono text-xs"
                                     />
                                 </div>
                             </div>
