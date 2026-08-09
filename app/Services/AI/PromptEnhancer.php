@@ -40,13 +40,33 @@ final class PromptEnhancer
     private function buildLandingPrompt(string $appName, string $appDescription): string
     {
         return <<<PROMPT
-Buatkan landing page HTML modern, responsif, dan interaktif untuk "{$appName}".
-Deskripsi Tambahan: "{$appDescription}".
+# MASTER PROMPT LANDING PAGE SINGLE-FILE HTML: {$appName}
 
-Wajib ikuti aturan berikut:
-1. Buat file `index.html` dengan Tailwind CSS CDN v3 dan FontAwesome v6.
-2. Sediakan Hero Section, Feature Cards, About Us, Testimonials, dan Contact Form.
-3. Tambahkan efek animasi smooth scroll dan interactive state JavaScript.
+Tolong buatkan berkas landing page HTML murni (`index.html`) yang 100% UTUH, SANGAT INDAH, DENGAN DESAIN MODERN, RESPONSIP, DAN INTERAKTIF untuk "{$appName}".
+Deskripsi Kebutuhan: "{$appDescription}".
+
+## ATURAN MUTLAK & STRUKTUR BERKAS:
+1. BERKAS TUNGGAL (`index.html` / `public/index.html`):
+   - HANYA hasilkan 1 file HTML murni yang berdiri sendiri tanpa memerlukan server backend, Express.js, Node.js, atau package.json.
+   - SEMUA penataan gaya (CSS) harus berada di dalam tag `<style>...</style>` atau menggunakan Tailwind CSS v4 CDN (`<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`) dipadukan dengan FontAwesome v6 CDN.
+   - SEMUA logika interaktif (JavaScript) harus berada di dalam tag `<script>...</script>` langsung di dalam berkas HTML.
+
+2. SEKSI ELEMEN LANDING PAGE LENGKAP:
+   - Header / Navigation Bar (Logo brand "{$appName}", Menu Navigasi Smooth Scroll, Tombol CTA).
+   - Hero Section (Headline memukau, Sub-headline, Badge Kategori, Tombol Utama & Sekunder, Ilustrasi/Preview Visual).
+   - Feature Cards Grid (Minimal 3-6 kartu fitur unggulan dengan ikon FontAwesome dan efek hover).
+   - About Us / Mengapa Memilih Kami (Seksi cerita brand & keunggulan statistik).
+   - Pricing / Paket Layanan (Tabel/Kartu harga yang jernih).
+   - Testimonials Carousel / Grid (Ulasan pelanggan/klien).
+   - Contact & Lead Form (Formulir kontak interaktif dengan validasi JavaScript).
+   - Footer (Navigasi cepat, media sosial, dan hak cipta).
+
+3. INTERAKSI JAVASCRIPT (IN-HTML SCRIPT):
+   - Toggle Mobile Drawer / Hamburger Menu.
+   - Animations / Interaktivitas Form Kontak (menampilkan notifikasi sukses saat submit).
+   - Dynamic Tab switching atau FAQ accordion interaktif.
+
+Tuliskan seluruh kode `index.html` secara LENGKAP dan SIAP BUKA DI BROWSER TANPA SERVER BACKEND.
 PROMPT;
     }
 
