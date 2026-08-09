@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Folder, FileCode, Trash2, Copy, Pencil, ArrowRight, Plus } from 'lucide-react';
+import { Folder, FileCode, Trash2, Copy, Pencil, ArrowRight, Plus, MoreHorizontal } from 'lucide-react';
 import {
     ContextMenu,
     ContextMenuContent,
@@ -7,6 +7,13 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
     Dialog,
     DialogContent,
@@ -120,6 +127,7 @@ export function FileTree({
         const fp = file.path;
         const isDragging = dragging === fp;
         const isOver = dragOver === fp;
+        const isActive = activeFile === fp;
 
         const fileName = fp.split('/').pop() ?? fp;
 
@@ -128,7 +136,7 @@ export function FileTree({
                 key={fp}
                 className={cn(
                     'rounded-md transition-all',
-                    isOver && 'bg-primary/10 ring-2 ring-primary ring-inset',
+                    isOver && 'bg-primary/20 ring-2 ring-primary ring-inset',
                 )}
             >
                 <ContextMenu>
@@ -144,38 +152,37 @@ export function FileTree({
                             onClick={() => onSelect(fp)}
                             onKeyDown={(e) => e.key === 'Enter' && onSelect(fp)}
                             className={cn(
-                                'flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm transition-colors',
-                                activeFile === fp && !isDragging
-                                    ? 'bg-accent text-accent-foreground'
-                                    : 'hover:bg-accent/50',
-                                isDragging && 'opacity-40 ring-2 ring-dashed ring-foreground/30',
-                                dragging && !isDragging && 'hover:bg-accent/30',
+                                'flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-xs font-medium transition-all duration-150',
+                                isActive && !isDragging
+                                    ? 'bg-primary/15 text-primary font-bold border-l-2 border-primary shadow-xs'
+                                    : 'text-foreground/80 hover:bg-accent hover:text-foreground',
+                                isDragging && 'opacity-40 ring-2 ring-dashed ring-primary',
                                 dragging ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
-                                isOver && 'ring-primary ring-2 ring-inset',
                             )}
                             style={{ paddingLeft: `${12 + depth * 12}px` }}
                         >
-                            <FileCode className={`size-3.5 shrink-0 ${EXT_ICONS[getExt(fp)] || ''}`} />
+                            <FileCode className={`size-4 shrink-0 ${EXT_ICONS[getExt(fp)] || 'text-slate-400'}`} />
                             <span className="flex-1 truncate">{fileName}</span>
+                            {isActive && <div className="size-1.5 rounded-full bg-primary shrink-0" />}
                         </div>
                     </ContextMenuTrigger>
-                    <ContextMenuContent>
+                    <ContextMenuContent className="w-48">
                         <ContextMenuItem onClick={() => onSelect(fp)}>
-                            <FileCode className="size-3.5" /> Open
+                            <FileCode className="size-3.5 text-primary" /> Open Code
                         </ContextMenuItem>
                         <ContextMenuSeparator />
                         <ContextMenuItem onClick={() => onDuplicate(fp)}>
-                            <Copy className="size-3.5" /> Duplicate
+                            <Copy className="size-3.5 text-indigo-500" /> Duplicate
                         </ContextMenuItem>
                         <ContextMenuItem onClick={() => onRename(fp)}>
-                            <Pencil className="size-3.5" /> Rename
+                            <Pencil className="size-3.5 text-amber-500" /> Rename
                         </ContextMenuItem>
                         <ContextMenuItem onClick={() => onMove(fp)}>
-                            <ArrowRight className="size-3.5" /> Move to
+                            <ArrowRight className="size-3.5 text-emerald-500" /> Move to
                         </ContextMenuItem>
                         <ContextMenuSeparator />
                         <ContextMenuItem onClick={() => onDelete(fp)} variant="destructive">
-                            <Trash2 className="size-3.5" /> Delete
+                            <Trash2 className="size-3.5 text-red-500" /> Delete
                         </ContextMenuItem>
                     </ContextMenuContent>
                 </ContextMenu>
@@ -193,11 +200,11 @@ export function FileTree({
                 onDrop={(e) => onDropToFolder(e, '/')}
                 className={cn(
                     'rounded-md transition-all',
-                    dragOver === '/' && 'bg-primary/15 ring-2 ring-primary/40',
+                    dragOver === '/' && 'bg-primary/20 ring-2 ring-primary/40',
                 )}
             >
-                <div className="flex w-full items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground">
-                    <Folder className="size-3 text-amber-500" />
+                <div className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <Folder className="size-3.5 text-amber-500" />
                     root
                 </div>
                 <div className="space-y-0.5">
@@ -209,6 +216,7 @@ export function FileTree({
             {allFolderNames.map((folderName) => {
                 const dirFiles = files.filter((f) => f.path.startsWith(folderName + '/'));
                 const dbFolder = folders.find((f) => f.name === folderName);
+                const isFolderActive = activeFile?.startsWith(folderName + '/');
 
                 return (
                     <div
@@ -217,71 +225,73 @@ export function FileTree({
                         onDragLeave={() => setDragOver(null)}
                         onDrop={(e) => onDropToFolder(e, folderName)}
                         className={cn(
-                            'rounded-md transition-all',
-                            dragOver === folderName && 'bg-primary/15 ring-2 ring-primary/40',
+                            'rounded-md transition-all space-y-0.5',
+                            dragOver === folderName && 'bg-primary/20 ring-2 ring-primary/40',
                         )}
                     >
-                        <ContextMenu>
-                            <ContextMenuTrigger asChild>
-                                <div className="group flex w-full items-center justify-between px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent/40 rounded-md cursor-pointer">
-                                    <div className="flex items-center gap-1.5 truncate">
-                                        <Folder className="size-3.5 text-amber-500 shrink-0" />
-                                        <span className="font-semibold text-foreground truncate">{folderName}</span>
-                                        <span className="text-[10px] text-muted-foreground font-normal">({dirFiles.length})</span>
+                        <DropdownMenu>
+                            <ContextMenu>
+                                <ContextMenuTrigger asChild>
+                                    <div className={cn(
+                                        'flex w-full items-center justify-between px-2.5 py-1.5 text-xs font-semibold rounded-md cursor-pointer transition-all duration-150',
+                                        isFolderActive
+                                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                                            : 'text-foreground/90 hover:bg-accent hover:text-foreground'
+                                    )}>
+                                        <div className="flex items-center gap-2 truncate">
+                                            <Folder className="size-4 text-amber-500 shrink-0" />
+                                            <span className="truncate">{folderName}</span>
+                                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-normal text-muted-foreground">
+                                                {dirFiles.length}
+                                            </span>
+                                        </div>
+
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="size-6 p-0 hover:bg-accent text-muted-foreground hover:text-foreground shrink-0"
+                                                onClick={(e) => e.stopPropagation()}
+                                                title="Menu Folder"
+                                            >
+                                                <MoreHorizontal className="size-3.5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
                                     </div>
-                                    <div className="hidden group-hover:flex items-center gap-1 shrink-0">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onNewFileInFolder(folderName);
-                                            }}
-                                            className="p-1 hover:text-primary transition-colors"
-                                            title="Buat File di Folder Ini"
-                                        >
-                                            <Plus className="size-3 text-primary" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setFolderToRename({ oldName: folderName, newName: folderName });
-                                            }}
-                                            className="p-1 hover:text-indigo-500 transition-colors"
-                                            title="Pindahkan / Rename Folder"
-                                        >
-                                            <Pencil className="size-3 text-indigo-500" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setFolderToDelete({ name: folderName, files: dirFiles });
-                                            }}
-                                            className="p-1 hover:text-red-500 transition-colors"
-                                            title="Hapus Folder"
-                                        >
-                                            <Trash2 className="size-3 text-red-500" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </ContextMenuTrigger>
-                            <ContextMenuContent>
-                                <ContextMenuItem onClick={() => onNewFileInFolder(folderName)}>
-                                    <Plus className="size-3.5 text-primary" /> Buat File di Folder ini
-                                </ContextMenuItem>
-                                <ContextMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })}>
-                                    <Pencil className="size-3.5 text-indigo-500" /> Pindahkan / Rename Folder
-                                </ContextMenuItem>
-                                <ContextMenuSeparator />
-                                <ContextMenuItem
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="w-52">
+                                    <ContextMenuItem onClick={() => onNewFileInFolder(folderName)}>
+                                        <Plus className="size-3.5 text-primary" /> Buat File di Folder ini
+                                    </ContextMenuItem>
+                                    <ContextMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })}>
+                                        <Pencil className="size-3.5 text-indigo-500" /> Pindahkan / Rename Folder
+                                    </ContextMenuItem>
+                                    <ContextMenuSeparator />
+                                    <ContextMenuItem
+                                        onClick={() => setFolderToDelete({ name: folderName, files: dirFiles })}
+                                        variant="destructive"
+                                    >
+                                        <Trash2 className="size-3.5 text-red-500" /> Hapus Folder (Beserta Isinya)
+                                    </ContextMenuItem>
+                                </ContextMenuContent>
+                            </ContextMenu>
+
+                            <DropdownMenuContent align="end" className="w-52">
+                                <DropdownMenuItem onClick={() => onNewFileInFolder(folderName)} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                    <Plus className="size-4 text-primary" /> Buat File di Folder ini
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setFolderToRename({ oldName: folderName, newName: folderName })} className="flex items-center gap-2 cursor-pointer text-xs font-medium">
+                                    <Pencil className="size-4 text-indigo-500" /> Pindahkan / Rename Folder
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
                                     onClick={() => setFolderToDelete({ name: folderName, files: dirFiles })}
-                                    variant="destructive"
+                                    className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-red-600 dark:text-red-400 focus:text-red-600"
                                 >
-                                    <Trash2 className="size-3.5 text-red-500" /> Hapus Folder (Beserta Isinya)
-                                </ContextMenuItem>
-                            </ContextMenuContent>
-                        </ContextMenu>
+                                    <Trash2 className="size-4 text-red-500" /> Hapus Folder (Beserta Isinya)
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <div className="space-y-0.5">
                             {dirFiles.map((file) => renderFile(file, 1))}
