@@ -151,20 +151,21 @@ export default function PlanIndex({ plans }: IndexProps) {
                 </div>
 
                 {/* Plans Cards Grid */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 pt-3">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {plans.map((plan) => (
                         <Card key={plan.id} className={`flex flex-col justify-between relative transition-all ${plan.is_popular ? 'border-2 border-primary shadow-lg' : ''}`}>
-                            {plan.is_popular && (
-                                <div className="absolute -top-3.5 right-4 z-10 bg-primary text-primary-foreground text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-md">
-                                    Populer
-                                </div>
-                            )}
-
-                            <CardHeader className="pb-3">
+                            <CardHeader className="pb-3 pt-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-[10px]">
-                                        {plan.is_active ? 'Aktif' : 'Non-aktif'}
-                                    </Badge>
+                                    <div className="flex items-center gap-1.5">
+                                        <Badge variant={plan.is_active ? 'default' : 'secondary'} className="text-[10px]">
+                                            {plan.is_active ? 'Aktif' : 'Non-aktif'}
+                                        </Badge>
+                                        {plan.is_popular && (
+                                            <Badge className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[10px] uppercase border-0">
+                                                Populer
+                                            </Badge>
+                                        )}
+                                    </div>
                                     <span className="font-mono text-xs text-muted-foreground">Slug: {plan.slug}</span>
                                 </div>
                                 <CardTitle className="text-xl font-bold mt-2">{plan.name}</CardTitle>
