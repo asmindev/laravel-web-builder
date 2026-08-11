@@ -37,18 +37,12 @@ class Project extends Model
     protected static function booted(): void
     {
         static::creating(function (Project $project) {
-            if (!$project->slug) {
-                $baseSlug = 'user-' . $project->user_id . '-project';
-                $count = static::where('user_id', $project->user_id)->count() + 1;
-                $slug = $baseSlug . '-' . $count;
-                
-                while (static::where('slug', $slug)->exists()) {
-                    $count++;
-                    $slug = $baseSlug . '-' . $count;
-                }
-                
-                $project->slug = $slug;
-            }
+            $project->slug = 'temp-' . uniqid();
+        });
+
+        static::created(function (Project $project) {
+            $project->slug = (string) $project->id;
+            $project->saveQuietly();
         });
     }
 
