@@ -215,6 +215,16 @@ p { color: #6b7280; margin-bottom: 1.5rem; }
             ];
         }
 
+        $defaults['.env'] = [
+            'content' => "PORT=3000\nDB_CONNECTION=mysql\nDB_HOST=127.0.0.1\nDB_PORT=3306\nDB_DATABASE=app_db\nDB_USERNAME=root\nDB_PASSWORD=secret\nSESSION_SECRET=super_secret_session_key_2026\n",
+            'mime_type' => 'text/plain',
+        ];
+
+        $defaults['README.md'] = [
+            'content' => "# {$project->name}\n\n## Default Credentials\nJika aplikasi ini menggunakan fitur autentikasi (Node.js backend), Anda dapat login menggunakan:\n- **Username / Email**: `admin`\n- **Password**: `admin123`\n",
+            'mime_type' => 'text/markdown',
+        ];
+
         foreach ($defaults as $path => $file) {
             $project->files()->create([
                 'path' => $path,

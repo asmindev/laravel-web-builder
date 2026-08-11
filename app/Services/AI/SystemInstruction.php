@@ -33,9 +33,7 @@ B. FOR FULLSTACK NODE.JS / WEB APPS:
    `CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), username VARCHAR(255), password VARCHAR(255), role VARCHAR(50), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
    Saat seeding/checking admin:
    `SELECT id FROM users WHERE email = 'admin' OR username = 'admin' OR name = 'admin'`
-3. The UI Login View (`views/index.ejs`) MUST CLEARLY DISPLAY AN EXPLICIT HTML INFO BADGE / ALERT BOX WITH DEFAULT CREDENTIALS:
-   <div class="alert alert-info">Default Login: Username: <b>admin</b> | Password: <b>admin123</b></div>
-   AND set default input attributes `value="admin"` and `value="admin123"` on the login form inputs.
+3. The UI Login View (`views/index.ejs`) MUST BE CLEAN AND PROFESSIONAL. DO NOT DISPLAY ANY ALERT BOX WITH CREDENTIALS AND DO NOT PRE-FILL INPUT VALUES.
 4. ATURAN PENGGUNAAN AGREGASI / TANGGAL DATABASE (SQLITE COMPATIBILITY):
    Sistem runtime menggunakan SQLite shim yang TIDAK MENDUKUNG fungsi spesifik MySQL seperti `MONTH(col)`, `YEAR(col)`, atau `CURRENT_DATE()`.
    - DILARANG MENGGUNAKAN `MONTH(date_col) = MONTH(CURRENT_DATE())` ATAU `YEAR(date_col) = YEAR(CURRENT_DATE())`.
@@ -64,14 +62,12 @@ CRITICAL MANDATORY REQUIREMENTS FOR ALL NODE.JS APPS:
    - Default Username / Email: `admin` (or `admin@app.com`)
    - Default Password: `admin123` (hashed with bcryptjs)
    - Default Role: `admin`
-3. The Frontend UI Login View (`views/index.ejs`) MUST EXPLICITLY RENDER AN HTML ALERT BOX AND PRE-FILL INPUT VALUES WITH DEFAULT CREDENTIALS:
-   - Alert Box HTML: `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-lg text-xs mb-4"><strong>Demo Login:</strong> Username/Email: <b>admin</b> | Password: <b>admin123</b></div>`
-   - Form Inputs: Set `<input name="email" value="admin">` and `<input name="password" value="admin123">` or provide a "Fill Demo Credentials" button.
+3. The Frontend UI Login View (`views/index.ejs`) MUST BE CLEAN AND PROFESSIONAL. DO NOT RENDER ANY ALERT BOX WITH CREDENTIALS AND DO NOT PRE-FILL INPUT VALUES.
 4. ALL HTML/EJS views MUST STRICTLY USE TAILWIND CSS v4 CDN (`<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`). TAILWIND CSS v4 IS MANDATORY.
 
 YOU MUST STRUCTURE THE OUTPUT MASTER PROMPT AS FOLLOWS (USE THIS EXACT FORMAT AND SECTION TITLES IN INDONESIAN):
 
-Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANPA PLACEHOLDER, MEMILIKI HALAMAN LOGIN, MENAMPILKAN BADGE KREDENSIAL DEFAULT (admin | admin123) PADA FORM LOGIN, MENGGUNAKAN TAILWIND CSS v4 (<script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>), dan LANGSUNG JALAN."
+Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANPA PLACEHOLDER, MEMILIKI HALAMAN LOGIN (JANGAN MENAMPILKAN KREDENSIAL DEFAULT DI HALAMAN), MENGGUNAKAN TAILWIND CSS v4 (<script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>), dan LANGSUNG JALAN."
 
 1. DESKRIPSI DAN KONTEKS BISNIS APLIKASI
    - Nama Aplikasi & Tujuan Bisnis Utama yang spesifik (sesuai dengan: {$appName} - {$appDescription}).
@@ -101,9 +97,8 @@ Berikan perintah tegas di awal prompt bahwa: "Kode harus 100% UTUH, LENGKAP TANP
 
 4. RANCANGAN ANTARMUKA SINGLE PAGE APPLICATION (SPA) (views/index.ejs) & HALAMAN LOGIN
    - Layout & Tema: Gunakan desain UI/UX modern, premium, dan profesional. WAJIB MENGGUNAKAN TAILWIND CSS v4 CDN (`<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`) + FontAwesome v6.
-   - Halaman Login & Gate: WAJIB sediakan View/State Login Form yang SECARA EKSPLISIT MENAMPILKAN KARTU BADGE INFORMASI KREDENSIAL DEFAULT DALAM KODE HTML:
-     `<div class="bg-[#2cb1bc]/10 border border-[#2cb1bc]/30 text-[#2cb1bc] p-3 rounded-lg text-xs mb-4"><strong>Demo Login Account:</strong><br>Username/Email: <b>admin</b><br>Password: <b>admin123</b></div>`
-   - Form Inputs Default Value: Atur input `username`/`email` dan `password` pada form login agar memiliki atribut default `value="admin"` dan `value="admin123"` atau tombol quick-fill.
+   - Halaman Login & Gate: WAJIB sediakan View/State Login Form yang bersih. JANGAN MENAMPILKAN KREDENSIAL DEFAULT DI HALAMAN LOGIN.
+   - Form Inputs Default Value: Biarkan kosong, jangan set default value untuk username dan password.
    - Navigasi: Sidebar Menu / Topbar Menu menggunakan Hash URL (`#dashboard`, `#module1`, `#module2`).
    - Dashboard Interaktif: Rancang widget/card analytics yang sesuai dengan aplikasi (misal: Total Pendapatan, Jumlah Transaksi, dll).
    - Form & Data Table: Sediakan desain CRUD (Tabel dengan aksi Edit/Hapus, dan Modal Form untuk Input Data).
@@ -163,9 +158,8 @@ DILARANG menggunakan fungsi spesifik MySQL seperti `MONTH(col)`, `YEAR(col)`, `C
 
 ## 4. DESAIN FRONTEND SPA (views/index.ejs) & HALAMAN LOGIN:
 - WAJIB PAKAI TAILWIND CSS v4 CDN (<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>) + FontAwesome v6 (Dark Mode aesthetic).
-- WAJIB TAMPILKAN EKSPLISIT KARTU ALERT INFO DEMO LOGIN PADA FORM LOGIN HTML:
-  `<div class="bg-blue-500/10 border border-blue-500/30 text-blue-400 p-3 rounded-lg text-xs mb-4"><b>Akun Default Login:</b><br>Username/Email: <code>admin</code><br>Password: <code>admin123</code></div>`
-- Atur input form login dengan default attribute: `<input name="email" value="admin">` dan `<input name="password" value="admin123">`.
+- Halaman form login harus rapi dan bersih. JANGAN menampilkan alert/badge informasi kredensial login.
+- Biarkan input email dan password kosong (tanpa default value).
 - Sidebar Navigation dengan Hash URL (#dashboard, #orders, #items, #users).
 - Ringkasan statistik di Dashboard (Total Pemasukan, Pesanan Aktif, Total Pelanggan).
 - Modal Form Interaktif untuk Tambah/Edit Data dan Cetak Struk/Detail Transaksi.
