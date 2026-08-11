@@ -453,7 +453,7 @@ export default function Welcome({
                                     />
 
                                     <div className="pointer-events-none absolute inset-0 z-30 mix-blend-screen">
-                                        <div className="h-8 w-full animate-bounce bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent" />
+                                        <div className="h-8 w-full animate-scan bg-gradient-to-b from-transparent via-[#2cb1bc]/40 to-transparent" />
                                     </div>
 
                                     <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_120%)]" />
