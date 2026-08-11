@@ -12,7 +12,7 @@ class ProjectService
         $project = Project::create([
             'user_id' => $userId,
             'name' => $data['name'],
-            'slug' => $data['slug'] ?? Str::random(12),
+            'slug' => $data['slug'] ?? null,
             'description' => $data['description'] ?? null,
             'template' => $data['template'] ?? 'blank',
             'config' => $data['config'] ?? ['title' => $data['name']],

@@ -36,7 +36,20 @@ class Project extends Model
 
     protected static function booted(): void
     {
-        static::creating(fn (Project $project) => $project->slug ??= Str::random(12));
+        static::creating(function (Project $project) {
+            if (!$project->slug) {
+                $baseSlug = 'user-' . $project->user_id . '-project';
+                $count = static::where('user_id', $project->user_id)->count() + 1;
+                $slug = $baseSlug . '-' . $count;
+                
+                while (static::where('slug', $slug)->exists()) {
+                    $count++;
+                    $slug = $baseSlug . '-' . $count;
+                }
+                
+                $project->slug = $slug;
+            }
+        });
     }
 
     public function user(): BelongsTo
