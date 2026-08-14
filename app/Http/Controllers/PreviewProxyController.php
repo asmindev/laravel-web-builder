@@ -59,7 +59,7 @@ class PreviewProxyController extends Controller
                 'projectData' => $project->toArray(),
             ]);
 
-            $httpRequest = Http::timeout(15);
+            $httpRequest = Http::timeout(15)->withoutRedirecting();
             
             // Forward raw Cookie header dari browser client (e.g. connect.sid untuk express-session)
             $rawCookieHeader = $_SERVER['HTTP_COOKIE'] ?? $request->server('HTTP_COOKIE') ?? $request->header('Cookie');
@@ -161,6 +161,17 @@ HTML;
             ];
 
             $laravelResponse = response($body, $response->status(), $headers);
+
+            // Rewrite redirect Location headers (e.g. /login → /app/10/login)
+            $locationHeader = $response->header('Location');
+            if ($locationHeader) {
+                if (str_starts_with($locationHeader, '/')) {
+                    $locationHeader = '/app/' . $slug . $locationHeader;
+                } else {
+                    $locationHeader = preg_replace('#^https?://[^/]+(?:/[^/]+)?(/.*)?$#', '/app/' . $slug . '$1', $locationHeader);
+                }
+                $laravelResponse->headers->set('Location', $locationHeader);
+            }
 
             // Forward Set-Cookie header dari Node Engine (e.g. connect.sid) ke browser client
             $setCookieHeader = $response->header('Set-Cookie');
