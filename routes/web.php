@@ -16,6 +16,16 @@ Route::any('/app/{slug}/{path?}', PreviewProxyController::class)
     ->where('path', '.*')
     ->name('app.preview');
 
+// Fallback proxy: automatically route /api/* calls to the originating project using the Referer header
+Route::any('/api/{any}', function (\Illuminate\Http\Request $request, string $any) {
+    $referer = $request->header('Referer', '');
+    if (preg_match('~/app/([^/?#]+)~', $referer, $matches)) {
+        $slug = $matches[1];
+        return app(PreviewProxyController::class)($request, $slug, 'api/' . $any);
+    }
+    abort(404);
+})->where('any', '.*');
+
 // Public Landing Page
 Route::get('/', function () {
     return \Inertia\Inertia::render('welcome', [

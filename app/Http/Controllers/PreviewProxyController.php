@@ -97,25 +97,58 @@ class PreviewProxyController extends Controller
 
             // Rewrite absolute paths di HTML/JS agar request sampe ke Node Engine.
             // /assets/... → /app/slug/assets/..., /api/... → /app/slug/api/...
-            // Root-level files: /style.css → /app/slug/style.css
             if (str_contains($contentType, 'text/html')) {
                 $prefix = '/app/' . $slug;
-                // Direct replacements
+
+                // 1. Direct replacements for static and template strings
                 $body = str_replace(
-                    ["'/api/", '"/api/', '`/api/'],
-                    ["'" . $prefix . '/api/', '"' . $prefix . '/api/', '`' . $prefix . '/api/'],
+                    ["'/api", '"/api', '`/api', "'/assets", '"/assets', '`/assets', "'/public", '"/public', '`/public'],
+                    ["'" . $prefix . '/api', '"' . $prefix . '/api', '`' . $prefix . '/api', "'" . $prefix . '/assets', '"' . $prefix . '/assets', '`' . $prefix . '/assets', "'" . $prefix . '/public', '"' . $prefix . '/public', '`' . $prefix . '/public'],
                     $body
                 );
-                $body = str_replace(
-                    ["'/assets/", '"/assets/', '`/assets/'],
-                    ["'" . $prefix . '/assets/', '"' . $prefix . '/assets/', '`' . $prefix . '/assets/'],
-                    $body
-                );
-                $body = str_replace(
-                    ["'/public/", '"/public/', '`/public/'],
-                    ["'" . $prefix . '/public/', '"' . $prefix . '/public/', '`' . $prefix . '/public/'],
-                    $body
-                );
+
+                // 2. Client-side Fetch & XHR Interceptor injection
+                $interceptorScript = <<<HTML
+<script id="__preview_proxy_interceptor__">
+(function() {
+    const slugPrefix = '{$prefix}';
+    const _fetch = window.fetch;
+    window.fetch = function(resource, init) {
+        if (typeof resource === 'string') {
+            if (resource.startsWith('/api') || resource.startsWith('/assets') || resource.startsWith('/public')) {
+                resource = slugPrefix + resource;
+            }
+        } else if (resource && resource.url) {
+            try {
+                const u = new URL(resource.url, window.location.origin);
+                if (u.origin === window.location.origin && (u.pathname.startsWith('/api') || u.pathname.startsWith('/assets') || u.pathname.startsWith('/public'))) {
+                    resource = new Request(slugPrefix + u.pathname + u.search, resource);
+                }
+            } catch(e) {}
+        }
+        return _fetch.call(this, resource, init);
+    };
+
+    const _open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+        if (typeof url === 'string') {
+            if (url.startsWith('/api') || url.startsWith('/assets') || url.startsWith('/public')) {
+                url = slugPrefix + url;
+            }
+        }
+        return _open.call(this, method, url, ...rest);
+    };
+})();
+</script>
+HTML;
+
+                if (str_contains($body, '<head>')) {
+                    $body = str_replace('<head>', "<head>\n" . $interceptorScript, $body);
+                } elseif (str_contains($body, '<html>')) {
+                    $body = str_replace('<html>', "<html>\n" . $interceptorScript, $body);
+                } else {
+                    $body = $interceptorScript . "\n" . $body;
+                }
             }
 
             $headers = [
