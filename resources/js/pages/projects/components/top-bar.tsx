@@ -14,6 +14,7 @@ interface TopBarProps {
     onSave: () => void;
     onPublish: () => void;
     onOpenPromptModal: () => void;
+    onOpenResetDbModal: () => void;
     onOpenDeleteModal: () => void;
 }
 
@@ -25,6 +26,7 @@ export function TopBar({
     onSave,
     onPublish,
     onOpenPromptModal,
+    onOpenResetDbModal,
     onOpenDeleteModal,
 }: TopBarProps) {
     return (
@@ -51,6 +53,16 @@ export function TopBar({
                     className="gap-1 border-indigo-500/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
                 >
                     <Sparkles className="size-3.5 text-amber-500" /> Buat Prompt
+                </Button>
+
+                {/* Kosongkan DB (Simpan Admin) Button */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onOpenResetDbModal}
+                    className="gap-1 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                >
+                    <Database className="size-3.5 text-amber-500" /> Kosongkan DB
                 </Button>
 
                 {/* Download / Export Options Dropdown */}

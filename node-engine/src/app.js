@@ -58,6 +58,23 @@ app.post('/internal/purge-cache', internalAuth(INTERNAL_API_SECRET), (req, res) 
     }
 });
 
+// Reset project database seed records while keeping admin account
+app.post('/internal/reset-db', internalAuth(INTERNAL_API_SECRET), (req, res) => {
+    const body = parseJsonBody(req);
+    const { slug } = body;
+    if (!slug) return res.status(400).json({ success: false, message: 'Missing project slug' });
+
+    const { resetDbKeepAdmin } = require('./services/sqlite-shim');
+    const result = resetDbKeepAdmin(slug);
+
+    if (global.__appInstances) global.__appInstances.delete(slug);
+    if (global.__sessionStores) global.__sessionStores.delete(slug);
+    cache.del(`project:${slug}`);
+    cache.del(`preload:${slug}`);
+
+    res.json(result);
+});
+
 // Internal render endpoint with project data inline (no API callback needed)
 app.post('/api/render', async (req, res) => {
     const { slug, project, path } = req.body;

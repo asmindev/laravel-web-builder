@@ -7,7 +7,8 @@ import AdminLayout from '@/layouts/admin-layout';
 import { mapLanguage } from '@/lib/file-utils';
 import type { ShowProps } from '@/types/project';
 import { Head, router } from '@inertiajs/react';
-import { Check, CheckCircle2, Copy, ExternalLink, Loader2, ShieldAlert, Sparkles, Trash2 } from 'lucide-react';
+import axios from 'axios';
+import { Check, CheckCircle2, Copy, Database, ExternalLink, Loader2, ShieldAlert, Sparkles, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { MoveDialog } from './components/move-dialog';
 import { RenameDialog } from './components/rename-dialog';
@@ -25,6 +26,11 @@ export default function ProjectShow({ project }: ShowProps) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
+    // Reset DB States
+    const [showResetDbModal, setShowResetDbModal] = useState(false);
+    const [resettingDb, setResettingDb] = useState(false);
+    const [resetDbStatus, setResetDbStatus] = useState<{ success: boolean; message: string } | null>(null);
+
     // Prompt Enhancer States
     const [showPromptModal, setShowPromptModal] = useState(false);
     const [appName, setAppName] = useState(project.name);
@@ -34,6 +40,25 @@ export default function ProjectShow({ project }: ShowProps) {
     const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [enhanceError, setEnhanceError] = useState<string | null>(null);
+
+    const handleResetDatabase = async () => {
+        setResettingDb(true);
+        setResetDbStatus(null);
+        try {
+            const res = await axios.post(route('projects.reset-db', project.slug));
+            setResetDbStatus({
+                success: res.data.success,
+                message: res.data.message || 'Database berhasil dikosongkan! Akun admin tetap dipertahankan.',
+            });
+        } catch (err: any) {
+            setResetDbStatus({
+                success: false,
+                message: err.response?.data?.message || 'Gagal mengosongkan database.',
+            });
+        } finally {
+            setResettingDb(false);
+        }
+    };
 
     const handleDeleteProject = () => {
         setDeleting(true);
@@ -96,6 +121,7 @@ export default function ProjectShow({ project }: ShowProps) {
                 onSave={f.handleSave}
                 onPublish={f.handlePublish}
                 onOpenPromptModal={() => setShowPromptModal(true)}
+                onOpenResetDbModal={() => setShowResetDbModal(true)}
                 onOpenDeleteModal={() => setShowDeleteModal(true)}
             />
 
@@ -275,6 +301,63 @@ export default function ProjectShow({ project }: ShowProps) {
                         </Button>
                         <Button variant="destructive" onClick={handleDeleteProject} disabled={deleting}>
                             {deleting ? <Loader2 className="mr-1 size-4 animate-spin" /> : null} Ya, Hapus Proyek
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Reset / Kosongkan Data Seed Database Dialog */}
+            <Dialog
+                open={showResetDbModal}
+                onOpenChange={(open) => {
+                    setShowResetDbModal(open);
+                    if (!open) setResetDbStatus(null);
+                }}
+            >
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                            <Database className="size-5" /> Kosongkan Data Seed Database?
+                        </DialogTitle>
+                        <DialogDescription className="text-sm leading-relaxed text-muted-foreground mt-2">
+                            Tindakan ini akan <strong>mengosongkan seluruh data tabel sampel / demo</strong> (seperti produk, riwayat transaksi, mutasi stok, log aktivitas, dll.) pada database proyek <strong>{project.name}</strong>.
+                            <br /><br />
+                            <span className="text-foreground font-medium flex items-center gap-1.5">
+                                <CheckCircle2 className="size-4 text-emerald-500 shrink-0 inline" />
+                                Akun Login Administrator (admin) tetap dipertahankan
+                            </span>
+                            sehingga Anda dapat langsung login dan menginput data riil operasional dari awal tanpa data sampah.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {resetDbStatus && (
+                        <div
+                            className={`p-3 rounded-lg border text-sm flex items-start gap-2.5 ${
+                                resetDbStatus.success
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                                    : 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400'
+                            }`}
+                        >
+                            {resetDbStatus.success ? (
+                                <CheckCircle2 className="size-4 shrink-0 mt-0.5" />
+                            ) : (
+                                <ShieldAlert className="size-4 shrink-0 mt-0.5" />
+                            )}
+                            <span>{resetDbStatus.message}</span>
+                        </div>
+                    )}
+
+                    <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                        <Button variant="outline" onClick={() => setShowResetDbModal(false)} disabled={resettingDb}>
+                            Tutup
+                        </Button>
+                        <Button
+                            onClick={handleResetDatabase}
+                            disabled={resettingDb}
+                            className="bg-amber-600 hover:bg-amber-500 text-white gap-1"
+                        >
+                            {resettingDb ? <Loader2 className="mr-1 size-4 animate-spin" /> : <Database className="size-4" />}
+                            Kosongkan Data Sekarang
                         </Button>
                     </DialogFooter>
                 </DialogContent>

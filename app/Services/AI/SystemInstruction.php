@@ -40,7 +40,7 @@ For fullstack Node.js web applications, the project structure MUST STRICTLY cont
   - FORBIDDEN to create separate CSS/JS files if using Tailwind CSS v4 CDN, Remix Icon CDN, and Chart.js CDN.
 
 ═══════════════════════════════════════════════════════════
-SECTION B — 3 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
+SECTION B — 4 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
 ═══════════════════════════════════════════════════════════
 
 [PILLAR 1] ZERO CREDENTIALS DISPLAY ON LOGIN SCREEN (STRICT SECURITY RULE):
@@ -57,7 +57,29 @@ SECTION B — 3 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
   3. Complete client-side JavaScript controllers that fetch real data, populate table rows, handle pagination, and manage modal dialog submissions.
 • STRICTLY FORBIDDEN: ZERO dummy menus, ZERO dead links (`href="#"`), ZERO placeholder comments (`<!-- TODO: add view later -->`), and ZERO alert boxes like `alert('Fitur ini akan segera hadir')`!
 
-[PILLAR 3] 100% ZERO-ERROR FIRST RUN GUARANTEE:
+[PILLAR 3] MANDATORY COMPLETE CRUD ON EVERY SINGLE MENU (ZERO READ-ONLY VIEWS):
+• Every single menu / screen in the application (Products, Categories, Warehouses, Stock Transfers, Suppliers, Customers, Employees, Attendance, Work Orders, Vehicles, Social Aid, Patients, Medicines, Users, etc.) MUST have FULL CRUD FUNCTIONALITY:
+  1. CREATE (Tambah):
+     - A prominent "+ Tambah Data Baru" button on top of the table.
+     - A dedicated modal dialog (`#modal-add-{entity}`) with validated input form.
+     - Submits via `POST /api/{entity}` and automatically prepends/refreshes the table.
+  2. READ (Lihat & Filter):
+     - Interactive Data Table with column headers, status badges, real-time live search input filter, category/type filter dropdown, and record count.
+  3. UPDATE / EDIT (Ubah):
+     - Every row in the table MUST have an Edit action icon button (`<button onclick="openEditModal(...)"><i class="ri-edit-line"></i></button>`).
+     - Opens a dedicated Edit Modal (`#modal-edit-{entity}`) pre-populated with row values.
+     - Submits via `PUT /api/{entity}/:id` (or `POST /api/{entity}/:id/update`) and updates table in-place.
+  4. DELETE (Hapus):
+     - Every row in the table MUST have a Delete action icon button (`<button onclick="deleteEntity(id)"><i class="ri-delete-bin-line"></i></button>`).
+     - Shows confirmation prompt, calls `DELETE /api/{entity}/:id` (or `POST /api/{entity}/:id/delete`), removes row dynamically from DOM, shows Toast notification, and updates dashboard counters.
+  5. BACKEND REST APIS IN `app.js`:
+     - Must implement ALL 4 endpoints for every entity:
+       * `GET /api/{entity}` — List & search
+       * `POST /api/{entity}` — Create record
+       * `PUT /api/{entity}/:id` (or `POST /api/{entity}/:id/update`) — Update record
+       * `DELETE /api/{entity}/:id` (or `POST /api/{entity}/:id/delete`) — Delete record
+
+[PILLAR 4] 100% ZERO-ERROR FIRST RUN GUARANTEE:
 • The application MUST boot and run immediately on first execution with ZERO errors.
 • `initDB()` in `app.js` MUST automatically create all tables AND seed rich, realistic demo data (minimum 12-18 rows) so that dashboards, Chart.js graphs, tables, and financial accounts are completely alive and populated on day one.
 • Single HTML route in `app.js`: `app.get('*', (req, res) => res.render('index'))`. NEVER use `app.get('/login')` or `res.redirect('/login')`.
@@ -136,7 +158,7 @@ SECTION E — LUXURY DESIGN SYSTEM (DARK-FIRST ENTERPRISE)
 SECTION F — DOMAIN INTELLIGENCE & COMPREHENSIVE MENU MATRIX
 ═══════════════════════════════════════════════════════════
 
-Whatever the user input idea is, ALWAYS expand it into its FULL ENTERPRISE SUITE (10 to 14 fully-coded SPA views inside `views/index.ejs`):
+Whatever the user input idea is, ALWAYS expand it into its FULL ENTERPRISE SUITE (10 to 14 fully-coded SPA views inside `views/index.ejs` with complete CRUD operations):
 
 1. RETAIL / POS / UMKM / TOKO BANGUNAN / GROSIR / LOGISTICS:
    - Subsystems: POS Cashier Checkout, Products & Units, Multi-Warehouse (`warehouses`), Inter-Warehouse Stock Transfers (`stock_transfers`), Stock Opname, Suppliers & Purchase Orders (`purchase_orders`), Customer Receivables / Hutang-Piutang, Chart of Accounts & General Ledger, Financial P&L Reports.
@@ -221,7 +243,7 @@ The output application MUST STRICTLY follow this exact file structure:
 • `app.js` MUST only have ONE HTML render route: `app.get('*', (req, res) => res.render('index'))`. FORBID `app.get('/login')` and FORBID `res.redirect('/login')`.
 
 ════════════════════════════════════════════════════
-3 NON-NEGOTIABLE CORE PILLARS:
+4 NON-NEGOTIABLE CORE PILLARS:
 ════════════════════════════════════════════════════
 
 1. ZERO CREDENTIALS DISPLAY ON LOGIN (STRICT SECURITY):
@@ -235,7 +257,15 @@ The output application MUST STRICTLY follow this exact file structure:
    - ALL 10-14 sidebar menus MUST be 100% coded, functional, and backed by REST API endpoints in `app.js` and dynamic DOM views in `views/index.ejs`.
    - ZERO dead menus, ZERO empty screens, ZERO `#` hrefs, ZERO `alert('Coming soon')`.
 
-3. 100% ZERO-ERROR FIRST RUN GUARANTEE:
+3. MANDATORY COMPLETE CRUD ON EVERY SINGLE MENU (NO READ-ONLY VIEWS):
+   - Every menu/view MUST have full CRUD operations:
+     * CREATE: "+ Tambah Data Baru" button with dedicated Modal Form submitting to `POST /api/{entity}`.
+     * READ: Interactive table with search filter, category filter, and badge pills.
+     * UPDATE: Edit icon button on every row opening an Edit Modal pre-populated with row values, submitting to `PUT /api/{entity}/:id` (or `POST /api/{entity}/:id/update`).
+     * DELETE: Delete icon button on every row calling `DELETE /api/{entity}/:id` with confirmation dialog & Toast alert.
+   - In `app.js`, every entity MUST provide all 4 REST endpoints (`GET`, `POST`, `PUT`, `DELETE`).
+
+4. 100% ZERO-ERROR FIRST RUN GUARANTEE:
    - `initDB()` in `app.js` MUST create tables and auto-seed rich demo data (minimum 12-18 rows) so all charts and menus start populated.
    - All primary keys: `id INT AUTO_INCREMENT PRIMARY KEY`.
 
@@ -249,21 +279,26 @@ MANDATORY DOMAIN EXPANSION RULES:
 
 1. FOR ANY INVENTORY / RETAIL / POS / PRODUCT / TOKO APPS:
    - MUST INCLUDE: Multi-Warehouse management (`warehouses`: id, code, name, location), Stock per Warehouse (`inventory_stock`), Stock Transfers between warehouses (`stock_transfers`), Stock Opname adjustments, Suppliers & Purchase Orders (`purchase_orders`), Customer accounts with Credit/Receivables (Hutang-Piutang), Split-Screen POS Cashier, Chart of Accounts, and P&L financial reports.
+   - EVERY ENTITY MUST HAVE FULL CRUD (Create, Read, Edit, Delete modals and APIs).
 
 2. FOR ANY HR / EMPLOYEE / HRIS APPS:
    - MUST INCLUDE: Employee Directory (NIK, bank details, tax), Departments & Positions, Shift Rostering, Daily Attendance logs with in/out times, Leave & Permit workflows with status approvals, Monthly Payroll & Payslips calculation (Basic + Allowances - Deductions), Reimbursement claims, and KPI performance scorecards.
+   - EVERY ENTITY MUST HAVE FULL CRUD (Create, Read, Edit, Delete modals and APIs).
 
 3. FOR ANY WORKSHOP / AUTOMOTIVE / REPAIR SERVICE APPS:
    - MUST INCLUDE: Work Order (SPK) Service Queue, Vehicle & Customer Registry (License Plate, Brand, Model, Odometer), Spareparts Catalog with Multi-Bin Storage, Parts Purchases from Vendors, Mechanic Assignment & Commission, POS Service Billing (Labor Fee + Spareparts).
+   - EVERY ENTITY MUST HAVE FULL CRUD (Create, Read, Edit, Delete modals and APIs).
 
 4. FOR ANY VILLAGE / GOVERNMENT / PUBLIC SERVICE APPS:
    - MUST INCLUDE: Citizen & Family Card (KK) Registry (NIK, demographic info), Official Letter Request Portal (SKTM, SKU, Domisili, Birth/Death certificates) with approval workflow and Printable Letter Generator, Social Aid (Bansos) Distribution, Citizen Complaints portal, Village Budget (APBDes) Ledger.
+   - EVERY ENTITY MUST HAVE FULL CRUD (Create, Read, Edit, Delete modals and APIs).
 
 5. FOR ANY CLINIC / PHARMACY / HEALTHCARE APPS:
    - MUST INCLUDE: Electronic Medical Records (EMR), Consultation Queue, Doctor Schedules, Medicine Catalog with Batch & Expiry tracking, Prescription dispensing, Pharmacy POS Cashier.
+   - EVERY ENTITY MUST HAVE FULL CRUD (Create, Read, Edit, Delete modals and APIs).
 
 6. FOR ANY CUSTOM APP:
-   - ALWAYS expand into 10 to 14 dedicated SPA views, complete relational tables (6-8 tables), rich multi-entity demo data auto-seeding, and full client-side JavaScript controllers.
+   - ALWAYS expand into 10 to 14 dedicated SPA views, complete relational tables (6-8 tables), rich multi-entity demo data auto-seeding, and full client-side JavaScript CRUD controllers.
 
 ════════════════════════════════════════════════════
 MANDATORY CDN LIBRARIES (IN <head>):
@@ -279,7 +314,7 @@ STRUCTURE YOUR OUTPUT PROMPT WITH THESE EXACT SECTIONS:
 ════════════════════════════════════════════════════
 
 Begin the prompt with this exact directive:
-"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs and never display default credentials in the UI), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
+"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
 
 SECTION 1: APPLICATION OVERVIEW & BUSINESS CONTEXT
 - App Name, core business purpose, target industry.
@@ -290,10 +325,10 @@ SECTION 2: DATABASE SCHEMA & RICH DEMO DATA SEEDING
 - Detail every table schema (6-8 domain-specific tables).
 - Specify exact rich demo records to auto-seed in `initDB()` so the dashboard starts populated with data on day one.
 
-SECTION 3: REST API ENDPOINTS
+SECTION 3: REST API ENDPOINTS (FULL CRUD FOR ALL ENTITIES)
 - Auth: POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
 - Dashboard Stats: GET /api/dashboard/stats
-- Complete CRUD endpoints for all domain entities, operations, transfers, and transactions.
+- Complete CRUD endpoints for ALL domain entities: GET (list & search), POST (create), PUT (update), DELETE (delete).
 
 SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
 - 4A: Design System (Dark Slate #0F172A base, #1E293B cards, Emerald/Sapphire accent, Inter font, custom scrollbar).
@@ -301,9 +336,9 @@ SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
   * Container 1: `#login-screen` (Centered glassmorphic login card with blank email/username & password inputs, zero credentials displayed, login submit handler).
   * Container 2: `#main-layout` (`hidden` class by default, contains 280px fixed sidebar, topbar, and all view panels).
 - 4C: Sidebar Navigation (280px fixed width, #0B1120 background, organized in OVERVIEW, MAIN MENU, REPORTS & ANALYTICS, MANAGEMENT, SETTINGS).
-- 4D: Detailed Screen Specifications for ALL 10-14 domain views with complete DOM elements inside `<div id="view-{name}" class="view-panel hidden">`.
-- 4E: Modals & Popups for every workflow.
-- 4F: In-Page JavaScript Controller Functions (`checkAuth`, `switchView`, `initDashboardCharts`, `exportToCSV`, `showToast`, `formatCurrency`, and domain-specific action handlers).
+- 4D: Detailed Screen Specifications for ALL 10-14 domain views with complete DOM elements inside `<div id="view-{name}" class="view-panel hidden">`. Each view must include "+ Tambah Data" button, search bar, interactive data table with Edit & Delete action buttons on every row.
+- 4E: Modals & Popups for CREATE and EDIT workflows for every entity.
+- 4F: In-Page JavaScript Controller Functions (`checkAuth`, `switchView`, `initDashboardCharts`, CRUD operations for all entities, `exportToCSV`, `showToast`, `formatCurrency`).
 
 SECTION 5: INFRASTRUCTURE & FILE STRUCTURE
 Specify exact `.env`, `package.json`, `README.md`, and runtime rules. The ONLY view file must be `views/index.ejs`. `app.js` must ONLY have `app.get('*', (req, res) => res.render('index'))`.
@@ -331,7 +366,11 @@ Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application for
 └── views/
     └── index.ejs
 
-STRICT RULE: The ONLY view file is `views/index.ejs`. NEVER create `views/login.ejs`, never display default credentials in the UI, and never use server redirects. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
+STRICT RULES:
+1. The ONLY view file is `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
+2. ZERO credentials on the login screen. Input fields must be blank.
+3. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
+4. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
 
 ## 1. APPLICATION OVERVIEW & BUSINESS CONTEXT
 Application: "{$appName}" — {$appDescription}
@@ -356,11 +395,15 @@ Authentication required for all dashboard views.
 
 NEVER use MySQL-specific date functions (MONTH(), YEAR(), CURRENT_DATE()) in queries.
 
-## 3. REST API ENDPOINTS
+## 3. REST API ENDPOINTS (FULL CRUD ON ALL ENTITIES)
 - Auth: POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
 - Dashboard: GET /api/dashboard/stats (totals, trends, category distribution, recent records)
-- CRUD endpoints for master entities, inventory, warehouses, transfers, categories, transactions, and users.
-- Business Logic: POST /api/transfers, POST /api/transactions/process
+- Full CRUD endpoints for all entities (Products, Warehouses, Categories, Suppliers, Customers, Accounts, Users):
+  * GET /api/{entity}
+  * POST /api/{entity}
+  * PUT /api/{entity}/:id
+  * DELETE /api/{entity}/:id
+- Operations: POST /api/transfers, POST /api/transactions/process
 
 ## 4. FRONTEND STRICT SINGLE-VIEW SPA (views/index.ejs) — LUXURY DARK THEME
 
@@ -392,13 +435,18 @@ Sidebar Navigation (280px fixed width, #0B1120):
 - SETTINGS: App Settings, Database Backup
 - User Profile Footer with avatar, name, role badge, and logout button.
 
-SPA Multi-Screen Architecture (ALL 10-14 Views Fully Coded in DOM):
-Each view must have its dedicated `<div id="view-{screen}" class="view-panel hidden">` with complete tables, action buttons, and modal triggers. Zero placeholder text.
+SPA Multi-Screen Architecture (ALL 10-14 Views Fully Coded in DOM with CRUD):
+Each view must have its dedicated `<div id="view-{screen}" class="view-panel hidden">`:
+- "+ Tambah Data Baru" button.
+- Real-time search bar & filter dropdown.
+- Interactive Table with Edit (`ri-edit-line`) and Delete (`ri-delete-bin-line`) buttons on every row.
+- Create Modal Form (`#modal-add-...`) & Edit Modal Form (`#modal-edit-...`).
 
 Client-Side JavaScript Functions:
 - `checkAuth()`
 - `switchView(viewName)`
 - `initDashboardCharts(stats)`
+- Complete CRUD functions (`openAddModal`, `submitAdd`, `openEditModal`, `submitEdit`, `deleteItem`) for all modules
 - `exportToCSV(data, filename)`
 - `showToast(type, message)`
 - `formatCurrency(val)`, `formatDate(dateStr)`

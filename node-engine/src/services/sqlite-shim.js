@@ -381,9 +381,56 @@ function getBetterSqliteShimForSlug(slug = 'default') {
     };
 }
 
+function resetDbKeepAdmin(slug = 'default') {
+    const dbPath = getDbPathForSlug(slug);
+    if (!fs.existsSync(dbPath)) {
+        return { success: true, message: 'Database belum diinisialisasi.' };
+    }
+
+    try {
+        const db = getBetterSqliteForSlug(slug);
+        
+        // Temporarily disable foreign key constraints
+        db.pragma('foreign_keys = OFF');
+
+        // Query all user tables
+        const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all();
+        
+        for (const row of tables) {
+            const tableName = row.name;
+            const lowerName = tableName.toLowerCase();
+            
+            if (lowerName === 'users') {
+                // Keep administrator user (id = 1 or username = 'admin' or role = 'admin')
+                db.exec(`DELETE FROM \`${tableName}\` WHERE id > 1 AND LOWER(username) NOT IN ('admin', 'administrator') AND LOWER(role) NOT IN ('admin', 'administrator')`);
+            } else {
+                // Truncate all records from table
+                db.exec(`DELETE FROM \`${tableName}\``);
+                try {
+                    db.exec(`DELETE FROM sqlite_sequence WHERE name = '${tableName}'`);
+                } catch {}
+            }
+        }
+
+        db.pragma('foreign_keys = ON');
+
+        return {
+            success: true,
+            message: 'Database berhasil dikosongkan! Seluruh data seed demo telah dibersihkan dan akun admin tetap aktif.'
+        };
+    } catch (err) {
+        console.error(`[resetDbKeepAdmin] Error resetting DB for ${slug}:`, err);
+        return {
+            success: false,
+            message: 'Gagal mengosongkan database: ' + err.message
+        };
+    }
+}
+
 module.exports = {
     getDbPathForSlug,
     getBetterSqliteForSlug,
     getSQLite3ShimForSlug,
     getBetterSqliteShimForSlug,
+    resetDbKeepAdmin,
 };

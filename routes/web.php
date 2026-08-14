@@ -96,6 +96,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project:slug}/unpublish', [PublishController::class, 'unpublish'])->name('projects.unpublish');
     Route::get('/projects/{project:slug}/preview', [PublishController::class, 'preview'])->name('projects.preview');
 
+    // Database Management
+    Route::post('/projects/{project:slug}/reset-db', [ProjectController::class, 'resetDatabase'])->name('projects.reset-db');
+
     // Export / Import
     Route::get('/projects/{project:slug}/export-json', [PublishController::class, 'exportJson'])->name('projects.export-json');
     Route::get('/projects/{project:slug}/export-zip', [PublishController::class, 'exportZip'])->name('projects.export-zip');

@@ -95,4 +95,39 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.index')->with('success', 'Project deleted.');
     }
+
+    public function resetDatabase(Project $project): \Illuminate\Http\JsonResponse
+    {
+        if ($project->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $engineUrl = config('app.node_engine_url', 'http://127.0.0.1:4000');
+        $secret = config('app.internal_api_secret');
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(10)
+                ->withHeaders([
+                    'X-Internal-Api-Key' => $secret,
+                ])
+                ->post("$engineUrl/internal/reset-db", [
+                    'slug' => $project->slug,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return response()->json([
+                    'success' => true,
+                    'message' => $data['message'] ?? 'Database berhasil dikosongkan! Seluruh data demo telah dibersihkan dan akun admin tetap aktif.',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Reset DB error: " . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengosongkan database. Pastikan node engine sedang berjalan.',
+        ], 500);
+    }
 }
