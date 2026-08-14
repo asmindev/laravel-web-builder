@@ -104,9 +104,34 @@ class RenderService {
             return subApp;
         };
 
-        const sandbox = {
-            express: () => subApp,
-            require: (name) => {
+        const moduleCache = new Map();
+
+        const resolveLocalFile = (reqPath, currentDir = '/') => {
+            const clean = reqPath.replace(/^\.\//, '');
+            const candidates = [
+                clean,
+                `${clean}.js`,
+                `${clean}.json`,
+                `${clean}/index.js`,
+                path.join(currentDir, clean).replace(/^\//, ''),
+                path.join(currentDir, `${clean}.js`).replace(/^\//, ''),
+                path.join(currentDir, `${clean}/index.js`).replace(/^\//, ''),
+            ];
+            for (const cand of candidates) {
+                const f = files.find(file => file.path === cand || file.path === '/' + cand || file.path.endsWith('/' + cand));
+                if (f) return f;
+            }
+            return null;
+        };
+
+        const createSandboxRequire = (currentDir = '/') => {
+            const customRequire = (name) => {
+                if (name.startsWith('.') || name.startsWith('/')) {
+                    const localFile = resolveLocalFile(name, currentDir);
+                    if (localFile) {
+                        return loadLocalModule(localFile);
+                    }
+                }
                 if (name === 'express') {
                     const fn = () => subApp;
                     fn.json = express.json;
@@ -202,7 +227,52 @@ class RenderService {
                     return getBetterSqliteShimForSlug(slug);
                 }
                 try { return require(name); } catch { return undefined; }
-            },
+            };
+            return customRequire;
+        };
+
+        const loadLocalModule = (localFile) => {
+            if (moduleCache.has(localFile.path)) {
+                return moduleCache.get(localFile.path);
+            }
+
+            if (localFile.path.endsWith('.json')) {
+                try {
+                    const parsed = JSON.parse(localFile.content);
+                    moduleCache.set(localFile.path, parsed);
+                    return parsed;
+                } catch {
+                    return {};
+                }
+            }
+
+            const mod = { exports: {} };
+            moduleCache.set(localFile.path, mod.exports);
+
+            const fileDir = path.dirname('/' + localFile.path);
+            const localSandbox = {
+                ...sandbox,
+                module: mod,
+                exports: mod.exports,
+                __dirname: fileDir,
+                __filename: '/' + localFile.path,
+                require: createSandboxRequire(fileDir),
+            };
+
+            const localContext = vm.createContext(localSandbox);
+            try {
+                new vm.Script(localFile.content, { timeout: 5000 }).runInContext(localContext, { timeout: 5000 });
+                moduleCache.set(localFile.path, mod.exports);
+                return mod.exports;
+            } catch (err) {
+                console.error(`[project] Error loading module '${localFile.path}':`, err);
+                return mod.exports;
+            }
+        };
+
+        const sandbox = {
+            express: () => subApp,
+            require: createSandboxRequire('/'),
             console: { log: (...args) => console.log('[project]', ...args), error: (...args) => console.error('[project]', ...args) },
             Buffer,
             URL,

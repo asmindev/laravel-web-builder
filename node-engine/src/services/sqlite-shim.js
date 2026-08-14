@@ -62,40 +62,43 @@ class UniversalSQLite {
 
     prepare(sql) {
         const stmt = this.raw.prepare(sql);
+        const normalizeArgs = (args) => {
+            if (args.length === 0) return [];
+            if (args.length === 1 && Array.isArray(args[0])) return args[0];
+            return args;
+        };
+
         return {
-            run: (params = []) => {
+            run: (...args) => {
+                const p = normalizeArgs(args);
                 if (sqliteDriverType === 'node:sqlite') {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
                     const info = stmt.run(...p);
                     return {
                         lastInsertRowid: Number(info.lastInsertRowid),
                         changes: Number(info.changes || 0),
                     };
                 } else {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
-                    const info = stmt.run(p);
+                    const info = stmt.run(...p);
                     return {
                         lastInsertRowid: Number(info.lastInsertRowid),
                         changes: Number(info.changes || 0),
                     };
                 }
             },
-            get: (params = []) => {
+            get: (...args) => {
+                const p = normalizeArgs(args);
                 if (sqliteDriverType === 'node:sqlite') {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
                     return stmt.get(...p);
                 } else {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
-                    return stmt.get(p);
+                    return stmt.get(...p);
                 }
             },
-            all: (params = []) => {
+            all: (...args) => {
+                const p = normalizeArgs(args);
                 if (sqliteDriverType === 'node:sqlite') {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
                     return stmt.all(...p) || [];
                 } else {
-                    const p = Array.isArray(params) ? params : (params !== undefined ? [params] : []);
-                    return stmt.all(p) || [];
+                    return stmt.all(...p) || [];
                 }
             },
         };
