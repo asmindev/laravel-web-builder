@@ -90,6 +90,7 @@ class UniversalSQLite {
                             `);
                         }
                     } catch {}
+                    console.log(`[SQLite3 Shim Auto-Heal] 🛠️ Auto-healed: Initialized 'users' table and default administrator.`);
                     return true;
                 } else {
                     this.raw.exec(`
@@ -103,9 +104,11 @@ class UniversalSQLite {
                             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
                     `);
+                    console.log(`[SQLite3 Shim Auto-Heal] 🛠️ Auto-healed: Initialized missing table '${missingTable}'.`);
                     return true;
                 }
-            } catch {
+            } catch (healErr) {
+                console.error(`[SQLite3 Shim Auto-Heal Error] Failed to create table '${missingTable}':`, healErr.message);
                 return false;
             }
         }
@@ -119,8 +122,10 @@ class UniversalSQLite {
                 const tableName = tableMatch[1];
                 try {
                     this.raw.exec(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${missingCol}\` TEXT;`);
+                    console.log(`[SQLite3 Shim Auto-Heal] 🛠️ Auto-healed: Added missing column '${missingCol}' to table '${tableName}'.`);
                     return true;
-                } catch {
+                } catch (colHealErr) {
+                    console.error(`[SQLite3 Shim Auto-Heal Error] Failed to add column '${missingCol}':`, colHealErr.message);
                     return false;
                 }
             }
@@ -289,6 +294,7 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
+            console.error('[SQLite3 Shim Error]', err.message, '| SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err));
             }
@@ -311,6 +317,7 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
+            console.error('[SQLite3 Shim Error]', err.message, '| SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err, null));
             }
@@ -333,6 +340,7 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
+            console.error('[SQLite3 Shim Error]', err.message, '| SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err, []));
             }
