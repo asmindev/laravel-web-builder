@@ -55,7 +55,7 @@ export function TopBar({
                     <Sparkles className="size-3.5 text-amber-500" /> Buat Prompt
                 </Button>
 
-                {/* Kosongkan DB (Simpan Admin) Button */}
+                {/* Kosongkan DB (Simpan Admin) Button - Temporarily hidden
                 <Button
                     variant="outline"
                     size="sm"
@@ -64,6 +64,7 @@ export function TopBar({
                 >
                     <Database className="size-3.5 text-amber-500" /> Kosongkan DB
                 </Button>
+                */}
 
                 {/* Download / Export Options Dropdown */}
                 <DropdownMenu>
