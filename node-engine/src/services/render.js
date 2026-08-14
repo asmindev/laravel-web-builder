@@ -1,5 +1,6 @@
 const vm = require('node:vm');
 const express = require('express');
+const path = require('path');
 
 const TIMEOUT_MS = 5000;
 
