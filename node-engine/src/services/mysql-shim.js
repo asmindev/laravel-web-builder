@@ -1,23 +1,7 @@
-const Database = require('better-sqlite3');
-const fs = require('fs');
-const path = require('path');
-
-const dbInstances = new Map();
+const { getBetterSqliteForSlug } = require('./sqlite-shim');
 
 function getDbForSlug(slug = 'default') {
-    if (!dbInstances.has(slug)) {
-        const storageDir = path.join(__dirname, '../../storage');
-        if (!fs.existsSync(storageDir)) {
-            fs.mkdirSync(storageDir, { recursive: true });
-        }
-        const dbPath = path.join(storageDir, `${slug}.db`);
-        const db = new Database(dbPath);
-        try {
-            db.pragma('journal_mode = WAL');
-        } catch {}
-        dbInstances.set(slug, db);
-    }
-    return dbInstances.get(slug);
+    return getBetterSqliteForSlug(slug);
 }
 
 class MySQLToSQLiteAdapter {

@@ -162,6 +162,16 @@ export default function Welcome({
     const [isDark, setIsDark] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [typingText, setTypingText] = useState('');
+
+    // Lock body scroll when mobile menu is open
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [mobileMenuOpen]);
     const [agencyName, setAgencyName] = useState('');
     const [agencyType, setAgencyType] = useState('Jenis Website: Company Profile');
 
@@ -207,7 +217,7 @@ export default function Welcome({
 
     return (
         <div
-            className={`relative min-h-screen overflow-x-hidden bg-slate-50 font-sans text-slate-700 antialiased transition-colors duration-500 selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] dark:bg-[#030712] dark:text-gray-300 ${isDark ? 'dark' : ''}`}
+            className={`relative min-h-screen overflow-x-hidden overflow-y-auto bg-slate-50 font-sans text-slate-700 antialiased transition-colors duration-500 selection:bg-[#2cb1bc]/30 selection:text-[#2cb1bc] dark:bg-[#030712] dark:text-gray-300 ${isDark ? 'dark' : ''}`}
         >
             <Head title={`${appName} — Generate Website dengan Prompt`} />
 
@@ -308,7 +318,10 @@ export default function Welcome({
 
                 {/* Mobile Menu Dropdown */}
                 {mobileMenuOpen && (
-                    <div className="absolute top-full left-0 z-50 flex w-full flex-col gap-4 border-b border-slate-200/80 bg-white/95 px-6 py-6 shadow-2xl backdrop-blur-2xl md:hidden dark:border-[#1e293b]/80 dark:bg-[#0f172a]/95">
+                    <>
+                    {/* Backdrop overlay */}
+                    <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden" onClick={() => setMobileMenuOpen(false)} />
+                    <div className="absolute top-full left-0 z-50 flex w-full flex-col gap-3 border-b border-slate-200/80 bg-white/98 px-5 py-5 shadow-2xl backdrop-blur-2xl sm:gap-4 sm:px-6 sm:py-6 md:hidden dark:border-[#1e293b]/80 dark:bg-[#0f172a]/98">
                         <a
                             onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center justify-between py-1 text-base font-semibold text-slate-800 transition-colors hover:text-[#2cb1bc] dark:text-gray-200"
@@ -354,26 +367,27 @@ export default function Welcome({
                         <hr className="my-1 border-slate-200 dark:border-slate-800/80" />
                         <Link
                             href={auth?.user ? '/dashboard' : '/login'}
-                            className="rounded-xl bg-slate-900 py-3.5 text-center text-sm font-bold text-white shadow-md transition-transform active:scale-95 dark:bg-white dark:text-black"
+                            className="rounded-xl bg-slate-900 py-3 text-center text-sm font-bold text-white shadow-md transition-transform active:scale-95 sm:py-3.5 dark:bg-white dark:text-black"
                         >
                             Masuk ke Dashboard
                         </Link>
                     </div>
+                    </>
                 )}
             </header>
 
             {/* Hero Main Content */}
-            <main className="relative z-10 pt-28 pb-16 sm:pt-36 lg:pt-48 lg:pb-32">
+            <main className="relative z-10 pt-24 pb-10 sm:pt-36 sm:pb-16 lg:pt-48 lg:pb-32">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                    <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div className="grid grid-cols-1 items-center gap-6 sm:gap-10 lg:grid-cols-2 lg:gap-16">
                         {/* Hero Text Content */}
-                        <div className="space-y-6 text-center sm:space-y-8 lg:text-left">
+                        <div className="space-y-4 text-center sm:space-y-6 md:space-y-8 lg:text-left">
                             <div className="mb-1 inline-flex items-center gap-2 rounded-full border border-[#2cb1bc]/30 bg-[#2cb1bc]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold text-[#2cb1bc] backdrop-blur-md sm:px-4 sm:py-2 sm:text-xs">
                                 <Sparkles className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
                                 {content.hero_badge || 'Engine Generasi Ke-3 Tersedia'}
                             </div>
 
-                            <h1 className="text-3xl leading-[1.15] font-extrabold tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.1] md:text-6xl lg:text-[4.2rem] dark:text-white">
+                            <h1 className="text-[1.7rem] leading-[1.18] font-extrabold tracking-tight text-slate-900 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[4.2rem] dark:text-white">
                                 {content.hero_title_1 || 'Ketik Idenya,'}
                                 <br />
                                 {content.hero_title_2 || 'AI Kami Buat'}
@@ -383,24 +397,24 @@ export default function Welcome({
                                 </span>
                             </h1>
 
-                            <p className="mx-auto max-w-xl text-base leading-relaxed font-medium text-slate-600 sm:text-lg md:text-xl lg:mx-0 dark:text-gray-400">
+                            <p className="mx-auto max-w-xl text-sm leading-relaxed font-medium text-slate-600 sm:text-base md:text-lg lg:mx-0 lg:text-xl dark:text-gray-400">
                                 {content.hero_subtitle ||
                                     'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'}
                             </p>
 
                             {/* AI Prompt Input Simulation */}
                             <div className="mx-auto max-w-xl pt-2 lg:mx-0">
-                                <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl sm:gap-3 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
+                                <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl sm:gap-3 sm:rounded-2xl sm:p-2 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
                                     <div className="shrink-0 pl-2.5 text-[#2cb1bc] sm:pl-3">
                                         <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div className="flex min-h-[38px] w-full items-center overflow-hidden bg-transparent py-1.5 text-left font-mono text-xs text-slate-800 focus:outline-none sm:text-sm dark:text-white">
-                                        <span className="break-all">{typingText}</span>
+                                    <div className="flex min-h-[34px] w-full min-w-0 items-center overflow-hidden bg-transparent py-1 text-left font-mono text-[10px] text-slate-800 focus:outline-none sm:min-h-[38px] sm:py-1.5 sm:text-xs md:text-sm dark:text-white">
+                                        <span className="line-clamp-2 break-all sm:line-clamp-none">{typingText}</span>
                                         <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#2cb1bc]" />
                                     </div>
                                     <Link
                                         href={auth?.user ? '/dashboard' : '/login'}
-                                        className="flex shrink-0 items-center justify-center rounded-xl bg-[#2cb1bc] p-3 text-white shadow-[0_4px_15px_rgba(44,177,188,0.3)] transition-all hover:bg-[#239099] active:scale-95 sm:p-3.5 dark:text-[#030712] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)]"
+                                        className="flex shrink-0 items-center justify-center rounded-lg bg-[#2cb1bc] p-2.5 text-white shadow-[0_4px_15px_rgba(44,177,188,0.3)] transition-all hover:bg-[#239099] active:scale-95 sm:rounded-xl sm:p-3.5 dark:text-[#030712] dark:shadow-[0_0_15px_rgba(44,177,188,0.5)]"
                                         aria-label="Jalankan Prompt AI"
                                     >
                                         <Wand2 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -408,7 +422,7 @@ export default function Welcome({
                                 </div>
 
                                 {/* Prompt Suggestions */}
-                                <div className="mt-3.5 flex flex-wrap items-center justify-center gap-1.5 font-mono text-[10px] text-slate-500 sm:gap-2 sm:text-xs lg:justify-start dark:text-gray-500">
+                                <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1 font-mono text-[9px] text-slate-500 sm:mt-3.5 sm:gap-2 sm:text-xs lg:justify-start dark:text-gray-500">
                                     <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
                                     {suggestions.map((sug, i) => (
                                         <button
@@ -427,9 +441,9 @@ export default function Welcome({
                         </div>
 
                         {/* Hero Interactive 3D Orbit Visual */}
-                        <div className="relative mt-6 flex h-[320px] items-center justify-center sm:h-[450px] lg:mt-0 lg:h-[520px]">
-                            <div className="relative flex aspect-square w-full max-w-[280px] items-center justify-center sm:max-w-md">
-                                <div className="absolute h-32 w-32 animate-pulse rounded-full bg-[#2cb1bc] blur-[50px] sm:h-40 sm:w-40 sm:blur-[60px]" />
+                        <div className="relative mt-2 flex h-[260px] items-center justify-center sm:mt-6 sm:h-[380px] md:h-[450px] lg:mt-0 lg:h-[520px]">
+                            <div className="relative flex aspect-square w-full max-w-[220px] items-center justify-center sm:max-w-[320px] md:max-w-md">
+                                <div className="absolute h-24 w-24 animate-pulse rounded-full bg-[#2cb1bc] blur-[40px] sm:h-32 sm:w-32 sm:blur-[50px] md:h-40 md:w-40 md:blur-[60px]" />
 
                                 <div
                                     className="absolute h-[78%] w-[78%] animate-spin rounded-full border border-dashed border-[#2cb1bc]/40 dark:border-[#2cb1bc]/30"
@@ -445,7 +459,7 @@ export default function Welcome({
                                 </div>
 
                                 {/* Central Logo Frame */}
-                                <div className="group relative z-20 h-36 w-36 overflow-hidden rounded-full border-4 border-white bg-black shadow-2xl sm:h-52 sm:w-52 sm:border-[6px] dark:border-[#030712] dark:shadow-[0_0_50px_rgba(44,177,188,0.25)]">
+                                <div className="group relative z-20 h-28 w-28 overflow-hidden rounded-full border-[3px] border-white bg-black shadow-2xl sm:h-40 sm:w-40 sm:border-4 md:h-52 md:w-52 md:border-[6px] dark:border-[#030712] dark:shadow-[0_0_50px_rgba(44,177,188,0.25)]">
                                     <img
                                         src={logoUrl}
                                         alt={`${appName} Core AI`}
@@ -461,22 +475,22 @@ export default function Welcome({
 
                                 {/* Floating UI Elements */}
                                 <div
-                                    className="absolute top-2 -left-2 z-30 flex animate-bounce items-center gap-2.5 rounded-xl border border-l-2 border-slate-200/50 border-l-[#2cb1bc] bg-white/75 p-2.5 shadow-lg backdrop-blur-xl sm:top-8 sm:-left-6 sm:gap-3 sm:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
+                                    className="absolute -top-1 left-0 z-30 flex animate-bounce items-center gap-1.5 rounded-lg border border-l-2 border-slate-200/50 border-l-[#2cb1bc] bg-white/75 p-1.5 shadow-lg backdrop-blur-xl sm:top-8 sm:-left-6 sm:gap-2.5 sm:rounded-xl sm:p-2.5 md:gap-3 md:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
                                     style={{ animationDuration: '4s' }}
                                 >
-                                    <Cpu className="h-4 w-4 animate-pulse text-[#2cb1bc] sm:h-5 sm:w-5" />
-                                    <div className="font-mono text-[9px] sm:text-xs">
+                                    <Cpu className="h-3 w-3 animate-pulse text-[#2cb1bc] sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                                    <div className="font-mono text-[8px] sm:text-[9px] md:text-xs">
                                         <p className="font-bold text-slate-800 dark:text-white">Menyusun Layout...</p>
                                         <p className="text-[#2cb1bc]">CSS Grid Applied</p>
                                     </div>
                                 </div>
 
                                 <div
-                                    className="absolute -right-2 bottom-6 z-30 flex animate-bounce items-center gap-2.5 rounded-xl border border-l-2 border-slate-200/50 border-l-[#ff8a5c] bg-white/75 p-2.5 shadow-lg backdrop-blur-xl sm:-right-8 sm:bottom-12 sm:gap-3 sm:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
+                                    className="absolute right-0 bottom-2 z-30 flex animate-bounce items-center gap-1.5 rounded-lg border border-l-2 border-slate-200/50 border-l-[#ff8a5c] bg-white/75 p-1.5 shadow-lg backdrop-blur-xl sm:-right-8 sm:bottom-12 sm:gap-2.5 sm:rounded-xl sm:p-2.5 md:gap-3 md:p-3 dark:border-white/10 dark:bg-[#0f172a]/65"
                                     style={{ animationDuration: '4s', animationDelay: '2s' }}
                                 >
-                                    <CheckCircle2 className="h-4 w-4 text-[#ff8a5c] sm:h-5 sm:w-5" />
-                                    <div className="font-mono text-[9px] sm:text-xs">
+                                    <CheckCircle2 className="h-3 w-3 text-[#ff8a5c] sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                                    <div className="font-mono text-[8px] sm:text-[9px] md:text-xs">
                                         <p className="font-bold text-slate-800 dark:text-white">Aset Dimuat</p>
                                         <p className="text-slate-500 dark:text-gray-400">Opt: WebP, 0.4s</p>
                                     </div>
@@ -585,11 +599,11 @@ export default function Welcome({
                         </p>
                     </div>
 
-                    <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2`}>
+                    <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:gap-8 md:grid-cols-2`}>
                         {dbPlans.map((plan) => (
                             <div
                                 key={plan.slug}
-                                className={`relative flex flex-col rounded-3xl p-6 shadow-lg transition-all sm:p-8 ${
+                                className={`relative flex flex-col rounded-2xl p-5 shadow-lg transition-all sm:rounded-3xl sm:p-8 ${
                                     plan.is_popular
                                         ? 'border-2 border-[#2cb1bc] bg-slate-900 shadow-2xl md:-translate-y-2 dark:bg-[#0a0f1d] dark:shadow-[0_0_40px_rgba(44,177,188,0.15)]'
                                         : 'border border-slate-200 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-[#0f172a]/65'
@@ -608,7 +622,7 @@ export default function Welcome({
                                 >
                                     {plan.description || 'Paket pilihan tepat untuk Anda.'}
                                 </p>
-                                <div className="my-5 sm:my-6">
+                                <div className="my-4 sm:my-6">
                                     <span
                                         className={`text-3xl font-black tracking-tight sm:text-4xl ${plan.is_popular ? 'text-[#2cb1bc]' : 'text-slate-900 dark:text-white'}`}
                                     >
@@ -636,7 +650,7 @@ export default function Welcome({
                                 </ul>
                                 <Link
                                     href={auth?.user ? '/dashboard' : '/login'}
-                                    className={`w-full rounded-xl px-4 py-3 text-center text-xs font-extrabold transition-all sm:text-sm ${
+                                    className={`block w-full rounded-xl px-4 py-2.5 text-center text-xs font-extrabold transition-all sm:py-3 sm:text-sm ${
                                         plan.is_popular
                                             ? 'bg-[#2cb1bc] text-slate-900 shadow-[0_0_20px_rgba(44,177,188,0.4)] hover:bg-[#239099] active:scale-95'
                                             : 'border-2 border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800'
@@ -658,12 +672,12 @@ export default function Welcome({
                 <div className="pointer-events-none absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#ff8a5c] opacity-[0.05] mix-blend-multiply blur-[100px] filter sm:h-[500px] sm:w-[500px] sm:blur-[150px] dark:opacity-[0.08] dark:mix-blend-screen" />
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                    <div className="flex flex-col items-center justify-between gap-8 rounded-[1.5rem] border border-slate-300 bg-white/75 p-6 shadow-lg backdrop-blur-xl sm:rounded-[2rem] sm:p-10 md:flex-row md:gap-12 md:p-14 dark:border-[#1e293b] dark:bg-[#0f172a]/65">
-                        <div className="space-y-4 text-left sm:space-y-6 md:w-3/5">
+                    <div className="flex flex-col items-center justify-between gap-6 rounded-2xl border border-slate-300 bg-white/75 p-5 shadow-lg backdrop-blur-xl sm:gap-8 sm:rounded-[2rem] sm:p-10 md:flex-row md:gap-12 md:p-14 dark:border-[#1e293b] dark:bg-[#0f172a]/65">
+                        <div className="w-full space-y-3 text-left sm:space-y-6 md:w-3/5">
                             <div className="inline-flex items-center gap-2 rounded-full border border-[#ff8a5c]/30 bg-[#ff8a5c]/10 px-3 py-1.5 font-mono text-[10px] font-bold text-[#e86a38] sm:text-[11px] dark:text-[#ff8a5c]">
                                 <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> {content.agency_badge || 'Opsi Terima Beres'}
                             </div>
-                            <h3 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl dark:text-white">
+                            <h3 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl md:text-3xl lg:text-4xl dark:text-white">
                                 {content.agency_title || 'Tidak Punya Waktu Membuat Sendiri?'}
                             </h3>
                             <p className="text-sm leading-relaxed text-slate-600 sm:text-base md:text-lg dark:text-gray-400">
@@ -674,7 +688,7 @@ export default function Welcome({
                         <div className="flex w-full flex-col gap-4 md:w-2/5">
                             <form
                                 onSubmit={handleWhatsAppAgency}
-                                className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/60"
+                                className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6 dark:border-slate-800 dark:bg-slate-900/60"
                             >
                                 <h4 className="mb-3 font-mono text-xs font-bold tracking-wider text-slate-900 uppercase sm:mb-4 sm:text-sm dark:text-white">
                                     Konsultasi Proyek Kustom
@@ -684,12 +698,12 @@ export default function Welcome({
                                     placeholder="Nama Anda"
                                     value={agencyName}
                                     onChange={(e) => setAgencyName(e.target.value)}
-                                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs transition-colors focus:border-[#ff8a5c] focus:outline-none sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-white"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs transition-colors focus:border-[#ff8a5c] focus:outline-none sm:rounded-xl sm:px-4 sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-white"
                                 />
                                 <select
                                     value={agencyType}
                                     onChange={(e) => setAgencyType(e.target.value)}
-                                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-600 transition-colors focus:border-[#ff8a5c] focus:outline-none sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-gray-300"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-600 transition-colors focus:border-[#ff8a5c] focus:outline-none sm:rounded-xl sm:px-4 sm:text-sm dark:border-slate-700 dark:bg-black/50 dark:text-gray-300"
                                 >
                                     <option value="Jenis Website: Company Profile">Jenis Website: Company Profile</option>
                                     <option value="Jenis Website: Toko Online">Jenis Website: Toko Online</option>
@@ -748,7 +762,7 @@ export default function Welcome({
             {/* Footer */}
             <footer className="relative z-10 border-t border-slate-200 bg-white py-10 transition-colors duration-500 sm:py-12 dark:border-white/10 dark:bg-[#0a0d14]">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                    <div className="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:text-left">
+                    <div className="flex flex-col items-center justify-between gap-5 text-center sm:gap-6 md:flex-row md:text-left">
                         <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-black sm:h-10 sm:w-10 dark:border-[#1e293b]">
                                 <img src={logoUrl} alt={`${appName} Logo`} className="h-full w-full object-cover" />

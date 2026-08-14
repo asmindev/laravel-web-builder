@@ -151,8 +151,13 @@ class RenderService {
                         compareSync: (pwd, hash) => pwd === hash || hash === pwd,
                     };
                 }
-                if (name === 'better-sqlite3' || name === 'sqlite3') {
-                    try { return require(name); } catch { return undefined; }
+                if (name === 'sqlite3') {
+                    const { getSQLite3ShimForSlug } = require('./sqlite-shim');
+                    return getSQLite3ShimForSlug(slug);
+                }
+                if (name === 'better-sqlite3') {
+                    const { getBetterSqliteShimForSlug } = require('./sqlite-shim');
+                    return getBetterSqliteShimForSlug(slug);
                 }
                 try { return require(name); } catch { return undefined; }
             },

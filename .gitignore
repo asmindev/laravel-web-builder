@@ -15,3 +15,6 @@ Thumbs.db
 /public/hot
 /resources/js/actions
 /resources/js/routes
+node-engine/.local-node/
+/node-engine/storage/*.db*
+*.db
