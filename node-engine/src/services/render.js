@@ -98,6 +98,12 @@ class RenderService {
             });
         }
 
+        subApp.listen = (_port, cb) => {
+            if (typeof _port === 'function') _port();
+            else if (typeof cb === 'function') cb();
+            return subApp;
+        };
+
         const sandbox = {
             express: () => subApp,
             require: (name) => {
@@ -147,9 +153,21 @@ class RenderService {
                     let realBcrypt = null;
                     try { realBcrypt = require('bcrypt'); } catch {}
                     return {
-                        hash: async (pwd, rounds) => {
+                        genSalt: async (rounds) => {
                             if (realBcrypt) {
-                                try { return await realBcrypt.hash(pwd, rounds || 10); } catch {}
+                                try { return await realBcrypt.genSalt(rounds || 10); } catch {}
+                            }
+                            return '$2b$10$abcdefghijklmnopqrstuu';
+                        },
+                        genSaltSync: (rounds) => {
+                            if (realBcrypt) {
+                                try { return realBcrypt.genSaltSync(rounds || 10); } catch {}
+                            }
+                            return '$2b$10$abcdefghijklmnopqrstuu';
+                        },
+                        hash: async (pwd, saltOrRounds) => {
+                            if (realBcrypt) {
+                                try { return await realBcrypt.hash(pwd, saltOrRounds || 10); } catch {}
                             }
                             return pwd;
                         },
@@ -160,9 +178,9 @@ class RenderService {
                             }
                             return false;
                         },
-                        hashSync: (pwd, rounds) => {
+                        hashSync: (pwd, saltOrRounds) => {
                             if (realBcrypt) {
-                                try { return realBcrypt.hashSync(pwd, rounds || 10); } catch {}
+                                try { return realBcrypt.hashSync(pwd, saltOrRounds || 10); } catch {}
                             }
                             return pwd;
                         },
@@ -193,31 +211,18 @@ class RenderService {
             __dirname: '/',
             __filename: '/app.js',
             process: { env: envVars, exit: () => {}, uptime: () => process.uptime() },
-            setTimeout: undefined,
-            setInterval: undefined,
+            setTimeout,
+            clearTimeout,
+            setInterval,
+            clearInterval,
+            setImmediate,
+            clearImmediate,
         };
 
-        const code = (() => {
-            const idx = appFile.content.indexOf('app.listen');
-            if (idx === -1) return appFile.content;
-            const parenStart = appFile.content.indexOf('(', idx);
-            if (parenStart === -1) return appFile.content;
-            let depth = 0;
-            for (let i = parenStart; i < appFile.content.length; i++) {
-                if (appFile.content[i] === '(') depth++;
-                else if (appFile.content[i] === ')') {
-                    depth--;
-                    if (depth === 0) {
-                        return appFile.content.slice(0, idx) + appFile.content.slice(i + 1);
-                    }
-                }
-            }
-            return appFile.content;
-        })();
-
+        const code = appFile.content;
         const context = vm.createContext(sandbox);
         try {
-            new vm.Script(code, { timeout: 3000 }).runInContext(context, { timeout: 3000 });
+            new vm.Script(code, { timeout: 5000 }).runInContext(context, { timeout: 5000 });
         } catch (err) {
             console.error('[project] App script execution error:', err);
             return false;
