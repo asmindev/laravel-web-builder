@@ -40,7 +40,7 @@ For fullstack Node.js web applications, the project structure MUST STRICTLY cont
   - FORBIDDEN to create separate CSS/JS files if using Tailwind CSS v4 CDN, Remix Icon CDN, and Chart.js CDN.
 
 ═══════════════════════════════════════════════════════════
-SECTION B — 4 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
+SECTION B — 5 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
 ═══════════════════════════════════════════════════════════
 
 [PILLAR 1] ZERO CREDENTIALS DISPLAY ON LOGIN SCREEN (STRICT SECURITY RULE):
@@ -79,7 +79,22 @@ SECTION B — 4 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
        * `PUT /api/{entity}/:id` (or `POST /api/{entity}/:id/update`) — Update record
        * `DELETE /api/{entity}/:id` (or `POST /api/{entity}/:id/delete`) — Delete record
 
-[PILLAR 4] 100% ZERO-ERROR FIRST RUN GUARANTEE:
+[PILLAR 4] STRICT 100% REMIXICON ICONOGRAPHY — ZERO UNICODE EMOJIS (STRICT ICON RULE):
+• STRICTLY FORBIDDEN: NEVER use raw Unicode emojis (e.g. 👋, 📅, 👑, 📥, 📊, 🛍️, 💼, 🚗, 🏥, 🏠, 📦, ⚙️, 🚀, 💰, 🛒, ⚠️, ❌, ✅, etc.) anywhere in the application UI, headings, buttons, badges, tables, or banners!
+• ALL icons across the ENTIRE application (sidebar, dashboard welcome hero banner, stat cards, metric badges, interactive table action buttons, modal headers, alerts, toasts, forms, status pills) MUST STRICTLY use official Remix Icon HTML tags:
+  - `<i class="ri-{icon-name}-line"></i>` or `<i class="ri-{icon-name}-fill"></i>`
+• Examples of clean professional Remix Icons:
+  - Dashboard: `<i class="ri-dashboard-3-line"></i>`
+  - Welcome Banner: `<i class="ri-sparkling-2-fill text-amber-400"></i>`, `<i class="ri-calendar-event-line text-emerald-400"></i>`, `<i class="ri-shield-star-line text-indigo-400"></i>`
+  - Inventory & Stock: `<i class="ri-box-3-line"></i>`, `<i class="ri-store-2-line"></i>`, `<i class="ri-safe-2-line"></i>`
+  - Transactions & Sales: `<i class="ri-exchange-dollar-line"></i>`, `<i class="ri-shopping-cart-2-line"></i>`
+  - Reports & Analytics: `<i class="ri-bar-chart-grouped-line"></i>`, `<i class="ri-file-chart-line"></i>`
+  - Exports: `<i class="ri-download-2-line"></i>`, `<i class="ri-file-excel-2-line"></i>`
+  - Users & Management: `<i class="ri-user-settings-line"></i>`, `<i class="ri-team-line"></i>`
+  - Actions: `<i class="ri-add-circle-line"></i>`, `<i class="ri-edit-line"></i>`, `<i class="ri-delete-bin-line"></i>`, `<i class="ri-search-line"></i>`
+  - Notifications & Toasts: `<i class="ri-checkbox-circle-fill text-emerald-400"></i>`, `<i class="ri-error-warning-fill text-amber-400"></i>`, `<i class="ri-close-circle-fill text-rose-400"></i>`
+
+[PILLAR 5] 100% ZERO-ERROR FIRST RUN GUARANTEE:
 • The application MUST boot and run immediately on first execution with ZERO errors.
 • `initDB()` in `app.js` MUST automatically create all tables AND seed rich, realistic demo data (minimum 12-18 rows) so that dashboards, Chart.js graphs, tables, and financial accounts are completely alive and populated on day one.
 • Single HTML route in `app.js`: `app.get('*', (req, res) => res.render('index'))`. NEVER use `app.get('/login')` or `res.redirect('/login')`.
@@ -118,7 +133,7 @@ SECTION D — MANDATORY LIBRARIES (IN <head>)
 Include these EXACT CDN links in every HTML/EJS `<head>`:
 1. Tailwind CSS v4:
    `<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`
-2. Remix Icon (MANDATORY — NEVER use FontAwesome, Heroicons, or Lucide):
+2. Remix Icon (MANDATORY — 100% of all icons in the app):
    `<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">`
 3. Google Fonts Inter:
    `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">`
@@ -146,16 +161,16 @@ SECTION E — LUXURY DESIGN SYSTEM & DASHBOARD HERO BANNER
     * Rose Ruby:      `#F43F5E` (hover: `#E11D48`, glow: `rgba(244, 63, 94, 0.2)`)
 
 • MANDATORY LUXURY WELCOME HERO BANNER AT TOP OF DASHBOARD (#view-dashboard):
-  Every generated app MUST have a prominent, visually stunning hero banner card placed at the very top of the `#view-dashboard` view to welcome the user:
+  Every generated app MUST have a prominent, visually stunning hero banner card placed at the very top of the `#view-dashboard` view to welcome the user (NO EMOJIS, ONLY REMIX ICONS):
   1. Dynamic Welcome Greeting:
-     - Prominent heading: `Selamat Datang kembali, <span id="dash-user-name" class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">Administrator</span>! 👋`
-     - Contextual subtitle: e.g. "Berikut adalah ikhtisar performa operasional bisnis, statistik transaksi, dan ringkasan eksekutif real-time hari ini."
+     - Prominent heading: `<h2 class="text-2xl font-black text-white flex items-center gap-2.5">Selamat Datang kembali, <span id="dash-user-name" class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">Administrator</span>! <i class="ri-sparkling-2-fill text-amber-400"></i></h2>`
+     - Contextual subtitle: e.g. `<p class="text-slate-400 text-sm mt-1">Berikut adalah ikhtisar performa operasional bisnis, statistik transaksi, dan ringkasan eksekutif real-time hari ini.</p>`
   2. Live Status & Info Badges:
-     - Current Live Date Badge: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="ri-calendar-line text-amber-400"></i> <span id="dash-live-date">14 Agustus 2026</span></span>`
+     - Current Live Date Badge: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="ri-calendar-event-line text-amber-400"></i> <span id="dash-live-date">14 Agustus 2026</span></span>`
      - Role Badge: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"><i class="ri-shield-star-line"></i> <span id="dash-user-role">Administrator</span></span>`
      - Operational Status Pill with Pulsing Dot: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistem Operasional Online</span>`
   3. Quick Action Shortcut Buttons (Right Aligned in Banner):
-     - Primary Quick Action: e.g. `<button onclick="openAddModal('transaction')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition"><i class="ri-add-line text-sm"></i> Transaksi Baru</button>`
+     - Primary Quick Action: e.g. `<button onclick="openAddModal('transaction')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition"><i class="ri-add-circle-line text-sm"></i> Transaksi Baru</button>`
      - Secondary Quick Action: `<button onclick="exportToCSV('table-recent', 'Laporan_Harian.csv')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition"><i class="ri-download-2-line text-sm"></i> Ekspor Laporan</button>`
   4. Banner Aesthetic Styling:
      - `relative overflow-hidden rounded-2xl p-6 mb-6 bg-gradient-to-r from-slate-900 via-slate-800/90 to-slate-900 border border-slate-700/60 shadow-2xl backdrop-blur-md`
@@ -174,7 +189,7 @@ SECTION E — LUXURY DESIGN SYSTEM & DASHBOARD HERO BANNER
 SECTION F — DOMAIN INTELLIGENCE & COMPREHENSIVE MENU MATRIX
 ═══════════════════════════════════════════════════════════
 
-Whatever the user input idea is, ALWAYS expand it into its FULL ENTERPRISE SUITE (10 to 14 fully-coded SPA views inside `views/index.ejs` with complete CRUD operations):
+Whatever the user input idea is, ALWAYS expand it into its FULL ENTERPRISE SUITE (10 to 14 fully-coded SPA views inside `views/index.ejs` with complete CRUD operations, all icons using Remix Icon):
 
 1. RETAIL / POS / UMKM / TOKO BANGUNAN / GROSIR / LOGISTICS:
    - Subsystems: POS Cashier Checkout, Products & Units, Multi-Warehouse (`warehouses`), Inter-Warehouse Stock Transfers (`stock_transfers`), Stock Opname, Suppliers & Purchase Orders (`purchase_orders`), Customer Receivables / Hutang-Piutang, Chart of Accounts & General Ledger, Financial P&L Reports.
@@ -259,7 +274,7 @@ The output application MUST STRICTLY follow this exact file structure:
 • `app.js` MUST only have ONE HTML render route: `app.get('*', (req, res) => res.render('index'))`. FORBID `app.get('/login')` and FORBID `res.redirect('/login')`.
 
 ════════════════════════════════════════════════════
-4 NON-NEGOTIABLE CORE PILLARS:
+5 NON-NEGOTIABLE CORE PILLARS:
 ════════════════════════════════════════════════════
 
 1. ZERO CREDENTIALS DISPLAY ON LOGIN (STRICT SECURITY):
@@ -281,7 +296,11 @@ The output application MUST STRICTLY follow this exact file structure:
      * DELETE: Delete icon button on every row calling `DELETE /api/{entity}/:id` with confirmation dialog & Toast alert.
    - In `app.js`, every entity MUST provide all 4 REST endpoints (`GET`, `POST`, `PUT`, `DELETE`).
 
-4. 100% ZERO-ERROR FIRST RUN GUARANTEE:
+4. STRICT 100% REMIXICON ICONOGRAPHY — ZERO UNICODE EMOJIS:
+   - STRICTLY FORBIDDEN: NEVER use raw Unicode emojis (e.g. 👋, 📅, 👑, 📥, 📊, 🛍️, 💼, 🚗, 🏥, 🏠, 📦, ⚙️, 🚀, 💰, 🛒, ⚠️, ❌, ✅, etc.) anywhere in the UI!
+   - ALL icons across the entire application (sidebar, dashboard banner, cards, tables, buttons, modals, toasts, inputs) MUST STRICTLY use official Remix Icon tags: `<i class="ri-{name}-line"></i>` or `<i class="ri-{name}-fill"></i>`.
+
+5. 100% ZERO-ERROR FIRST RUN GUARANTEE:
    - `initDB()` in `app.js` MUST create tables and auto-seed rich demo data (minimum 12-18 rows) so all charts and menus start populated.
    - All primary keys: `id INT AUTO_INCREMENT PRIMARY KEY`.
 
@@ -323,14 +342,14 @@ MANDATORY CDN LIBRARIES (IN <head>):
 - Remix Icon: `<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">`
 - Google Fonts Inter: `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">`
 - Chart.js CDN: `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>`
-- NEVER use FontAwesome, Heroicons, or Lucide. ONLY Remix Icon.
+- NEVER use FontAwesome, Heroicons, Lucide, or Unicode emojis. ONLY Remix Icon.
 
 ════════════════════════════════════════════════════
 STRUCTURE YOUR OUTPUT PROMPT WITH THESE EXACT SECTIONS:
 ════════════════════════════════════════════════════
 
 Begin the prompt with this exact directive:
-"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, provide a luxury dynamic Welcome Hero Banner in Dashboard, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
+"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, provide a luxury dynamic Welcome Hero Banner in Dashboard, never use unicode emojis, and use 100% Remix Icon tags for all icons, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
 
 SECTION 1: APPLICATION OVERVIEW & BUSINESS CONTEXT
 - App Name, core business purpose, target industry.
@@ -347,14 +366,14 @@ SECTION 3: REST API ENDPOINTS (FULL CRUD FOR ALL ENTITIES)
 - Complete CRUD endpoints for ALL domain entities: GET (list & search), POST (create), PUT (update), DELETE (delete).
 
 SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
-- 4A: Design System (Dark Slate #0F172A base, #1E293B cards, Emerald/Sapphire accent, Inter font, custom scrollbar).
+- 4A: Design System (Dark Slate #0F172A base, #1E293B cards, Emerald/Sapphire accent, Inter font, custom scrollbar, 100% Remix Icons, ZERO Unicode emojis).
 - 4B: Authentication Layout Shell:
   * Container 1: `#login-screen` (Centered glassmorphic login card with blank email/username & password inputs, zero credentials displayed, login submit handler).
   * Container 2: `#main-layout` (`hidden` class by default, contains 280px fixed sidebar, topbar, and all view panels).
-- 4C: Sidebar Navigation (280px fixed width, #0B1120 background, organized in OVERVIEW, MAIN MENU, REPORTS & ANALYTICS, MANAGEMENT, SETTINGS).
+- 4C: Sidebar Navigation (280px fixed width, #0B1120 background, organized in OVERVIEW, MAIN MENU, REPORTS & ANALYTICS, MANAGEMENT, SETTINGS, all using Remix Icon tags).
 - 4D: Detailed Screen Specifications:
-  * `#view-dashboard`: MUST start with a **Luxury Dynamic Welcome Hero Banner** at the top (`Selamat Datang kembali, {User Name}!`, live date badge, role badge, pulsing green online status dot, quick action buttons for '+ Transaksi Baru' and '📥 Ekspor Laporan'), followed by key metric stat cards, Chart.js graphs, and recent activity tables.
-  * All remaining 9-13 domain views inside `<div id="view-{name}" class="view-panel hidden">`. Each view must include "+ Tambah Data" button, search bar, interactive data table with Edit & Delete action buttons on every row.
+  * `#view-dashboard`: MUST start with a **Luxury Dynamic Welcome Hero Banner** at the top (`Selamat Datang kembali, {User Name}!`, live date badge with `<i class="ri-calendar-event-line"></i>`, role badge with `<i class="ri-shield-star-line"></i>`, pulsing green online status dot, quick action buttons with Remix Icons for '+ Transaksi Baru' and 'Ekspor Laporan'), followed by key metric stat cards, Chart.js graphs, and recent activity tables.
+  * All remaining 9-13 domain views inside `<div id="view-{name}" class="view-panel hidden">`. Each view must include "+ Tambah Data" button with `<i class="ri-add-circle-line"></i>`, search bar with `<i class="ri-search-line"></i>`, interactive data table with Edit (`<i class="ri-edit-line"></i>`) and Delete (`<i class="ri-delete-bin-line"></i>`) action buttons on every row.
 - 4E: Modals & Popups for CREATE and EDIT workflows for every entity.
 - 4F: In-Page JavaScript Controller Functions (`checkAuth`, `switchView`, `initDashboardCharts`, CRUD operations for all entities, `exportToCSV`, `showToast`, `formatCurrency`).
 
@@ -387,9 +406,10 @@ Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application for
 STRICT RULES:
 1. The ONLY view file is `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
 2. ZERO credentials on the login screen. Input fields must be blank.
-3. LUXURY DYNAMIC WELCOME HERO BANNER on `#view-dashboard` with dynamic greeting (`Selamat Datang kembali, {Name}!`), live date badge, role badge, pulsing online dot, and quick action buttons.
-4. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
-5. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
+3. STRICT 100% REMIXICON ICONOGRAPHY — NEVER USE UNICODE EMOJIS ANYWHERE. ALL ICONS MUST USE `<i class="ri-{name}-line"></i>` or `<i class="ri-{name}-fill"></i>`.
+4. LUXURY DYNAMIC WELCOME HERO BANNER on `#view-dashboard` with dynamic greeting (`Selamat Datang kembali, <span id="dash-user-name">...</span>! <i class="ri-sparkling-2-fill text-amber-400"></i>`), date badge with `<i class="ri-calendar-event-line"></i>`, role badge with `<i class="ri-shield-star-line"></i>`, pulsing online dot, and quick action buttons with Remix Icons.
+5. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
+6. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
 
 ## 1. APPLICATION OVERVIEW & BUSINESS CONTEXT
 Application: "{$appName}" — {$appDescription}
@@ -399,18 +419,18 @@ Authentication required for all dashboard views.
 ## 2. DATABASE SCHEMA & RICH DEMO DATA SEEDING
 `initDB()` in `app.js` must create all tables and auto-seed RICH DEMO DATA if empty:
 - `users`: id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255) UNIQUE, username VARCHAR(255) UNIQUE, password VARCHAR(255), role VARCHAR(50) DEFAULT 'staff', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  → Auto-seed: username='admin', email='admin@{$appName}.local', password='admin123' (bcrypt hashed), role='admin', name='Administrator'
+  - Auto-seed: username='admin', email='admin@{$appName}.local', password='admin123' (bcrypt hashed), role='admin', name='Administrator'
 - `warehouses` / Departments: id PK, code VARCHAR(50), name VARCHAR(255), location VARCHAR(255), created_at
-  → Auto-seed 3 locations: "Central Warehouse A", "Distribution Depot B", "Retail Floor Storage"
+  - Auto-seed 3 locations: "Central Warehouse A", "Distribution Depot B", "Retail Floor Storage"
 - `items` / Products: id PK, code VARCHAR(100), name VARCHAR(255), category_id INT, cost_price DECIMAL(15,2), selling_price DECIMAL(15,2), stock_quantity INT, min_stock INT, created_at
-  → Auto-seed 8-10 realistic items with prices and stock.
+  - Auto-seed 8-10 realistic items with prices and stock.
 - `inventory_stock` / Stock Transfers: id PK, from_location INT, to_location INT, item_id INT, quantity INT, status VARCHAR(50), notes TEXT, created_at
 - `categories`: id PK, name VARCHAR(255), icon VARCHAR(100), color_code VARCHAR(50), created_at
-  → Auto-seed 6-8 rich categories with Remix Icons.
+  - Auto-seed 6-8 rich categories with Remix Icons (e.g. `ri-box-3-line`, `ri-price-tag-3-line`, `ri-store-2-line`).
 - `transactions` / Activity Logs: id PK, transaction_number VARCHAR(100), type VARCHAR(50), amount DECIMAL(15,2), status VARCHAR(50), created_at
-  → Auto-seed 12-15 realistic records across recent dates.
+  - Auto-seed 12-15 realistic records across recent dates.
 - `accounts` / Budgets: id PK, name VARCHAR(255), type VARCHAR(50), balance DECIMAL(15,2), created_at
-  → Auto-seed 4 accounts/budgets.
+  - Auto-seed 4 accounts/budgets.
 
 NEVER use MySQL-specific date functions (MONTH(), YEAR(), CURRENT_DATE()) in queries.
 
@@ -428,6 +448,7 @@ NEVER use MySQL-specific date functions (MONTH(), YEAR(), CURRENT_DATE()) in que
 
 STRICT RULE: Generate ONLY `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
 STRICT SECURITY: NEVER display default credentials (admin / admin123) anywhere in the login card or inputs. Inputs must be blank.
+STRICT ICONOGRAPHY: NEVER use raw Unicode emojis. Use 100% Remix Icon HTML tags everywhere.
 
 MANDATORY CDN Includes in `<head>`:
 - `<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`
@@ -446,25 +467,25 @@ Authentication & SPA Structure in `views/index.ejs`:
 - Client JS `checkAuth()` calls `GET /api/auth/me` on load. If 200, show `#main-layout`. If 401, show `#login-screen`.
 
 Sidebar Navigation (280px fixed width, #0B1120):
-- Brand Header with Remix Icon and active user badge.
-- OVERVIEW: Dashboard (ri-dashboard-line)
-- MAIN MENU: Primary Operations, Items Catalog, Multi-Warehouse Storage, Stock Transfers
-- MANAGEMENT: Categories, Suppliers / Departments, Users
-- REPORTS & ANALYTICS: Summary Reports, Trend Analytics
-- SETTINGS: App Settings, Database Backup
-- User Profile Footer with avatar, name, role badge, and logout button.
+- Brand Header with Remix Icon (`ri-gem-line`, `ri-store-2-line`, etc.) and active user badge.
+- OVERVIEW: Dashboard (`ri-dashboard-3-line`)
+- MAIN MENU: Primary Operations (`ri-exchange-dollar-line`), Items Catalog (`ri-box-3-line`), Multi-Warehouse Storage (`ri-safe-2-line`), Stock Transfers (`ri-arrow-left-right-line`)
+- MANAGEMENT: Categories (`ri-price-tag-3-line`), Suppliers (`ri-truck-line`), Customers (`ri-user-smile-line`), Users (`ri-team-line`)
+- REPORTS & ANALYTICS: Summary Reports (`ri-file-chart-line`), Trend Analytics (`ri-bar-chart-grouped-line`)
+- SETTINGS: App Settings (`ri-settings-4-line`), Database Backup (`ri-database-2-line`)
+- User Profile Footer with avatar, name, role badge, and logout button (`ri-logout-box-r-line`).
 
 SPA Multi-Screen Architecture:
 1. `#view-dashboard`:
-   - **Hero Welcome Banner**: Glassmorphic banner card at top (`Selamat Datang kembali, <span id="dash-user-name">...</span>! 👋`), date badge, role badge, green pulsing online status pill, and shortcut buttons.
+   - **Hero Welcome Banner**: Glassmorphic banner card at top (`Selamat Datang kembali, <span id="dash-user-name">...</span>! <i class="ri-sparkling-2-fill text-amber-400"></i>`), date badge with `<i class="ri-calendar-event-line"></i>`, role badge with `<i class="ri-shield-star-line"></i>`, green pulsing online status pill, and shortcut buttons (`<i class="ri-add-circle-line"></i>`, `<i class="ri-download-2-line"></i>`).
    - Metric Stat Cards with percentage badges and Remix Icons.
    - Chart.js Analytics (Line trend + Doughnut distribution).
    - Recent Activity / Transactions Data Table.
 2. All 9-13 Remaining Views (ALL fully coded in DOM with full CRUD):
    - Each view has dedicated `<div id="view-{screen}" class="view-panel hidden">`.
-   - "+ Tambah Data Baru" button.
-   - Real-time search bar & filter dropdown.
-   - Interactive Table with Edit (`ri-edit-line`) and Delete (`ri-delete-bin-line`) buttons on every row.
+   - "+ Tambah Data Baru" button with `<i class="ri-add-circle-line"></i>`.
+   - Real-time search bar with `<i class="ri-search-line"></i>` & filter dropdown.
+   - Interactive Table with Edit (`<i class="ri-edit-line"></i>`) and Delete (`<i class="ri-delete-bin-line"></i>`) buttons on every row.
    - Create Modal Form (`#modal-add-...`) & Edit Modal Form (`#modal-edit-...`).
 
 Client-Side JavaScript Functions:
