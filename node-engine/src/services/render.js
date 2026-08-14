@@ -210,21 +210,31 @@ class RenderService {
                         });
                     }
                     if (name === 'bcrypt' || name === 'bcryptjs') {
-                        try {
-                            const bjs = require('bcryptjs');
-                            if (bjs && typeof bjs.compareSync === 'function') return bjs;
-                        } catch {}
-                        try {
-                            const b = require('bcrypt');
-                            if (b && typeof b.compareSync === 'function') return b;
-                        } catch {}
+                        let realBcrypt = null;
+                        try { realBcrypt = require('bcryptjs'); } catch {
+                            try { realBcrypt = require('bcrypt'); } catch {}
+                        }
                         return {
-                            genSalt: async (rounds) => '$2b$10$abcdefghijklmnopqrstuu',
-                            genSaltSync: (rounds) => '$2b$10$abcdefghijklmnopqrstuu',
-                            hash: async (pwd) => pwd,
-                            compare: async (pwd, hash) => pwd === hash,
-                            hashSync: (pwd) => pwd,
-                            compareSync: (pwd, hash) => pwd === hash,
+                            genSalt: async (rounds) => realBcrypt ? realBcrypt.genSalt(rounds || 10) : '$2b$10$abcdefghijklmnopqrstuu',
+                            genSaltSync: (rounds) => realBcrypt ? realBcrypt.genSaltSync(rounds || 10) : '$2b$10$abcdefghijklmnopqrstuu',
+                            hash: async (pwd, saltOrRounds) => realBcrypt ? realBcrypt.hash(pwd, saltOrRounds || 10) : pwd,
+                            hashSync: (pwd, saltOrRounds) => realBcrypt ? realBcrypt.hashSync(pwd, saltOrRounds || 10) : pwd,
+                            compare: async (pwd, hash) => {
+                                if (!hash || !pwd) return false;
+                                if (pwd === hash) return true;
+                                if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                    try { return await realBcrypt.compare(pwd, hash); } catch {}
+                                }
+                                return false;
+                            },
+                            compareSync: (pwd, hash) => {
+                                if (!hash || !pwd) return false;
+                                if (pwd === hash) return true;
+                                if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                    try { return realBcrypt.compareSync(pwd, hash); } catch {}
+                                }
+                                return false;
+                            },
                         };
                     }
                     if (name === 'cookie-parser' || name === 'cookieParser') {

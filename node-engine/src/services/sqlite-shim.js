@@ -187,6 +187,13 @@ class UniversalSQLite {
             return args;
         };
 
+        const formatRow = (row) => {
+            if (!row || typeof row !== 'object') return row;
+            if (row.password && !row.password_hash) row.password_hash = row.password;
+            if (row.password_hash && !row.password) row.password = row.password_hash;
+            return row;
+        };
+
         return {
             run: (...args) => {
                 const p = normalizeArgs(args);
@@ -211,11 +218,11 @@ class UniversalSQLite {
             get: (...args) => {
                 const p = normalizeArgs(args);
                 try {
-                    return stmt.get(...p);
+                    return formatRow(stmt.get(...p));
                 } catch (err) {
                     if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(this._normalizeSql(sql));
-                        return newStmt.get(...p);
+                        return formatRow(newStmt.get(...p));
                     }
                     throw err;
                 }
@@ -223,11 +230,13 @@ class UniversalSQLite {
             all: (...args) => {
                 const p = normalizeArgs(args);
                 try {
-                    return stmt.all(...p) || [];
+                    const res = stmt.all(...p) || [];
+                    return res.map(formatRow);
                 } catch (err) {
                     if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(this._normalizeSql(sql));
-                        return newStmt.all(...p) || [];
+                        const res = newStmt.all(...p) || [];
+                        return res.map(formatRow);
                     }
                     throw err;
                 }
