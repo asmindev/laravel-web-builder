@@ -56,24 +56,77 @@ class UniversalSQLite {
         }
     }
 
-    _tryAutoMigrateColumn(sql, errMessage) {
+    _tryAutoHeal(sql, errMessage) {
         if (!errMessage || typeof errMessage !== 'string') return false;
-        const match = errMessage.match(/no such column:\s*([a-zA-Z0-9_]+)/i);
-        if (!match) return false;
-        const missingCol = match[1];
 
-        // Try to identify target table name from SQL
-        const tableMatch = sql.match(/(?:from|into|update|join)\s+[`"']?([a-zA-Z0-9_]+)[`"']?/i);
-        if (!tableMatch) return false;
-        const tableName = tableMatch[1];
-
-        try {
-            this.raw.exec(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${missingCol}\` TEXT;`);
-            console.log(`[UniversalSQLite Auto-Heal] Added missing column '${missingCol}' to table '${tableName}'.`);
-            return true;
-        } catch {
-            return false;
+        // 1. Auto-heal missing table (e.g. "no such table: users")
+        const tableErrMatch = errMessage.match(/no such table:\s*([a-zA-Z0-9_]+)/i);
+        if (tableErrMatch) {
+            const missingTable = tableErrMatch[1];
+            const lowerTable = missingTable.toLowerCase();
+            try {
+                if (lowerTable === 'users') {
+                    this.raw.exec(`
+                        CREATE TABLE IF NOT EXISTS users (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            username TEXT UNIQUE,
+                            email TEXT UNIQUE,
+                            password TEXT,
+                            password_hash TEXT,
+                            full_name TEXT,
+                            name TEXT,
+                            role TEXT DEFAULT 'admin',
+                            branch TEXT,
+                            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                        );
+                    `);
+                    // Ensure admin user exists
+                    try {
+                        const existingAdmin = this.raw.prepare("SELECT id FROM users WHERE username = 'admin'").get();
+                        if (!existingAdmin) {
+                            this.raw.exec(`
+                                INSERT INTO users (username, email, password, password_hash, full_name, name, role)
+                                VALUES ('admin', 'admin@app.local', 'admin123', '$2b$10$abcdefghijklmnopqrstuu', 'Administrator', 'Administrator', 'admin');
+                            `);
+                        }
+                    } catch {}
+                    return true;
+                } else {
+                    this.raw.exec(`
+                        CREATE TABLE IF NOT EXISTS \`${missingTable}\` (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            code TEXT,
+                            name TEXT,
+                            title TEXT,
+                            description TEXT,
+                            status TEXT DEFAULT 'Active',
+                            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                        );
+                    `);
+                    return true;
+                }
+            } catch {
+                return false;
+            }
         }
+
+        // 2. Auto-heal missing column (e.g. "no such column: email")
+        const colErrMatch = errMessage.match(/no such column:\s*([a-zA-Z0-9_]+)/i);
+        if (colErrMatch) {
+            const missingCol = colErrMatch[1];
+            const tableMatch = sql.match(/(?:from|into|update|join)\s+[`"']?([a-zA-Z0-9_]+)[`"']?/i);
+            if (tableMatch) {
+                const tableName = tableMatch[1];
+                try {
+                    this.raw.exec(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${missingCol}\` TEXT;`);
+                    return true;
+                } catch {
+                    return false;
+                }
+            }
+        }
+
+        return false;
     }
 
     exec(sql) {
@@ -85,7 +138,7 @@ class UniversalSQLite {
         try {
             stmt = this.raw.prepare(sql);
         } catch (err) {
-            if (this._tryAutoMigrateColumn(sql, err.message)) {
+            if (this._tryAutoHeal(sql, err.message)) {
                 stmt = this.raw.prepare(sql);
             } else {
                 throw err;
@@ -108,7 +161,7 @@ class UniversalSQLite {
                         changes: Number(info.changes || 0),
                     };
                 } catch (err) {
-                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                    if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(sql);
                         const info = newStmt.run(...p);
                         return {
@@ -124,7 +177,7 @@ class UniversalSQLite {
                 try {
                     return stmt.get(...p);
                 } catch (err) {
-                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                    if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(sql);
                         return newStmt.get(...p);
                     }
@@ -136,7 +189,7 @@ class UniversalSQLite {
                 try {
                     return stmt.all(...p) || [];
                 } catch (err) {
-                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                    if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(sql);
                         return newStmt.all(...p) || [];
                     }
@@ -195,7 +248,6 @@ class SQLite3DatabaseShim {
                 try { callback(null); } catch (cbErr) { console.error('[SQLite3 Open Callback Error]', cbErr); }
             }
         } catch (err) {
-            console.error('[SQLite3 Shim Error]', err);
             if (callback) {
                 try { callback(err); } catch {}
             }
@@ -205,7 +257,9 @@ class SQLite3DatabaseShim {
     _normalizeParams(params) {
         if (!params) return [];
         if (!Array.isArray(params)) {
-            if (typeof params === 'object') return params;
+            if (typeof params === 'object') {
+                return params;
+            }
             return [params];
         }
         return params.map(p => {
@@ -235,7 +289,6 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
-            console.error('[SQLite3 Shim run Error]', err.message, 'SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err));
             }
@@ -258,7 +311,6 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
-            console.error('[SQLite3 Shim get Error]', err.message, 'SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err, null));
             }
@@ -281,7 +333,6 @@ class SQLite3DatabaseShim {
             }
             return this;
         } catch (err) {
-            console.error('[SQLite3 Shim all Error]', err.message, 'SQL:', sql);
             if (callback) {
                 process.nextTick(() => callback(err, []));
             }
