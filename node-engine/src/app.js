@@ -82,8 +82,9 @@ app.get('/hello', (_req, res) => res.send('Hello World'));
 // Render a published project — wildcard route for slug-based hosting
 app.use('/:slug', async (req, res, next) => {
     const slug = req.params.slug;
-    // Skip built-in routes
-    if (slug === 'health' || slug.startsWith('_')) return next();
+    // Skip built-in routes & non-project paths
+    const reservedSlugs = ['health', 'hello', 'favicon.ico', 'robots.txt', 'login', 'register', 'api', 'internal', 'assets', 'public'];
+    if (reservedSlugs.includes(slug) || slug.startsWith('_')) return next();
 
     // If the Laravel proxy sent project data inline, use it to avoid API callback
     let projectData = null;

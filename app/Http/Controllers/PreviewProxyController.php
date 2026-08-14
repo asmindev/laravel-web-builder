@@ -112,16 +112,22 @@ class PreviewProxyController extends Controller
 <script id="__preview_proxy_interceptor__">
 (function() {
     const slugPrefix = '{$prefix}';
+    const shouldPrefix = (url) => {
+        if (!url || typeof url !== 'string') return false;
+        return url.startsWith('/api') || url.startsWith('/assets') || url.startsWith('/public') ||
+               url.startsWith('/auth') || url.startsWith('/login') || url.startsWith('/logout');
+    };
+
     const _fetch = window.fetch;
     window.fetch = function(resource, init) {
         if (typeof resource === 'string') {
-            if (resource.startsWith('/api') || resource.startsWith('/assets') || resource.startsWith('/public')) {
+            if (shouldPrefix(resource)) {
                 resource = slugPrefix + resource;
             }
         } else if (resource && resource.url) {
             try {
                 const u = new URL(resource.url, window.location.origin);
-                if (u.origin === window.location.origin && (u.pathname.startsWith('/api') || u.pathname.startsWith('/assets') || u.pathname.startsWith('/public'))) {
+                if (u.origin === window.location.origin && shouldPrefix(u.pathname)) {
                     resource = new Request(slugPrefix + u.pathname + u.search, resource);
                 }
             } catch(e) {}
@@ -131,10 +137,8 @@ class PreviewProxyController extends Controller
 
     const _open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-        if (typeof url === 'string') {
-            if (url.startsWith('/api') || url.startsWith('/assets') || url.startsWith('/public')) {
-                url = slugPrefix + url;
-            }
+        if (typeof url === 'string' && shouldPrefix(url)) {
+            url = slugPrefix + url;
         }
         return _open.call(this, method, url, ...rest);
     };

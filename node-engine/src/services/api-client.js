@@ -26,6 +26,10 @@ class ApiClient {
             return data;
         } catch (err) {
             if (err.response?.status === 404) return null;
+            if (err.code === 'ECONNABORTED' || err.code === 'ECONNREFUSED' || err.message?.includes('timeout')) {
+                console.warn(`[ApiClient] Fetch project '${slug}' timed out or failed to connect to Laravel: ${err.message}`);
+                return null;
+            }
             throw err;
         }
     }
