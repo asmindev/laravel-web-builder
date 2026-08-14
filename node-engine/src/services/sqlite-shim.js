@@ -56,12 +56,42 @@ class UniversalSQLite {
         }
     }
 
+    _tryAutoMigrateColumn(sql, errMessage) {
+        if (!errMessage || typeof errMessage !== 'string') return false;
+        const match = errMessage.match(/no such column:\s*([a-zA-Z0-9_]+)/i);
+        if (!match) return false;
+        const missingCol = match[1];
+
+        // Try to identify target table name from SQL
+        const tableMatch = sql.match(/(?:from|into|update|join)\s+[`"']?([a-zA-Z0-9_]+)[`"']?/i);
+        if (!tableMatch) return false;
+        const tableName = tableMatch[1];
+
+        try {
+            this.raw.exec(`ALTER TABLE \`${tableName}\` ADD COLUMN \`${missingCol}\` TEXT;`);
+            console.log(`[UniversalSQLite Auto-Heal] Added missing column '${missingCol}' to table '${tableName}'.`);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     exec(sql) {
         return this.raw.exec(sql);
     }
 
     prepare(sql) {
-        const stmt = this.raw.prepare(sql);
+        let stmt;
+        try {
+            stmt = this.raw.prepare(sql);
+        } catch (err) {
+            if (this._tryAutoMigrateColumn(sql, err.message)) {
+                stmt = this.raw.prepare(sql);
+            } else {
+                throw err;
+            }
+        }
+
         const normalizeArgs = (args) => {
             if (args.length === 0) return [];
             if (args.length === 1 && Array.isArray(args[0])) return args[0];
@@ -71,34 +101,46 @@ class UniversalSQLite {
         return {
             run: (...args) => {
                 const p = normalizeArgs(args);
-                if (sqliteDriverType === 'node:sqlite') {
+                try {
                     const info = stmt.run(...p);
                     return {
                         lastInsertRowid: Number(info.lastInsertRowid),
                         changes: Number(info.changes || 0),
                     };
-                } else {
-                    const info = stmt.run(...p);
-                    return {
-                        lastInsertRowid: Number(info.lastInsertRowid),
-                        changes: Number(info.changes || 0),
-                    };
+                } catch (err) {
+                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                        const newStmt = this.raw.prepare(sql);
+                        const info = newStmt.run(...p);
+                        return {
+                            lastInsertRowid: Number(info.lastInsertRowid),
+                            changes: Number(info.changes || 0),
+                        };
+                    }
+                    throw err;
                 }
             },
             get: (...args) => {
                 const p = normalizeArgs(args);
-                if (sqliteDriverType === 'node:sqlite') {
+                try {
                     return stmt.get(...p);
-                } else {
-                    return stmt.get(...p);
+                } catch (err) {
+                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                        const newStmt = this.raw.prepare(sql);
+                        return newStmt.get(...p);
+                    }
+                    throw err;
                 }
             },
             all: (...args) => {
                 const p = normalizeArgs(args);
-                if (sqliteDriverType === 'node:sqlite') {
+                try {
                     return stmt.all(...p) || [];
-                } else {
-                    return stmt.all(...p) || [];
+                } catch (err) {
+                    if (this._tryAutoMigrateColumn(sql, err.message)) {
+                        const newStmt = this.raw.prepare(sql);
+                        return newStmt.all(...p) || [];
+                    }
+                    throw err;
                 }
             },
         };
@@ -150,12 +192,12 @@ class SQLite3DatabaseShim {
         try {
             this.db = getBetterSqliteForSlug(this.slug, this.filename);
             if (callback) {
-                process.nextTick(() => callback(null));
+                try { callback(null); } catch (cbErr) { console.error('[SQLite3 Open Callback Error]', cbErr); }
             }
         } catch (err) {
             console.error('[SQLite3 Shim Error]', err);
             if (callback) {
-                process.nextTick(() => callback(err));
+                try { callback(err); } catch {}
             }
         }
     }
