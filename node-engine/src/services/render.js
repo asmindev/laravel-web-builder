@@ -225,6 +225,55 @@ class RenderService {
                             },
                         };
                     }
+                    if (name === 'cookie-parser' || name === 'cookieParser') {
+                        try {
+                            const cp = require('cookie-parser');
+                            if (typeof cp === 'function') return cp;
+                        } catch {}
+                        return (secret) => (req, res, next) => {
+                            req.cookies = req.cookies || {};
+                            const cookieHeader = req.headers?.cookie || req.headers?.Cookie;
+                            if (cookieHeader) {
+                                cookieHeader.split(';').forEach(c => {
+                                    const parts = c.split('=');
+                                    if (parts[0]) req.cookies[parts[0].trim()] = decodeURIComponent((parts[1] || '').trim());
+                                });
+                            }
+                            next();
+                        };
+                    }
+                    if (name === 'cors') {
+                        try {
+                            const c = require('cors');
+                            if (typeof c === 'function') return c;
+                        } catch {}
+                        return () => (req, res, next) => next();
+                    }
+                    if (name === 'crypto') {
+                        return require('crypto');
+                    }
+                    if (name === 'jsonwebtoken' || name === 'jwt') {
+                        try {
+                            const jwt = require('jsonwebtoken');
+                            if (jwt) return jwt;
+                        } catch {}
+                        return {
+                            sign: (payload) => Buffer.from(JSON.stringify(payload)).toString('base64'),
+                            verify: (token, _secret, cb) => {
+                                try {
+                                    const data = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+                                    if (typeof cb === 'function') cb(null, data);
+                                    return data;
+                                } catch (e) {
+                                    if (typeof cb === 'function') cb(e);
+                                    throw e;
+                                }
+                            },
+                            decode: (token) => {
+                                try { return JSON.parse(Buffer.from(token, 'base64').toString('utf-8')); } catch { return null; }
+                            }
+                        };
+                    }
                     if (name === 'sqlite3') {
                         const { getSQLite3ShimForSlug } = require('./sqlite-shim');
                         return getSQLite3ShimForSlug(slug);
