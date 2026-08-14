@@ -15,13 +15,16 @@ final class GeminiProvider implements ProviderInterface
 {
     private const string API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-    private const string MODEL = 'gemini-flash-latest';
-
     private const int TIMEOUT_SECONDS = 120;
+
+    private readonly string $model;
 
     public function __construct(
         private readonly string $apiKey,
-    ) {}
+        ?string $model = null,
+    ) {
+        $this->model = $model ?? (string) config('services.gemini.model', 'gemini-2.5-flash');
+    }
 
     /** {@inheritDoc} */
     public function generate(string $prompt): GenerationResult
@@ -30,7 +33,7 @@ final class GeminiProvider implements ProviderInterface
             $url = sprintf(
                 '%s/%s:generateContent',
                 self::API_BASE_URL,
-                self::MODEL
+                $this->model
             );
 
             $systemInstruction = SystemInstruction::forCodeGenerator();
@@ -58,7 +61,7 @@ final class GeminiProvider implements ProviderInterface
         } catch (\Throwable $e) {
             Log::error('Gemini generation failed', [
                 'error' => $e->getMessage(),
-                'model' => self::MODEL,
+                'model' => $this->model,
             ]);
             throw $e;
         }

@@ -94,6 +94,7 @@ class AIService
     {
         $this->providers['gemini'] = new GeminiProvider(
             apiKey: (string) config('services.gemini.key'),
+            model: (string) config('services.gemini.model', 'gemini-2.5-flash'),
         );
 
         $this->providers['openai'] = new OpenAIProvider(

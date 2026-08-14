@@ -13,8 +13,6 @@ final class PromptEnhancer
 {
     private const string API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-    private const string MODEL = 'gemini-flash-latest';
-
     private const int TIMEOUT_SECONDS = 60;
 
     /**
@@ -181,9 +179,12 @@ PROMPT;
     private function enhanceViaGemini(string $appName, string $appDescription): string
     {
         $apiKey = (string) config('services.gemini.key');
+        $model  = (string) config('services.gemini.model', 'gemini-2.5-flash');
+
         Log::info('Enhancing prompt via Gemini', [
-        'app_name' => $appName,
+            'app_name' => $appName,
             'api_key_present' => $apiKey !== '',
+            'model' => $model,
         ]);
 
         if ($apiKey === '') {
@@ -194,7 +195,7 @@ PROMPT;
             $url = sprintf(
                 '%s/%s:generateContent',
                 self::API_BASE_URL,
-                self::MODEL
+                $model
             );
 
             $response = Http::withHeaders(['x-goog-api-key' => $apiKey])
