@@ -116,6 +116,25 @@ class MySQLToSQLiteAdapter {
             let lastResults = [];
             for (const stmt of statements) {
                 const trimmed = stmt.toUpperCase();
+                
+                // No-op for MySQL Database/Session level statements that do not apply to SQLite
+                if (trimmed.startsWith('CREATE DATABASE') ||
+                    trimmed.startsWith('DROP DATABASE') ||
+                    trimmed.startsWith('USE ') ||
+                    trimmed.startsWith('USE`') ||
+                    trimmed.startsWith('USE"') ||
+                    trimmed.startsWith('USE[') ||
+                    trimmed.startsWith('SHOW DATABASES') ||
+                    trimmed.startsWith('SET NAMES') ||
+                    trimmed.startsWith('SET FOREIGN_KEY_CHECKS') ||
+                    trimmed.startsWith('SET SQL_MODE') ||
+                    trimmed.startsWith('SET TIME_ZONE') ||
+                    trimmed.startsWith('SET CHARACTER') ||
+                    trimmed.startsWith('SET @')) {
+                    lastResults = { affectedRows: 0, insertId: 0, changedRows: 0 };
+                    continue;
+                }
+
                 if (trimmed.startsWith('SELECT') || trimmed.startsWith('PRAGMA') || trimmed.startsWith('EXPLAIN')) {
                     lastResults = this.db.prepare(stmt).all(normalizedParams);
                 } else {
