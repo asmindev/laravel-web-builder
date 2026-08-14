@@ -30,7 +30,7 @@ For fullstack Node.js web applications, the project structure MUST STRICTLY cont
     └── index.ejs
 
 • STRICT FILE RULES:
-  1. `package.json` — dependencies: `express`, `mysql2`, `express-session`, `bcryptjs`, `ejs`.
+  1. `package.json` — dependencies: `express`, `mysql2`, `express-session`, `cookie-parser`, `bcryptjs`, `ejs`.
   2. `app.js` — All Express setup, database creation, rich mock seeding, REST API endpoints, and the single HTML route `app.get('*', (req, res) => res.render('index'))`.
   3. `.env` — Environment configuration (PORT=3000, DB credentials, SESSION_SECRET).
   4. `README.md` — Complete documentation, feature breakdown, default admin credentials, and API documentation.
@@ -126,7 +126,7 @@ Include these EXACT CDN links in every HTML/EJS `<head>`:
    `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>`
 
 ═══════════════════════════════════════════════════════════
-SECTION E — LUXURY DESIGN SYSTEM (DARK-FIRST ENTERPRISE)
+SECTION E — LUXURY DESIGN SYSTEM & DASHBOARD HERO BANNER
 ═══════════════════════════════════════════════════════════
 
 • Color Palette:
@@ -144,6 +144,22 @@ SECTION E — LUXURY DESIGN SYSTEM (DARK-FIRST ENTERPRISE)
     * Sapphire Blue:  `#3B82F6` (hover: `#2563EB`, glow: `rgba(59, 130, 246, 0.2)`)
     * Amber Gold:     `#F59E0B` (hover: `#D97706`, glow: `rgba(245, 158, 11, 0.2)`)
     * Rose Ruby:      `#F43F5E` (hover: `#E11D48`, glow: `rgba(244, 63, 94, 0.2)`)
+
+• MANDATORY LUXURY WELCOME HERO BANNER AT TOP OF DASHBOARD (#view-dashboard):
+  Every generated app MUST have a prominent, visually stunning hero banner card placed at the very top of the `#view-dashboard` view to welcome the user:
+  1. Dynamic Welcome Greeting:
+     - Prominent heading: `Selamat Datang kembali, <span id="dash-user-name" class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">Administrator</span>! 👋`
+     - Contextual subtitle: e.g. "Berikut adalah ikhtisar performa operasional bisnis, statistik transaksi, dan ringkasan eksekutif real-time hari ini."
+  2. Live Status & Info Badges:
+     - Current Live Date Badge: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700"><i class="ri-calendar-line text-amber-400"></i> <span id="dash-live-date">14 Agustus 2026</span></span>`
+     - Role Badge: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"><i class="ri-shield-star-line"></i> <span id="dash-user-role">Administrator</span></span>`
+     - Operational Status Pill with Pulsing Dot: `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistem Operasional Online</span>`
+  3. Quick Action Shortcut Buttons (Right Aligned in Banner):
+     - Primary Quick Action: e.g. `<button onclick="openAddModal('transaction')" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition"><i class="ri-add-line text-sm"></i> Transaksi Baru</button>`
+     - Secondary Quick Action: `<button onclick="exportToCSV('table-recent', 'Laporan_Harian.csv')" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition"><i class="ri-download-2-line text-sm"></i> Ekspor Laporan</button>`
+  4. Banner Aesthetic Styling:
+     - `relative overflow-hidden rounded-2xl p-6 mb-6 bg-gradient-to-r from-slate-900 via-slate-800/90 to-slate-900 border border-slate-700/60 shadow-2xl backdrop-blur-md`
+     - Subtle ambient radial background glow to give luxury depth.
 
 • Micro-Interactions & Components:
   - Global transition: `transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1)`
@@ -194,7 +210,7 @@ SECTION G — INFRASTRUCTURE CONFIGURATIONS
   DB_PASSWORD=secret
   SESSION_SECRET=super_secret_session_key_2026
 
-[G2] `package.json` Dependencies: express, mysql2, express-session, bcryptjs, ejs
+[G2] `package.json` Dependencies: express, mysql2, express-session, cookie-parser, bcryptjs, ejs
 
 [G3] Runtime Execution Rules:
   - STRICTLY EXACTLY 5 FILES: `package.json`, `app.js`, `.env`, `README.md`, `views/index.ejs`.
@@ -314,7 +330,7 @@ STRUCTURE YOUR OUTPUT PROMPT WITH THESE EXACT SECTIONS:
 ════════════════════════════════════════════════════
 
 Begin the prompt with this exact directive:
-"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
+"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, provide a luxury dynamic Welcome Hero Banner in Dashboard, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
 
 SECTION 1: APPLICATION OVERVIEW & BUSINESS CONTEXT
 - App Name, core business purpose, target industry.
@@ -336,7 +352,9 @@ SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
   * Container 1: `#login-screen` (Centered glassmorphic login card with blank email/username & password inputs, zero credentials displayed, login submit handler).
   * Container 2: `#main-layout` (`hidden` class by default, contains 280px fixed sidebar, topbar, and all view panels).
 - 4C: Sidebar Navigation (280px fixed width, #0B1120 background, organized in OVERVIEW, MAIN MENU, REPORTS & ANALYTICS, MANAGEMENT, SETTINGS).
-- 4D: Detailed Screen Specifications for ALL 10-14 domain views with complete DOM elements inside `<div id="view-{name}" class="view-panel hidden">`. Each view must include "+ Tambah Data" button, search bar, interactive data table with Edit & Delete action buttons on every row.
+- 4D: Detailed Screen Specifications:
+  * `#view-dashboard`: MUST start with a **Luxury Dynamic Welcome Hero Banner** at the top (`Selamat Datang kembali, {User Name}!`, live date badge, role badge, pulsing green online status dot, quick action buttons for '+ Transaksi Baru' and '📥 Ekspor Laporan'), followed by key metric stat cards, Chart.js graphs, and recent activity tables.
+  * All remaining 9-13 domain views inside `<div id="view-{name}" class="view-panel hidden">`. Each view must include "+ Tambah Data" button, search bar, interactive data table with Edit & Delete action buttons on every row.
 - 4E: Modals & Popups for CREATE and EDIT workflows for every entity.
 - 4F: In-Page JavaScript Controller Functions (`checkAuth`, `switchView`, `initDashboardCharts`, CRUD operations for all entities, `exportToCSV`, `showToast`, `formatCurrency`).
 
@@ -369,8 +387,9 @@ Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application for
 STRICT RULES:
 1. The ONLY view file is `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
 2. ZERO credentials on the login screen. Input fields must be blank.
-3. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
-4. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
+3. LUXURY DYNAMIC WELCOME HERO BANNER on `#view-dashboard` with dynamic greeting (`Selamat Datang kembali, {Name}!`), live date badge, role badge, pulsing online dot, and quick action buttons.
+4. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
+5. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
 
 ## 1. APPLICATION OVERVIEW & BUSINESS CONTEXT
 Application: "{$appName}" — {$appDescription}
@@ -435,12 +454,18 @@ Sidebar Navigation (280px fixed width, #0B1120):
 - SETTINGS: App Settings, Database Backup
 - User Profile Footer with avatar, name, role badge, and logout button.
 
-SPA Multi-Screen Architecture (ALL 10-14 Views Fully Coded in DOM with CRUD):
-Each view must have its dedicated `<div id="view-{screen}" class="view-panel hidden">`:
-- "+ Tambah Data Baru" button.
-- Real-time search bar & filter dropdown.
-- Interactive Table with Edit (`ri-edit-line`) and Delete (`ri-delete-bin-line`) buttons on every row.
-- Create Modal Form (`#modal-add-...`) & Edit Modal Form (`#modal-edit-...`).
+SPA Multi-Screen Architecture:
+1. `#view-dashboard`:
+   - **Hero Welcome Banner**: Glassmorphic banner card at top (`Selamat Datang kembali, <span id="dash-user-name">...</span>! 👋`), date badge, role badge, green pulsing online status pill, and shortcut buttons.
+   - Metric Stat Cards with percentage badges and Remix Icons.
+   - Chart.js Analytics (Line trend + Doughnut distribution).
+   - Recent Activity / Transactions Data Table.
+2. All 9-13 Remaining Views (ALL fully coded in DOM with full CRUD):
+   - Each view has dedicated `<div id="view-{screen}" class="view-panel hidden">`.
+   - "+ Tambah Data Baru" button.
+   - Real-time search bar & filter dropdown.
+   - Interactive Table with Edit (`ri-edit-line`) and Delete (`ri-delete-bin-line`) buttons on every row.
+   - Create Modal Form (`#modal-add-...`) & Edit Modal Form (`#modal-edit-...`).
 
 Client-Side JavaScript Functions:
 - `checkAuth()`
@@ -453,7 +478,7 @@ Client-Side JavaScript Functions:
 
 ## 5. INFRASTRUCTURE & BACKEND
 .env: PORT=3000, DB_CONNECTION=mysql, DB_HOST=127.0.0.1, DB_PORT=3306, DB_DATABASE=app_db, DB_USERNAME=root, DB_PASSWORD=secret, SESSION_SECRET=super_secret_session_key_2026
-package.json: express, mysql2, express-session, bcryptjs, ejs
+package.json: express, mysql2, express-session, cookie-parser, bcryptjs, ejs
 STRICT ROUTING RULE: `app.get('*', (req, res) => res.render('index'))`. NEVER create `app.get('/login')` or use `res.redirect('/login')`.
 NEVER use process.on('SIGINT'). NEVER use CREATE DATABASE. ALL client fetch() calls must start with /api/.
 
