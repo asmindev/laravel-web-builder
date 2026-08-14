@@ -49,9 +49,11 @@ app.post('/internal/purge-cache', internalAuth(INTERNAL_API_SECRET), (req, res) 
     if (slug) {
         cache.del(`project:${slug}`);
         cache.del(`preload:${slug}`);
+        if (global.__appInstances) global.__appInstances.delete(slug);
         res.json({ purged: true, slug });
     } else {
         cache.flush();
+        if (global.__appInstances) global.__appInstances.clear();
         res.json({ purged: true, all: true });
     }
 });

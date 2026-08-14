@@ -61,28 +61,22 @@ class PreviewProxyController extends Controller
 
             $httpRequest = Http::timeout(15)->withoutRedirecting();
             
-            // Forward raw Cookie header dari browser client (e.g. connect.sid untuk express-session)
             $rawCookieHeader = $_SERVER['HTTP_COOKIE'] ?? $request->server('HTTP_COOKIE') ?? $request->header('Cookie');
             
-            // Clean up connect.sid if encrypted by Laravel EncryptCookies middleware in previous requests
-            if ($rawCookieHeader && preg_match('/connect\.sid=([^;]+)/', $rawCookieHeader, $matches)) {
-                $rawSid = urldecode($matches[1]);
-                // If it looks like Laravel encrypted cookie (JSON base64 payload with mac), strip or use plain sid
-                if (str_contains($rawSid, '{"iv":') || str_contains($rawSid, 'eyJpdiI')) {
-                    // Extract plain sid if possible or clean up cookie string
-                }
-            }
+            $headersToForward = [
+                'Authorization' => $request->header('Authorization'),
+                'Accept' => $request->header('Accept'),
+                'Content-Type' => $request->header('Content-Type'),
+                'X-Requested-With' => $request->header('X-Requested-With'),
+            ];
 
             if ($rawCookieHeader) {
-                $httpRequest = $httpRequest->withHeaders([
-                    'Cookie' => $rawCookieHeader,
-                ]);
+                $headersToForward['Cookie'] = $rawCookieHeader;
             }
 
-            if ($request->header('Content-Type')) {
-                $httpRequest = $httpRequest->withHeaders([
-                    'Content-Type' => $request->header('Content-Type'),
-                ]);
+            $headersToForward = array_filter($headersToForward);
+            if (!empty($headersToForward)) {
+                $httpRequest = $httpRequest->withHeaders($headersToForward);
             }
             
             $bodyContent = $request->getContent();
