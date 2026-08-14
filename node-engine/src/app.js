@@ -8,6 +8,12 @@ const PORT = process.env.PORT || 4000;
 const LARAVEL_API_URL = process.env.LARAVEL_API_URL || 'http://127.0.0.1:8000';
 const INTERNAL_API_SECRET = process.env.INTERNAL_API_SECRET || 'dev-secret-key-change-in-production';
 
+// Filter out harmless Node experimental warnings (e.g. node:sqlite)
+process.on('warning', (warning) => {
+    if (warning.name === 'ExperimentalWarning') return;
+    console.warn(warning);
+});
+
 const app = express();
 app.use(express.raw({ type: '*/*', limit: '10mb' }));
 

@@ -349,6 +349,8 @@ class RenderService {
             const context = vm.createContext(sandbox);
             try {
                 new vm.Script(code, { timeout: 5000 }).runInContext(context, { timeout: 5000 });
+                // Yield to event loop to allow nextTick callbacks (such as initDB) to finish
+                await new Promise(r => setImmediate(r));
                 if (!global.__appInstances) global.__appInstances = new Map();
                 global.__appInstances.set(slug, { subApp, hash: contentHash });
             } catch (err) {

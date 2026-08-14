@@ -250,11 +250,19 @@ class SQLite3DatabaseShim {
         try {
             this.db = getBetterSqliteForSlug(this.slug, this.filename);
             if (callback) {
-                try { callback(null); } catch (cbErr) { console.error('[SQLite3 Open Callback Error]', cbErr); }
+                process.nextTick(() => {
+                    try {
+                        callback.call(this, null);
+                    } catch (cbErr) {
+                        console.error('[SQLite3 Open Callback Error]', cbErr?.stack || cbErr?.message || cbErr);
+                    }
+                });
             }
         } catch (err) {
             if (callback) {
-                try { callback(err); } catch {}
+                process.nextTick(() => {
+                    try { callback.call(this, err); } catch {}
+                });
             }
         }
     }
