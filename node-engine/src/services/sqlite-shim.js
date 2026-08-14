@@ -117,9 +117,11 @@ class UniversalSQLite {
 }
 
 function getBetterSqliteForSlug(slug = 'default', customPath = null) {
-    const dbPath = customPath && customPath !== ':memory:' && !customPath.includes('database.sqlite') && !customPath.includes('app.db')
-        ? customPath
-        : getDbPathForSlug(slug);
+    let dbPath = getDbPathForSlug(slug);
+
+    if (customPath === ':memory:') {
+        dbPath = ':memory:';
+    }
 
     const key = `${slug}:${dbPath}`;
     if (!dbInstances.has(key)) {

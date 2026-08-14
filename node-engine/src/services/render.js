@@ -1,7 +1,7 @@
 const vm = require('node:vm');
 const express = require('express');
 
-const TIMEOUT_MS = 500;
+const TIMEOUT_MS = 5000;
 
 /**
  * Renders published HTML projects in a sandboxed Node.js vm context.
@@ -144,11 +144,35 @@ class RenderService {
                     });
                 }
                 if (name === 'bcrypt' || name === 'bcryptjs') {
+                    let realBcrypt = null;
+                    try { realBcrypt = require('bcrypt'); } catch {}
                     return {
-                        hash: async (pwd) => pwd,
-                        compare: async (pwd, hash) => pwd === hash || hash === pwd,
-                        hashSync: (pwd) => pwd,
-                        compareSync: (pwd, hash) => pwd === hash || hash === pwd,
+                        hash: async (pwd, rounds) => {
+                            if (realBcrypt) {
+                                try { return await realBcrypt.hash(pwd, rounds || 10); } catch {}
+                            }
+                            return pwd;
+                        },
+                        compare: async (pwd, hash) => {
+                            if (pwd === hash) return true;
+                            if (realBcrypt && hash && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                try { return await realBcrypt.compare(pwd, hash); } catch {}
+                            }
+                            return false;
+                        },
+                        hashSync: (pwd, rounds) => {
+                            if (realBcrypt) {
+                                try { return realBcrypt.hashSync(pwd, rounds || 10); } catch {}
+                            }
+                            return pwd;
+                        },
+                        compareSync: (pwd, hash) => {
+                            if (pwd === hash) return true;
+                            if (realBcrypt && hash && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                try { return realBcrypt.compareSync(pwd, hash); } catch {}
+                            }
+                            return false;
+                        },
                     };
                 }
                 if (name === 'sqlite3') {
