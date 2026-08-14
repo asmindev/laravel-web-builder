@@ -56,10 +56,23 @@ class UniversalSQLite {
         }
     }
 
+    _normalizeSql(sql) {
+        if (!sql || typeof sql !== 'string') return sql;
+        // Replace double-quoted string literals in comparisons: = "Active", != "Inactive", LIKE "foo", IN ("A", "B")
+        return sql.replace(/([=><!]\s*|LIKE\s+|IN\s*\(\s*)"([^"]+)"/gi, (_match, prefix, val) => {
+            return `${prefix}'${val.replace(/'/g, "''")}'`;
+        });
+    }
+
     _tryAutoHeal(sql, errMessage) {
         if (!errMessage || typeof errMessage !== 'string') return false;
 
-        // 1. Auto-heal missing table (e.g. "no such table: users")
+        // 1. Auto-heal double-quoted string literals (e.g. no such column: "Active" - should this be a string literal in single-quotes?)
+        if (errMessage.includes('should this be a string literal in single-quotes') || errMessage.includes('no such column: "')) {
+            return true;
+        }
+
+        // 2. Auto-heal missing table (e.g. "no such table: users")
         const tableErrMatch = errMessage.match(/no such table:\s*([a-zA-Z0-9_]+)/i);
         if (tableErrMatch) {
             const missingTable = tableErrMatch[1];
@@ -77,6 +90,8 @@ class UniversalSQLite {
                             name TEXT,
                             role TEXT DEFAULT 'admin',
                             branch TEXT,
+                            department TEXT,
+                            status TEXT DEFAULT 'Active',
                             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                         );
                     `);
@@ -85,8 +100,8 @@ class UniversalSQLite {
                         const existingAdmin = this.raw.prepare("SELECT id FROM users WHERE username = 'admin'").get();
                         if (!existingAdmin) {
                             this.raw.exec(`
-                                INSERT INTO users (username, email, password, password_hash, full_name, name, role)
-                                VALUES ('admin', 'admin@app.local', 'admin123', '$2b$10$abcdefghijklmnopqrstuu', 'Administrator', 'Administrator', 'admin');
+                                INSERT INTO users (username, email, password, password_hash, full_name, name, role, department, status)
+                                VALUES ('admin', 'admin@app.local', 'admin123', '$2b$10$abcdefghijklmnopqrstuu', 'Administrator', 'Administrator', 'admin', 'Management', 'Active');
                             `);
                         }
                     } catch {}
@@ -113,7 +128,7 @@ class UniversalSQLite {
             }
         }
 
-        // 2. Auto-heal missing column (e.g. "no such column: email")
+        // 3. Auto-heal missing column (e.g. "no such column: email")
         const colErrMatch = errMessage.match(/no such column:\s*([a-zA-Z0-9_]+)/i);
         if (colErrMatch) {
             const missingCol = colErrMatch[1];
@@ -135,16 +150,32 @@ class UniversalSQLite {
     }
 
     exec(sql) {
-        return this.raw.exec(sql);
+        const normalized = this._normalizeSql(sql);
+        return this.raw.exec(normalized);
     }
 
-    prepare(sql) {
+    transaction(fn) {
+        return (...args) => {
+            this.exec('BEGIN');
+            try {
+                const result = fn(...args);
+                this.exec('COMMIT');
+                return result;
+            } catch (err) {
+                this.exec('ROLLBACK');
+                throw err;
+            }
+        };
+    }
+
+    prepare(rawSql) {
+        const sql = this._normalizeSql(rawSql);
         let stmt;
         try {
             stmt = this.raw.prepare(sql);
         } catch (err) {
             if (this._tryAutoHeal(sql, err.message)) {
-                stmt = this.raw.prepare(sql);
+                stmt = this.raw.prepare(this._normalizeSql(sql));
             } else {
                 throw err;
             }
@@ -167,7 +198,7 @@ class UniversalSQLite {
                     };
                 } catch (err) {
                     if (this._tryAutoHeal(sql, err.message)) {
-                        const newStmt = this.raw.prepare(sql);
+                        const newStmt = this.raw.prepare(this._normalizeSql(sql));
                         const info = newStmt.run(...p);
                         return {
                             lastInsertRowid: Number(info.lastInsertRowid),
@@ -183,7 +214,7 @@ class UniversalSQLite {
                     return stmt.get(...p);
                 } catch (err) {
                     if (this._tryAutoHeal(sql, err.message)) {
-                        const newStmt = this.raw.prepare(sql);
+                        const newStmt = this.raw.prepare(this._normalizeSql(sql));
                         return newStmt.get(...p);
                     }
                     throw err;
@@ -195,7 +226,7 @@ class UniversalSQLite {
                     return stmt.all(...p) || [];
                 } catch (err) {
                     if (this._tryAutoHeal(sql, err.message)) {
-                        const newStmt = this.raw.prepare(sql);
+                        const newStmt = this.raw.prepare(this._normalizeSql(sql));
                         return newStmt.all(...p) || [];
                     }
                     throw err;

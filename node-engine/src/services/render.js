@@ -140,15 +140,43 @@ class RenderService {
                             return loadLocalModule(localFile);
                         }
                     }
+                    const smartJsonParser = () => (req, res, next) => {
+                        if (req.body && typeof req.body === 'object') return next();
+                        if (Buffer.isBuffer(req.body)) {
+                            try { req.body = JSON.parse(req.body.toString('utf-8')); } catch {}
+                        } else if (typeof req.body === 'string') {
+                            try { req.body = JSON.parse(req.body); } catch {}
+                        }
+                        next();
+                    };
+                    const smartUrlencodedParser = () => (req, res, next) => {
+                        if (req.body && typeof req.body === 'object') return next();
+                        if (typeof req.body === 'string') {
+                            try {
+                                const qs = require('querystring');
+                                req.body = qs.parse(req.body);
+                            } catch {}
+                        }
+                        next();
+                    };
+
                     if (name === 'express') {
                         const fn = () => subApp;
-                        fn.json = express.json;
-                        fn.urlencoded = express.urlencoded;
+                        fn.json = smartJsonParser;
+                        fn.urlencoded = smartUrlencodedParser;
                         fn.static = express.static;
                         fn.Router = express.Router;
                         fn.raw = express.raw;
                         fn.text = express.text;
                         return fn;
+                    }
+                    if (name === 'body-parser' || name === 'bodyParser') {
+                        return {
+                            json: smartJsonParser,
+                            urlencoded: smartUrlencodedParser,
+                            raw: () => (req, res, next) => next(),
+                            text: () => (req, res, next) => next(),
+                        };
                     }
                     if (name === 'dotenv') {
                         return { config: () => ({ parsed: envVars }) };
@@ -175,54 +203,28 @@ class RenderService {
                         const store = global.__sessionStores.get(slug);
                         return (opts = {}) => sessionMod({
                             resave: false,
-                            saveUninitialized: false,
+                            saveUninitialized: true,
                             secret: envVars.SESSION_SECRET || 'secret-key-slug-' + slug,
                             ...opts,
                             store,
                         });
                     }
                     if (name === 'bcrypt' || name === 'bcryptjs') {
-                        let realBcrypt = null;
-                        try { realBcrypt = require('bcrypt'); } catch {}
+                        try {
+                            const bjs = require('bcryptjs');
+                            if (bjs && typeof bjs.compareSync === 'function') return bjs;
+                        } catch {}
+                        try {
+                            const b = require('bcrypt');
+                            if (b && typeof b.compareSync === 'function') return b;
+                        } catch {}
                         return {
-                            genSalt: async (rounds) => {
-                                if (realBcrypt) {
-                                    try { return await realBcrypt.genSalt(rounds || 10); } catch {}
-                                }
-                                return '$2b$10$abcdefghijklmnopqrstuu';
-                            },
-                            genSaltSync: (rounds) => {
-                                if (realBcrypt) {
-                                    try { return realBcrypt.genSaltSync(rounds || 10); } catch {}
-                                }
-                                return '$2b$10$abcdefghijklmnopqrstuu';
-                            },
-                            hash: async (pwd, saltOrRounds) => {
-                                if (realBcrypt) {
-                                    try { return await realBcrypt.hash(pwd, saltOrRounds || 10); } catch {}
-                                }
-                                return pwd;
-                            },
-                            compare: async (pwd, hash) => {
-                                if (pwd === hash) return true;
-                                if (realBcrypt && hash && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
-                                    try { return await realBcrypt.compare(pwd, hash); } catch {}
-                                }
-                                return false;
-                            },
-                            hashSync: (pwd, saltOrRounds) => {
-                                if (realBcrypt) {
-                                    try { return realBcrypt.hashSync(pwd, saltOrRounds || 10); } catch {}
-                                }
-                                return pwd;
-                            },
-                            compareSync: (pwd, hash) => {
-                                if (pwd === hash) return true;
-                                if (realBcrypt && hash && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
-                                    try { return realBcrypt.compareSync(pwd, hash); } catch {}
-                                }
-                                return false;
-                            },
+                            genSalt: async (rounds) => '$2b$10$abcdefghijklmnopqrstuu',
+                            genSaltSync: (rounds) => '$2b$10$abcdefghijklmnopqrstuu',
+                            hash: async (pwd) => pwd,
+                            compare: async (pwd, hash) => pwd === hash,
+                            hashSync: (pwd) => pwd,
+                            compareSync: (pwd, hash) => pwd === hash,
                         };
                     }
                     if (name === 'cookie-parser' || name === 'cookieParser') {
