@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use App\Services\PublishService;
 use App\Services\ExportService;
+use App\Services\PublishService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PublishController extends Controller
@@ -88,9 +87,10 @@ class PublishController extends Controller
             abort(403);
         }
 
+        $project->loadMissing(['files', 'assets']);
         $sqliteDbPath = base_path("node-engine/storage/{$project->slug}.db");
         $converter = app(\App\Services\SQLiteToMySQLConverter::class);
-        $mysqlDumpSql = $converter->convertToMySQLDump($sqliteDbPath);
+        $mysqlDumpSql = $converter->convertToMySQLDump($sqliteDbPath, $project);
 
         $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'database';
         $timestamp = now()->format('YmdHis');
@@ -113,26 +113,28 @@ class PublishController extends Controller
         $safeName = \Illuminate\Support\Str::slug($project->name, '_') ?: 'project';
 
         if ($type === 'nodejs') {
-            $file = $project->files->first(fn($f) => in_array(basename($f->path), ['index.js', 'server.js', 'app.js', 'main.js']));
-            if (!$file) {
-                $file = $project->files->first(fn($f) => str_ends_with($f->path, '.js'));
+            $file = $project->files->first(fn ($f) => in_array(basename($f->path), ['index.js', 'server.js', 'app.js', 'main.js']));
+            if (! $file) {
+                $file = $project->files->first(fn ($f) => str_ends_with($f->path, '.js'));
             }
             $ext = $file ? pathinfo($file->path, PATHINFO_EXTENSION) : 'js';
             $filename = "{$safeName}_index.{$ext}";
             $content = $file ? $file->content : "// File Node.js tidak ditemukan\n";
+
             return response($content, 200, [
                 'Content-Type' => 'text/plain',
                 'Content-Disposition' => "attachment; filename=\"{$filename}\"",
             ]);
         } else {
-            $file = $project->files->first(fn($f) => in_array(basename($f->path), ['index.ejs', 'index.html', 'home.ejs', 'index.hbs']));
-            if (!$file) {
-                $file = $project->files->first(fn($f) => str_ends_with($f->path, '.ejs') || str_ends_with($f->path, '.html'));
+            $file = $project->files->first(fn ($f) => in_array(basename($f->path), ['index.ejs', 'index.html', 'home.ejs', 'index.hbs']));
+            if (! $file) {
+                $file = $project->files->first(fn ($f) => str_ends_with($f->path, '.ejs') || str_ends_with($f->path, '.html'));
             }
             $ext = $file ? pathinfo($file->path, PATHINFO_EXTENSION) : 'html';
             $filename = "{$safeName}_index.{$ext}";
             $content = $file ? $file->content : "<!-- File Index tidak ditemukan -->\n";
             $mime = $ext === 'ejs' ? 'text/plain' : 'text/html';
+
             return response($content, 200, [
                 'Content-Type' => $mime,
                 'Content-Disposition' => "attachment; filename=\"{$filename}\"",
@@ -148,7 +150,7 @@ class PublishController extends Controller
 
         $data = json_decode(file_get_contents($validated['json']->getRealPath()), true);
 
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return redirect()->back()->with('error', 'Invalid JSON file.');
         }
 
