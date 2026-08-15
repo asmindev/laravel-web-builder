@@ -102,7 +102,7 @@ class UniversalSQLite {
                         if (!existingAdmin) {
                             this.raw.exec(`
                                 INSERT INTO users (username, email, password, password_hash, full_name, name, role, department, status)
-                                VALUES ('admin', 'admin@app.local', 'admin123', '$2b$10$abcdefghijklmnopqrstuu', 'Administrator', 'Administrator', 'admin', 'Management', 'Active');
+                                VALUES ('admin', 'admin@app.local', '$2b$10$Q9Tx83fv4EOyviz0isWqZeIowR.2YE1TYkYoFi9FbinF0UcwvoLau', '$2b$10$Q9Tx83fv4EOyviz0isWqZeIowR.2YE1TYkYoFi9FbinF0UcwvoLau', 'Administrator', 'Administrator', 'admin', 'Management', 'Active');
                             `);
                         }
                     } catch {}
