@@ -81,6 +81,29 @@ app.post('/internal/reset-db', internalAuth(INTERNAL_API_SECRET), (req, res) => 
     res.json(result);
 });
 
+// Export project database dump (all tables & data rows)
+app.post('/internal/export-db', async (req, res) => {
+    const body = parseJsonBody(req);
+    const { slug, projectData } = body;
+    if (!slug) return res.status(400).json({ success: false, message: 'Missing project slug' });
+
+    const { getDbPathForSlug, exportDatabaseDump } = require('./services/sqlite-shim');
+    const dbPath = getDbPathForSlug(slug);
+    const fs = require('fs');
+
+    // Auto-initialize if database does not exist on disk
+    if ((!fs.existsSync(dbPath) || fs.statSync(dbPath).size <= 4096) && projectData) {
+        try {
+            await render.tryExpressApp(slug, { url: '/', method: 'GET', headers: {} }, { on: () => {}, off: () => {}, setHeader: () => {}, send: () => {}, end: () => {} }, projectData);
+        } catch (e) {
+            console.error('[export-db init error]', e);
+        }
+    }
+
+    const result = exportDatabaseDump(slug);
+    res.json(result);
+});
+
 // Internal render endpoint with project data inline (no API callback needed)
 app.post('/api/render', async (req, res) => {
     const { slug, project, path } = req.body;

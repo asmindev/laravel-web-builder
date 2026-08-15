@@ -18,36 +18,36 @@ class SQLiteToMySQLConverter
     public function convertToMySQLDump(string $sqliteDbPath, ?Project $project = null): string
     {
         $header = $this->generateDefaultHeader();
+        $dumpRaw = '';
 
-        // 1. Auto-initialize database if it does not exist yet on disk
-        if ((! file_exists($sqliteDbPath) || filesize($sqliteDbPath) === 0) && $project) {
-            $this->ensureDatabaseInitialized($project, $sqliteDbPath);
+        // Method 0: Query Node Engine HTTP API directly (essential for production where Node Engine runs as a service)
+        if ($project) {
+            $dumpRaw = $this->dumpViaNodeEngineApi($project);
         }
 
-        if (! file_exists($sqliteDbPath)) {
-            // Fallback: Try extracting table definitions directly from app.js if DB cannot be created
-            $fallbackDump = $project ? $this->extractSchemaFromAppJs($project) : '';
-            if (! empty($fallbackDump)) {
-                return $header.$this->translateSqliteDumpToMySQL($fallbackDump)."\nSET FOREIGN_KEY_CHECKS=1;\n";
+        if (empty(trim($dumpRaw))) {
+            // 1. Auto-initialize database if it does not exist yet on disk
+            if ((! file_exists($sqliteDbPath) || filesize($sqliteDbPath) === 0) && $project) {
+                $this->ensureDatabaseInitialized($project, $sqliteDbPath);
             }
 
-            return $header."-- No SQLite database found for this project.\nSET FOREIGN_KEY_CHECKS=1;\n";
+            if (file_exists($sqliteDbPath)) {
+                // Method 1: Use `sqlite3` CLI binary if available
+                $dumpRaw = $this->dumpViaSqlite3Cli($sqliteDbPath);
+
+                // Method 2: Use PDO SQLite if CLI unavailable/empty
+                if (empty(trim($dumpRaw)) && extension_loaded('pdo_sqlite')) {
+                    $dumpRaw = $this->dumpViaPDO($sqliteDbPath);
+                }
+
+                // Method 3: Fallback to Node.js (node:sqlite / better-sqlite3)
+                if (empty(trim($dumpRaw))) {
+                    $dumpRaw = $this->dumpViaNode($sqliteDbPath);
+                }
+            }
         }
 
-        // Method 1: Use `sqlite3` CLI binary if available
-        $dumpRaw = $this->dumpViaSqlite3Cli($sqliteDbPath);
-
-        // Method 2: Use PDO SQLite if CLI unavailable/empty
-        if (empty(trim($dumpRaw)) && extension_loaded('pdo_sqlite')) {
-            $dumpRaw = $this->dumpViaPDO($sqliteDbPath);
-        }
-
-        // Method 3: Fallback to Node.js (node:sqlite / better-sqlite3)
-        if (empty(trim($dumpRaw))) {
-            $dumpRaw = $this->dumpViaNode($sqliteDbPath);
-        }
-
-        // Method 4: Fallback to static code extraction from app.js
+        // Method 4: Fallback to static code extraction from app.js if DB engine unavailable
         if (empty(trim($dumpRaw)) && $project) {
             $dumpRaw = $this->extractSchemaFromAppJs($project);
         }
@@ -58,6 +58,42 @@ class SQLiteToMySQLConverter
 
         // Translate SQLite dump string to MySQL compatible dump
         return $header.$this->translateSqliteDumpToMySQL($dumpRaw)."\nSET FOREIGN_KEY_CHECKS=1;\n";
+    }
+
+    /**
+     * Fetch complete SQL dump directly from the running Node Engine via HTTP
+     */
+    private function dumpViaNodeEngineApi(Project $project): string
+    {
+        try {
+            $engineUrl = config('app.node_engine_url', 'http://127.0.0.1:4000');
+            $project->loadMissing(['files', 'assets']);
+            $projectData = [
+                'slug' => $project->slug,
+                'published' => true,
+                'files' => $project->files->map(fn ($f) => [
+                    'path' => $f->path,
+                    'content' => $f->content,
+                    'updated_at' => $f->updated_at?->toIso8601String(),
+                ])->toArray(),
+            ];
+
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->post("{$engineUrl}/internal/export-db", [
+                'slug' => $project->slug,
+                'projectData' => $projectData,
+            ]);
+
+            if ($response->successful()) {
+                $json = $response->json();
+                if (! empty($json['success']) && ! empty($json['dump'])) {
+                    return (string) $json['dump'];
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently fall back to local disk extraction
+        }
+
+        return '';
     }
 
     /**

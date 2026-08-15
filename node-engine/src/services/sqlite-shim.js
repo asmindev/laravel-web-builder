@@ -576,10 +576,48 @@ function resetDbKeepAdmin(slug = 'default') {
     }
 }
 
+/**
+ * Exports complete SQLite database dump (all tables & data rows) as SQL string
+ */
+function exportDatabaseDump(slug) {
+    try {
+        const db = getBetterSqliteForSlug(slug);
+        try {
+            if (typeof db.exec === 'function') db.exec('PRAGMA wal_checkpoint(TRUNCATE);');
+            else if (typeof db.pragma === 'function') db.pragma('wal_checkpoint(TRUNCATE)');
+        } catch {}
+
+        const tables = db.prepare("SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'").all();
+        let dump = '';
+        for (const t of tables) {
+            dump += 'DROP TABLE IF EXISTS `' + t.name + '`;\n';
+            dump += t.sql + ';\n\n';
+            const rows = db.prepare('SELECT * FROM "' + t.name + '"').all();
+            if (rows && rows.length > 0) {
+                const cols = Object.keys(rows[0]).map(c => '`' + c + '`').join(', ');
+                for (const r of rows) {
+                    const vals = Object.values(r).map(v => {
+                        if (v === null) return 'NULL';
+                        if (typeof v === 'number') return v;
+                        return "'" + String(v).replace(/\\/g, '\\\\').replace(/'/g, "''") + "'";
+                    }).join(', ');
+                    dump += 'INSERT INTO `' + t.name + '` (' + cols + ') VALUES (' + vals + ');\n';
+                }
+                dump += '\n';
+            }
+        }
+        return { success: true, dump, tablesCount: tables.length };
+    } catch (err) {
+        console.error(`[exportDatabaseDump] Error exporting DB for ${slug}:`, err);
+        return { success: false, error: err.message, dump: '' };
+    }
+}
+
 module.exports = {
     getDbPathForSlug,
     getBetterSqliteForSlug,
     getSQLite3ShimForSlug,
     getBetterSqliteShimForSlug,
     resetDbKeepAdmin,
+    exportDatabaseDump,
 };
