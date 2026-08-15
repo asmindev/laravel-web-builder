@@ -377,17 +377,17 @@ export default function Welcome({
             </header>
 
             {/* Hero Main Content */}
-            <main className="relative z-10 pt-24 pb-10 sm:pt-36 sm:pb-16 lg:pt-48 lg:pb-32">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                    <div className="grid grid-cols-1 items-center gap-6 sm:gap-10 lg:grid-cols-2 lg:gap-16">
+            <main className="relative z-10 pt-28 pb-14 sm:pt-36 sm:pb-16 lg:pt-48 lg:pb-32">
+                <div className="mx-auto max-w-7xl px-5 sm:px-6">
+                    <div className="grid grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
                         {/* Hero Text Content */}
-                        <div className="space-y-4 text-left sm:space-y-6 md:space-y-8">
-                            <div className="mb-1 inline-flex items-center gap-2 rounded-full border border-[#2cb1bc]/30 bg-[#2cb1bc]/10 px-3.5 py-1.5 font-mono text-xs font-bold text-[#2cb1bc] backdrop-blur-md sm:px-4 sm:py-2">
+                        <div className="space-y-6 text-left sm:space-y-7 md:space-y-8">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-[#2cb1bc]/30 bg-[#2cb1bc]/10 px-4 py-1.5 font-mono text-xs font-bold text-[#2cb1bc] backdrop-blur-md sm:px-4 sm:py-2">
                                 <Sparkles className="h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4" />
                                 {content.hero_badge || 'Engine Generasi Ke-3 Tersedia'}
                             </div>
 
-                            <h1 className="text-[2.25rem] leading-[1.08] font-extrabold tracking-tight text-slate-900 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[4.2rem] dark:text-white">
+                            <h1 className="text-[2.25rem] leading-[1.12] font-extrabold tracking-tight text-slate-900 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[4.2rem] dark:text-white">
                                 {content.hero_title_1 || 'Ketik Idenya,'}
                                 <br />
                                 {content.hero_title_2 || 'AI Kami Buat'}
@@ -397,18 +397,18 @@ export default function Welcome({
                                 </span>
                             </h1>
 
-                            <p className="max-w-xl text-[0.95rem] leading-relaxed font-medium text-slate-600 sm:text-base md:text-lg lg:text-xl dark:text-gray-300">
+                            <p className="max-w-xl text-[0.95rem] leading-[1.7] font-normal text-slate-600 sm:text-base sm:leading-relaxed md:text-lg lg:text-xl dark:text-gray-300">
                                 {content.hero_subtitle ||
                                     'Lewati proses coding dan desain berbulan-bulan. Nusantartech AI merakit layout, menulis copy, dan mengatur styling hanya dari satu prompt teks.'}
                             </p>
 
                             {/* AI Prompt Input Simulation */}
-                            <div className="max-w-xl pt-2">
-                                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-xl sm:gap-3 sm:rounded-2xl sm:p-2 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
+                            <div className="max-w-xl pt-3 sm:pt-2">
+                                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 shadow-xl sm:gap-3 sm:rounded-2xl sm:p-2.5 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
                                     <div className="shrink-0 pl-2 text-[#2cb1bc] sm:pl-3">
                                         <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div className="flex min-h-[36px] w-full min-w-0 items-center overflow-hidden bg-transparent py-1 text-left font-mono text-xs text-slate-800 focus:outline-none sm:min-h-[38px] sm:py-1.5 md:text-sm dark:text-white">
+                                    <div className="flex min-h-[38px] w-full min-w-0 items-center overflow-hidden bg-transparent py-1 text-left font-mono text-xs text-slate-800 focus:outline-none sm:min-h-[40px] sm:py-1.5 md:text-sm dark:text-white">
                                         <span className="line-clamp-2 break-all sm:line-clamp-none">{typingText}</span>
                                         <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#2cb1bc]" />
                                     </div>
@@ -422,7 +422,7 @@ export default function Welcome({
                                 </div>
 
                                 {/* Prompt Suggestions */}
-                                <div className="mt-2.5 flex flex-wrap items-center justify-start gap-1.5 font-mono text-[10px] text-slate-500 sm:mt-3.5 sm:gap-2 sm:text-xs dark:text-gray-400">
+                                <div className="mt-3.5 flex flex-wrap items-center justify-start gap-2 font-mono text-[11px] text-slate-500 sm:mt-4 sm:text-xs dark:text-gray-400">
                                     <span className="font-semibold text-slate-600 dark:text-slate-400">Saran Prompt:</span>
                                     {suggestions.map((sug, i) => (
                                         <button
@@ -431,7 +431,7 @@ export default function Welcome({
                                             onClick={() =>
                                                 setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`)
                                             }
-                                            className="rounded-md border border-slate-200 bg-white/50 px-2 py-1 transition-all hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 dark:border-slate-800 dark:bg-transparent"
+                                            className="rounded-lg border border-slate-200 bg-white/60 px-2.5 py-1.5 transition-all hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 dark:border-slate-800 dark:bg-transparent"
                                         >
                                             "{sug}"
                                         </button>
@@ -441,7 +441,7 @@ export default function Welcome({
                         </div>
 
                         {/* Hero Interactive 3D Orbit Visual */}
-                        <div className="relative mt-2 flex h-[260px] items-center justify-center sm:mt-6 sm:h-[380px] md:h-[450px] lg:mt-0 lg:h-[520px]">
+                        <div className="relative mt-4 flex h-[280px] items-center justify-center sm:mt-6 sm:h-[380px] md:h-[450px] lg:mt-0 lg:h-[520px]">
                             <div className="relative flex aspect-square w-full max-w-[220px] items-center justify-center sm:max-w-[320px] md:max-w-md">
                                 <div className="absolute h-24 w-24 animate-pulse rounded-full bg-[#2cb1bc] blur-[40px] sm:h-32 sm:w-32 sm:blur-[50px] md:h-40 md:w-40 md:blur-[60px]" />
 
