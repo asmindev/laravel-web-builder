@@ -363,16 +363,7 @@ class RenderService {
 
                 const localContext = vm.createContext(localSandbox);
                 try {
-                    let script;
-                    try {
-                        script = new vm.Script(localFile.content, { timeout: 5000 });
-                    } catch (compileErr) {
-                        if (compileErr instanceof SyntaxError && (compileErr.message.includes('await') || compileErr.message.includes('Unexpected identifier'))) {
-                            script = new vm.Script(`(async () => {\n${localFile.content}\n})()`, { timeout: 5000 });
-                        } else {
-                            throw compileErr;
-                        }
-                    }
+                    const script = this.compileSafeScript(localFile.content, { timeout: 5000 });
                     script.runInContext(localContext, { timeout: 5000 });
                     moduleCache.set(localFile.path, mod.exports);
                     return mod.exports;
@@ -404,16 +395,7 @@ class RenderService {
             const code = appFile.content;
             const context = vm.createContext(sandbox);
             try {
-                let script;
-                try {
-                    script = new vm.Script(code, { timeout: 5000 });
-                } catch (compileErr) {
-                    if (compileErr instanceof SyntaxError && (compileErr.message.includes('await') || compileErr.message.includes('Unexpected identifier'))) {
-                        script = new vm.Script(`(async () => {\n${code}\n})()`, { timeout: 5000 });
-                    } else {
-                        throw compileErr;
-                    }
-                }
+                const script = this.compileSafeScript(code, { timeout: 5000 });
                 const result = script.runInContext(context, { timeout: 5000 });
                 if (result && typeof result.then === 'function') {
                     await Promise.race([
@@ -501,6 +483,33 @@ class RenderService {
                 fallback();
             });
         });
+    }
+
+    /**
+     * Safely compiles JavaScript code inside VM Script, automatically handling
+     * un-async functions with await and top-level await statements.
+     */
+    compileSafeScript(code, options = { timeout: 5000 }) {
+        try {
+            return new vm.Script(code, options);
+        } catch (compileErr) {
+            if (compileErr instanceof SyntaxError) {
+                // Strategy 1: Convert non-async functions & arrow functions containing await to async functions
+                try {
+                    let fixed = code;
+                    fixed = fixed.replace(/(?<!async\s+)\bfunction(\s+[a-zA-Z0-9_$]+)?\s*\(/g, 'async function$1(');
+                    fixed = fixed.replace(/(?<!async\s+)\(([\s*a-zA-Z0-9_$,\s]*)\)\s*=>/g, 'async ($1) =>');
+                    fixed = fixed.replace(/(?<!async\s+)\b([a-zA-Z0-9_$]+)\s*=>/g, 'async $1 =>');
+                    return new vm.Script(`(async () => {\n${fixed}\n})()`, options);
+                } catch {}
+
+                // Strategy 2: Simple top-level async wrapper
+                try {
+                    return new vm.Script(`(async () => {\n${code}\n})()`, options);
+                } catch {}
+            }
+            throw compileErr;
+        }
     }
 }
 
