@@ -387,12 +387,12 @@ export default function Welcome({
                                 {content.hero_badge || 'Engine Generasi Ke-3 Tersedia'}
                             </div>
 
-                            <h1 className="text-[2.25rem] leading-[1.12] font-extrabold tracking-tight text-slate-900 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[4.2rem] dark:text-white">
+                            <h1 className="text-[2.75rem] leading-[1.04] font-black tracking-tight text-slate-900 sm:text-5xl sm:leading-[1.08] md:text-6xl lg:text-[4.75rem] lg:leading-[1.03] dark:text-white">
                                 {content.hero_title_1 || 'Ketik Idenya,'}
                                 <br />
                                 {content.hero_title_2 || 'AI Kami Buat'}
                                 <br />
-                                <span className="bg-gradient-to-r from-[#2cb1bc] to-[#ff8a5c] bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-[#2cb1bc] via-[#38c9d6] to-[#ff8a5c] bg-clip-text text-transparent">
                                     {content.hero_title_highlight || 'Websitenya.'}
                                 </span>
                             </h1>
