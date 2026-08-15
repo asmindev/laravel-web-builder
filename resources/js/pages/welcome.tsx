@@ -178,23 +178,45 @@ export default function Welcome({
     const defaultPrompt =
         content.hero_prompt_demo ||
         'Buat landing page SaaS untuk startup finansial dengan tema modern, tabel harga dinamis, dan dominasi warna navy blue...';
+
+    const demoPrompts = useMemo(() => [
+        defaultPrompt,
+        'Buat website Toko Sepatu Sneakers dengan katalog interaktif, keranjang belanja, dan filter ukuran...',
+        'Buat sistem kasir & manajemen laundry kiloan dengan status cucian real-time dan struk digital...',
+        'Buat platform Klinik Gigi Premium dengan jadwal booking dokter online dan testimoni pasien...',
+        'Buat landing page Restoran & Kafe Modern dengan menu digital interaktif dan reservasi meja...'
+    ], [defaultPrompt]);
+
     const [activePrompt, setActivePrompt] = useState(defaultPrompt);
+    const [promptIndex, setPromptIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
     const logoUrl = (content as any).logo_url || (app_settings as any)?.logo_url || '/images/logo.webp';
 
-    // Typing effect simulation
+    // Continuous smooth typing & rotation effect simulation
     useEffect(() => {
-        let index = 0;
-        setTypingText('');
-        const interval = setInterval(() => {
-            if (index < activePrompt.length) {
-                setTypingText(activePrompt.slice(0, index + 1));
-                index++;
-            } else {
-                clearInterval(interval);
-            }
-        }, 30);
-        return () => clearInterval(interval);
-    }, [activePrompt]);
+        let timer: NodeJS.Timeout;
+        const currentFullText = activePrompt;
+
+        if (!isDeleting && typingText === currentFullText) {
+            timer = setTimeout(() => setIsDeleting(true), 3200);
+        } else if (isDeleting && typingText === '') {
+            setIsDeleting(false);
+            const nextIdx = (promptIndex + 1) % demoPrompts.length;
+            setPromptIndex(nextIdx);
+            setActivePrompt(demoPrompts[nextIdx]);
+        } else {
+            const speed = isDeleting ? 16 : 28;
+            timer = setTimeout(() => {
+                setTypingText((prev) =>
+                    isDeleting
+                        ? currentFullText.slice(0, prev.length - 1)
+                        : currentFullText.slice(0, prev.length + 1)
+                );
+            }, speed);
+        }
+
+        return () => clearTimeout(timer);
+    }, [typingText, isDeleting, activePrompt, promptIndex, demoPrompts]);
 
     // Toggle Dark Mode class on html element
     useEffect(() => {
@@ -405,12 +427,12 @@ export default function Welcome({
                             {/* AI Prompt Input Simulation */}
                             <div className="max-w-xl pt-3 sm:pt-2">
                                 <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-2.5 shadow-xl sm:gap-3 sm:rounded-2xl sm:p-2.5 dark:border-[#2cb1bc]/30 dark:bg-gradient-to-br dark:from-[#0d1322] dark:to-[#030712]">
-                                    <div className="shrink-0 pl-2 text-[#2cb1bc] sm:pl-3">
+                                    <div className="shrink-0 pl-1.5 text-[#2cb1bc] sm:pl-3">
                                         <Terminal className="h-5 w-5 sm:h-6 sm:w-6" />
                                     </div>
-                                    <div className="flex min-h-[38px] w-full min-w-0 items-center overflow-hidden bg-transparent py-1 text-left font-mono text-xs text-slate-800 focus:outline-none sm:min-h-[40px] sm:py-1.5 md:text-sm dark:text-white">
-                                        <span className="line-clamp-2 break-all sm:line-clamp-none">{typingText}</span>
-                                        <span className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-[#2cb1bc]" />
+                                    <div className="flex min-h-[44px] sm:min-h-[40px] w-full min-w-0 items-center overflow-hidden bg-transparent py-1 text-left font-mono text-[12px] sm:text-xs md:text-sm text-slate-800 leading-snug focus:outline-none dark:text-slate-200">
+                                        <span className="line-clamp-2 break-words sm:line-clamp-none font-medium">{typingText}</span>
+                                        <span className="ml-1 inline-block h-3.5 w-1.5 shrink-0 animate-pulse rounded-[1px] bg-[#2cb1bc] shadow-[0_0_8px_#2cb1bc]" />
                                     </div>
                                     <Link
                                         href={auth?.user ? '/dashboard' : '/login'}
@@ -428,9 +450,11 @@ export default function Welcome({
                                         <button
                                             key={i}
                                             type="button"
-                                            onClick={() =>
-                                                setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`)
-                                            }
+                                            onClick={() => {
+                                                setIsDeleting(false);
+                                                setTypingText('');
+                                                setActivePrompt(`Buat website ${sug} dengan tema modern, tabel harga dinamis, dan responsif...`);
+                                            }}
                                             className="rounded-lg border border-slate-200 bg-white/60 px-2.5 py-1.5 transition-all hover:border-[#ff8a5c] hover:text-[#ff8a5c] active:scale-95 dark:border-slate-800 dark:bg-transparent"
                                         >
                                             "{sug}"
