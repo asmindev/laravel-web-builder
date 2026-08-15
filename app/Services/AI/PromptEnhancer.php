@@ -50,7 +50,7 @@ The output must be a self-contained masterpiece with ZERO placeholder code, ZERO
 ═══════════════════════════════════════════════════════════
 • Deliver ONLY a single, self-contained `index.html` file.
 • NO Node.js, Express, backend servers, or package.json.
-• ALL styles must use Tailwind CSS v4 CDN and inlined `<style>` tag helpers.
+• ALL styles must use Tailwind CSS v4 CDN and inlined `<style>` tag helpers. FORBIDDEN to create separate CSS files (`style.css`), and FORBIDDEN to use CSS `@import` or link non-Tailwind stylesheets.
 • ALL client-side JavaScript (mobile menu, FAQ accordion, tab switching, pricing toggle, toast alerts, smooth scroll) must be inside `<script>` tags at the bottom of `index.html`.
 
 ═══════════════════════════════════════════════════════════
@@ -62,6 +62,7 @@ The output must be a self-contained masterpiece with ZERO placeholder code, ZERO
   `<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">`
 • Google Fonts Inter:
   `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">`
+• STRICT STYLE RESTRICTIONS: No external CSS files, no `@import` statements, no Bootstrap/Bulma/FontAwesome.
 
 ═══════════════════════════════════════════════════════════
 3. LUXURY DESIGN SYSTEM & VISUAL IDENTITY
@@ -179,7 +180,7 @@ PROMPT;
     private function enhanceViaGemini(string $appName, string $appDescription): string
     {
         $apiKey = (string) config('services.gemini.key');
-        $model  = (string) config('services.gemini.model', 'gemini-2.5-flash');
+        $model = (string) config('services.gemini.model', 'gemini-2.5-flash');
 
         Log::info('Enhancing prompt via Gemini', [
             'app_name' => $appName,
@@ -203,7 +204,7 @@ PROMPT;
                 ->post($url, [
                     'contents' => [
                         [
-                            'role'  => 'user',
+                            'role' => 'user',
                             'parts' => [['text' => SystemInstruction::forPromptEnhancer($appName, $appDescription)]],
                         ],
                     ],
@@ -216,7 +217,7 @@ PROMPT;
             return $output !== '' ? $output : SystemInstruction::forFallbackPrompt($appName, $appDescription);
         } catch (\Throwable $e) {
             Log::error('Gemini prompt enhancement failed', [
-                'error'    => $e->getMessage(),
+                'error' => $e->getMessage(),
                 'app_name' => $appName,
             ]);
 

@@ -31,13 +31,14 @@ For fullstack Node.js web applications, the project structure MUST STRICTLY cont
 
 • STRICT FILE RULES:
   1. `package.json` — dependencies: `express`, `mysql2`, `express-session`, `cookie-parser`, `bcryptjs`, `ejs`.
-  2. `app.js` — All Express setup, database creation, rich mock seeding, REST API endpoints, and the single HTML route `app.get('*', (req, res) => res.render('index'))`.
+  2. `app.js` — All Express setup, database creation, rich mock seeding, REST API endpoints, and the single HTML route `app.get('*', (req, res) => res.render('index'))`. All async DB setup MUST be wrapped inside `async function initDB() { ... } initDB();`.
   3. `.env` — Environment configuration (PORT=3000, DB credentials, SESSION_SECRET).
   4. `README.md` — Complete documentation, feature breakdown, default admin credentials, and API documentation.
   5. `views/index.ejs` — The ONLY view file containing the entire SPA client (inline `#login-screen`, `#main-layout`, all 10-14 `#view-...` panels, modals, and client-side JavaScript controllers).
 • STRICT PROHIBITIONS:
   - FORBIDDEN to create `views/login.ejs`, `views/dashboard.ejs`, `views/header.ejs`, or ANY secondary `.ejs` files.
-  - FORBIDDEN to create separate CSS/JS files if using Tailwind CSS v4 CDN, Remix Icon CDN, and Chart.js CDN.
+  - FORBIDDEN to create separate CSS/JS files (e.g. `style.css`, `public/style.css`, `custom.css`).
+  - STRICT PROHIBITION ON STYLE COMMANDS & EXTERNAL CSS: FORBIDDEN to use CSS `@import` rules, external stylesheets, or non-Tailwind CSS libraries (no Bootstrap, Bulma, FontAwesome, Lucide). ALL styles MUST use Tailwind CSS v4 CDN utility classes and optional inline `<style>` helper blocks in `<head>` of `views/index.ejs`.
 
 ═══════════════════════════════════════════════════════════
 SECTION B — 5 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
@@ -96,6 +97,8 @@ SECTION B — 5 NON-NEGOTIABLE CORE PILLARS (MANDATORY)
 
 [PILLAR 5] 100% ZERO-ERROR FIRST RUN GUARANTEE:
 • The application MUST boot and run immediately on first execution with ZERO errors.
+• In `app.js`, ALWAYS encapsulate all database creation and seeding inside an `async function initDB() { ... }` and call `initDB();` (or `(async () => { await initDB(); })();`).
+• STRICTLY FORBIDDEN: NEVER write bare top-level `await` statements (e.g. `await dbRun(...)`) in the global scope of `app.js` without an async function wrapper.
 • `initDB()` in `app.js` MUST automatically create all tables AND seed rich, realistic demo data (minimum 12-18 rows) so that dashboards, Chart.js graphs, tables, and financial accounts are completely alive and populated on day one.
 • Single HTML route in `app.js`: `app.get('*', (req, res) => res.render('index'))`. NEVER use `app.get('/login')` or `res.redirect('/login')`.
 
@@ -106,7 +109,7 @@ SECTION C — ARCHITECTURAL & AUTHENTICATION RULES
 [C1] LANDING PAGES / STATIC SITES:
 • Generate ONLY a single self-contained `index.html` (or `public/index.html`).
 • NO Node.js, Express, backend servers, or package.json.
-• ALL CSS inside Tailwind CSS v4 CDN + inline `<style>` tag helpers.
+• ALL CSS inside Tailwind CSS v4 CDN + inline `<style>` tag helpers. NO external CSS files, NO `@import` commands.
 • ALL JavaScript inside `<script>` tags at the bottom of `index.html`.
 • 100% complete, fully responsive, zero missing sections.
 
@@ -122,6 +125,7 @@ SECTION C — ARCHITECTURAL & AUTHENTICATION RULES
   - Logout Button: calls `POST /api/auth/logout`. On success: hide `#main-layout`, show `#login-screen`.
 
 • Database Compatibility (SQLite / MySQL Shim):
+  - Wrap all async table setup in `async function initDB() { ... } initDB();`. NEVER use bare top-level `await`.
   - Primary keys MUST ALWAYS be: `id INT AUTO_INCREMENT PRIMARY KEY`
   - NEVER use MySQL-specific date functions like `MONTH()`, `YEAR()`, `CURDATE()`, or `CURRENT_DATE()` in SQL queries. Use standard ISO dates or JavaScript date manipulation.
   - Users table structure: `CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), username VARCHAR(255), password VARCHAR(255), role VARCHAR(50) DEFAULT 'user', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
@@ -139,6 +143,11 @@ Include these EXACT CDN links in every HTML/EJS `<head>`:
    `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">`
 4. Chart.js (For interactive dashboards & analytics):
    `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>`
+
+• STRICT STYLE COMMAND RESTRICTIONS:
+  - DO NOT link or import any other external CSS framework or font library (NO Bootstrap, NO Bulma, NO FontAwesome, NO Lucide).
+  - DO NOT use CSS `@import` statements.
+  - DO NOT create separate `.css` files. All styling must be via Tailwind CSS v4 utility classes or optional inline `<style>` helpers in `<head>`.
 
 ═══════════════════════════════════════════════════════════
 SECTION E — LUXURY DESIGN SYSTEM & DASHBOARD HERO BANNER
@@ -230,6 +239,7 @@ SECTION G — INFRASTRUCTURE CONFIGURATIONS
 [G3] Runtime Execution Rules:
   - STRICTLY EXACTLY 5 FILES: `package.json`, `app.js`, `.env`, `README.md`, `views/index.ejs`.
   - SINGLE ROUTE SERVING HTML: `app.get('*', (req, res) => res.render('index'))`. Never create `app.get('/login')` or use `res.redirect('/login')`.
+  - ALWAYS wrap all database setup in `async function initDB() { ... } initDB();` in `app.js`. NEVER use bare top-level `await`.
   - NEVER use `process.on('SIGINT', ...)`.
   - NEVER execute `CREATE DATABASE IF NOT EXISTS`.
   - ALL client fetch() calls inside `views/index.ejs` MUST start with `/api/`.
@@ -270,6 +280,7 @@ The output application MUST STRICTLY follow this exact file structure:
     └── index.ejs
 
 • NEVER create `views/login.ejs` or any secondary `.ejs` files.
+• FORBIDDEN to create separate CSS/JS files (no `style.css`, no `public/style.css`).
 • The entire application frontend (login card, sidebar, topbar, 10-14 views, modals, JavaScript) MUST live in `views/index.ejs`.
 • `app.js` MUST only have ONE HTML render route: `app.get('*', (req, res) => res.render('index'))`. FORBID `app.get('/login')` and FORBID `res.redirect('/login')`.
 
@@ -300,7 +311,8 @@ The output application MUST STRICTLY follow this exact file structure:
    - STRICTLY FORBIDDEN: NEVER use raw Unicode emojis (e.g. 👋, 📅, 👑, 📥, 📊, 🛍️, 💼, 🚗, 🏥, 🏠, 📦, ⚙️, 🚀, 💰, 🛒, ⚠️, ❌, ✅, etc.) anywhere in the UI!
    - ALL icons across the entire application (sidebar, dashboard banner, cards, tables, buttons, modals, toasts, inputs) MUST STRICTLY use official Remix Icon tags: `<i class="ri-{name}-line"></i>` or `<i class="ri-{name}-fill"></i>`.
 
-5. 100% ZERO-ERROR FIRST RUN GUARANTEE:
+5. 100% ZERO-ERROR FIRST RUN GUARANTEE & SAFE ASYNC DB SETUP:
+   - In `app.js`, ALWAYS encapsulate all database creation and seeding inside `async function initDB() { ... }` and call `initDB();`. NEVER use bare top-level `await` statements outside an async function scope.
    - `initDB()` in `app.js` MUST create tables and auto-seed rich demo data (minimum 12-18 rows) so all charts and menus start populated.
    - All primary keys: `id INT AUTO_INCREMENT PRIMARY KEY`.
 
@@ -336,20 +348,23 @@ MANDATORY DOMAIN EXPANSION RULES:
    - ALWAYS expand into 10 to 14 dedicated SPA views, complete relational tables (6-8 tables), rich multi-entity demo data auto-seeding, and full client-side JavaScript CRUD controllers.
 
 ════════════════════════════════════════════════════
-MANDATORY CDN LIBRARIES (IN <head>):
+MANDATORY CDN LIBRARIES & STRICT STYLING RESTRICTIONS (IN <head>):
 ════════════════════════════════════════════════════
 - Tailwind CSS v4: `<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>`
 - Remix Icon: `<link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">`
 - Google Fonts Inter: `<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">`
 - Chart.js CDN: `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>`
-- NEVER use FontAwesome, Heroicons, Lucide, or Unicode emojis. ONLY Remix Icon.
+- STRICT STYLE COMMAND RESTRICTION:
+  * NEVER create separate CSS files (`style.css`, etc.).
+  * NEVER use CSS `@import` rules or link external CSS libraries (NO Bootstrap, NO Bulma, NO FontAwesome, NO Lucide).
+  * ALL styling must be achieved through Tailwind CSS v4 utility classes and optional inline `<style>` helpers in `views/index.ejs`.
 
 ════════════════════════════════════════════════════
 STRUCTURE YOUR OUTPUT PROMPT WITH THESE EXACT SECTIONS:
 ════════════════════════════════════════════════════
 
 Begin the prompt with this exact directive:
-"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never display default credentials in the UI, provide a luxury dynamic Welcome Hero Banner in Dashboard, never use unicode emojis, and use 100% Remix Icon tags for all icons, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
+"Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application. Every single file must be written in full — NO placeholders, NO TODOs, NO truncation. The application must strictly follow this exact 5-file structure: package.json, app.js, .env, README.md, and views/index.ejs (never create views/login.ejs, never create separate CSS files, never use @import or non-Tailwind style commands, never display default credentials in the UI, wrap DB initialization in async function initDB() in app.js without top-level await, provide a luxury dynamic Welcome Hero Banner in Dashboard, never use unicode emojis, and use 100% Remix Icon tags for all icons, and provide full CRUD operations with modals on every single menu), use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data."
 
 SECTION 1: APPLICATION OVERVIEW & BUSINESS CONTEXT
 - App Name, core business purpose, target industry.
@@ -359,6 +374,7 @@ SECTION 1: APPLICATION OVERVIEW & BUSINESS CONTEXT
 SECTION 2: DATABASE SCHEMA & RICH DEMO DATA SEEDING
 - Detail every table schema (6-8 domain-specific tables).
 - Specify exact rich demo records to auto-seed in `initDB()` so the dashboard starts populated with data on day one.
+- Wrap all async database setup in `async function initDB() { ... } initDB();` in `app.js`.
 
 SECTION 3: REST API ENDPOINTS (FULL CRUD FOR ALL ENTITIES)
 - Auth: POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
@@ -366,7 +382,7 @@ SECTION 3: REST API ENDPOINTS (FULL CRUD FOR ALL ENTITIES)
 - Complete CRUD endpoints for ALL domain entities: GET (list & search), POST (create), PUT (update), DELETE (delete).
 
 SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
-- 4A: Design System (Dark Slate #0F172A base, #1E293B cards, Emerald/Sapphire accent, Inter font, custom scrollbar, 100% Remix Icons, ZERO Unicode emojis).
+- 4A: Design System & Styling Restrictions (Dark Slate #0F172A base, #1E293B cards, Emerald/Sapphire accent, Inter font, custom scrollbar, 100% Remix Icons, ZERO Unicode emojis, NO external CSS files or @import commands).
 - 4B: Authentication Layout Shell:
   * Container 1: `#login-screen` (Centered glassmorphic login card with blank email/username & password inputs, zero credentials displayed, login submit handler).
   * Container 2: `#main-layout` (`hidden` class by default, contains 280px fixed sidebar, topbar, and all view panels).
@@ -378,7 +394,7 @@ SECTION 4: FRONTEND SINGLE-VIEW SPA BLUEPRINT (views/index.ejs)
 - 4F: In-Page JavaScript Controller Functions (`checkAuth`, `switchView`, `initDashboardCharts`, CRUD operations for all entities, `exportToCSV`, `showToast`, `formatCurrency`).
 
 SECTION 5: INFRASTRUCTURE & FILE STRUCTURE
-Specify exact `.env`, `package.json`, `README.md`, and runtime rules. The ONLY view file must be `views/index.ejs`. `app.js` must ONLY have `app.get('*', (req, res) => res.render('index'))`.
+Specify exact `.env`, `package.json`, `README.md`, and runtime rules. The ONLY view file must be `views/index.ejs`. `app.js` must ONLY have `app.get('*', (req, res) => res.render('index'))`. Wrap database operations in `async function initDB() { ... } initDB();`.
 
 ════════════════════════════════════════════════════
 OUTPUT RULES:
@@ -405,11 +421,13 @@ Generate a 100% COMPLETE, PRODUCTION-READY fullstack Node.js web application for
 
 STRICT RULES:
 1. The ONLY view file is `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
-2. ZERO credentials on the login screen. Input fields must be blank.
-3. STRICT 100% REMIXICON ICONOGRAPHY — NEVER USE UNICODE EMOJIS ANYWHERE. ALL ICONS MUST USE `<i class="ri-{name}-line"></i>` or `<i class="ri-{name}-fill"></i>`.
-4. LUXURY DYNAMIC WELCOME HERO BANNER on `#view-dashboard` with dynamic greeting (`Selamat Datang kembali, <span id="dash-user-name">...</span>! <i class="ri-sparkling-2-fill text-amber-400"></i>`), date badge with `<i class="ri-calendar-event-line"></i>`, role badge with `<i class="ri-shield-star-line"></i>`, pulsing online dot, and quick action buttons with Remix Icons.
-5. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
-6. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
+2. STRICT STYLING RESTRICTION: FORBIDDEN to create separate CSS files (`style.css`, etc.) and FORBIDDEN to use CSS `@import` rules or non-Tailwind frameworks. All styling must use Tailwind CSS v4 CDN utility classes and optional inline `<style>` helpers in `<head>`.
+3. ZERO credentials on the login screen. Input fields must be blank.
+4. STRICT 100% REMIXICON ICONOGRAPHY — NEVER USE UNICODE EMOJIS ANYWHERE. ALL ICONS MUST USE `<i class="ri-{name}-line"></i>` or `<i class="ri-{name}-fill"></i>`.
+5. LUXURY DYNAMIC WELCOME HERO BANNER on `#view-dashboard` with dynamic greeting (`Selamat Datang kembali, <span id="dash-user-name">...</span>! <i class="ri-sparkling-2-fill text-amber-400"></i>`), date badge with `<i class="ri-calendar-event-line"></i>`, role badge with `<i class="ri-shield-star-line"></i>`, pulsing online dot, and quick action buttons with Remix Icons.
+6. FULL CRUD (Create with Modal, Read with Table, Update with Edit Modal, Delete with prompt) ON EVERY SINGLE MENU.
+7. Use Tailwind CSS v4 CDN, Remix Icon CDN, Google Fonts Inter, Chart.js CDN, and work immediately on first run with rich auto-seeded demo data.
+8. SAFE DATABASE INITIALIZATION: In `app.js`, ALWAYS wrap database table creation and seeding in `async function initDB() { ... }` and call `initDB();`. NEVER use bare top-level `await`.
 
 ## 1. APPLICATION OVERVIEW & BUSINESS CONTEXT
 Application: "{$appName}" — {$appDescription}
@@ -417,7 +435,7 @@ Roles: Admin (full access), Manager (operational management), Staff (entry & exe
 Authentication required for all dashboard views.
 
 ## 2. DATABASE SCHEMA & RICH DEMO DATA SEEDING
-`initDB()` in `app.js` must create all tables and auto-seed RICH DEMO DATA if empty:
+`async function initDB()` in `app.js` must create all tables and auto-seed RICH DEMO DATA if empty:
 - `users`: id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255) UNIQUE, username VARCHAR(255) UNIQUE, password VARCHAR(255), role VARCHAR(50) DEFAULT 'staff', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   - Auto-seed: username='admin', email='admin@{$appName}.local', password='admin123' (bcrypt hashed), role='admin', name='Administrator'
 - `warehouses` / Departments: id PK, code VARCHAR(50), name VARCHAR(255), location VARCHAR(255), created_at
@@ -433,6 +451,7 @@ Authentication required for all dashboard views.
   - Auto-seed 4 accounts/budgets.
 
 NEVER use MySQL-specific date functions (MONTH(), YEAR(), CURRENT_DATE()) in queries.
+Call `initDB();` inside `app.js`.
 
 ## 3. REST API ENDPOINTS (FULL CRUD ON ALL ENTITIES)
 - Auth: POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me
@@ -447,6 +466,7 @@ NEVER use MySQL-specific date functions (MONTH(), YEAR(), CURRENT_DATE()) in que
 ## 4. FRONTEND STRICT SINGLE-VIEW SPA (views/index.ejs) — LUXURY DARK THEME
 
 STRICT RULE: Generate ONLY `views/index.ejs`. NEVER create `views/login.ejs` or any other `.ejs` file.
+STRICT STYLING: NO separate CSS files. NO `@import` commands. Use only Tailwind CSS v4 CDN utility classes and optional inline `<style>` helpers.
 STRICT SECURITY: NEVER display default credentials (admin / admin123) anywhere in the login card or inputs. Inputs must be blank.
 STRICT ICONOGRAPHY: NEVER use raw Unicode emojis. Use 100% Remix Icon HTML tags everywhere.
 
@@ -501,6 +521,7 @@ Client-Side JavaScript Functions:
 .env: PORT=3000, DB_CONNECTION=mysql, DB_HOST=127.0.0.1, DB_PORT=3306, DB_DATABASE=app_db, DB_USERNAME=root, DB_PASSWORD=secret, SESSION_SECRET=super_secret_session_key_2026
 package.json: express, mysql2, express-session, cookie-parser, bcryptjs, ejs
 STRICT ROUTING RULE: `app.get('*', (req, res) => res.render('index'))`. NEVER create `app.get('/login')` or use `res.redirect('/login')`.
+Wrap database initialization in `async function initDB() { ... } initDB();`. NEVER use bare top-level `await`.
 NEVER use process.on('SIGINT'). NEVER use CREATE DATABASE. ALL client fetch() calls must start with /api/.
 
 Write ALL 5 files (.env, package.json, app.js, README.md, views/index.ejs) 100% COMPLETE without any truncation or placeholders.

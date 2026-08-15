@@ -329,7 +329,17 @@ class RenderService {
 
                 const localContext = vm.createContext(localSandbox);
                 try {
-                    new vm.Script(localFile.content, { timeout: 5000 }).runInContext(localContext, { timeout: 5000 });
+                    let script;
+                    try {
+                        script = new vm.Script(localFile.content, { timeout: 5000 });
+                    } catch (compileErr) {
+                        if (compileErr instanceof SyntaxError && (compileErr.message.includes('await') || compileErr.message.includes('Unexpected identifier'))) {
+                            script = new vm.Script(`(async () => {\n${localFile.content}\n})()`, { timeout: 5000 });
+                        } else {
+                            throw compileErr;
+                        }
+                    }
+                    script.runInContext(localContext, { timeout: 5000 });
                     moduleCache.set(localFile.path, mod.exports);
                     return mod.exports;
                 } catch (err) {
@@ -360,7 +370,25 @@ class RenderService {
             const code = appFile.content;
             const context = vm.createContext(sandbox);
             try {
-                new vm.Script(code, { timeout: 5000 }).runInContext(context, { timeout: 5000 });
+                let script;
+                try {
+                    script = new vm.Script(code, { timeout: 5000 });
+                } catch (compileErr) {
+                    if (compileErr instanceof SyntaxError && (compileErr.message.includes('await') || compileErr.message.includes('Unexpected identifier'))) {
+                        script = new vm.Script(`(async () => {\n${code}\n})()`, { timeout: 5000 });
+                    } else {
+                        throw compileErr;
+                    }
+                }
+                const result = script.runInContext(context, { timeout: 5000 });
+                if (result && typeof result.then === 'function') {
+                    await Promise.race([
+                        result,
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('App initialization timeout')), 5000))
+                    ]).catch(err => {
+                        console.error('[project] Async initialization warning/error:', err);
+                    });
+                }
                 // Yield to event loop to allow nextTick callbacks (such as initDB) to finish
                 await new Promise(r => setImmediate(r));
                 if (!global.__appInstances) global.__appInstances = new Map();
