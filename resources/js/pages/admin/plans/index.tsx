@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -155,7 +155,7 @@ export default function PlanIndex({ plans }: IndexProps) {
                 </div>
 
                 {/* Plans Cards Grid */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {plans.map((plan) => (
                         <Card
                             key={plan.id}
@@ -203,19 +203,26 @@ export default function PlanIndex({ plans }: IndexProps) {
                                 </div>
                             </CardContent>
 
-                            <div className="mt-4 flex items-center justify-between gap-2 border-t p-4 pt-0">
-                                <Button variant="outline" size="sm" onClick={() => openEditModal(plan)} className="w-full gap-1 text-xs">
-                                    <Edit className="size-3.5" /> Edit Paket
+                            <CardFooter className="mt-3 flex items-center gap-2 border-t p-4 pt-3">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openEditModal(plan)}
+                                    className="flex-1 gap-1.5 text-xs font-medium"
+                                >
+                                    <Edit className="size-3.5 shrink-0" />
+                                    <span>Edit Paket</span>
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setDeletingPlan(plan)}
-                                    className="shrink-0 border-red-500/30 text-red-600 hover:text-red-700"
+                                    className="shrink-0 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-950/50 dark:hover:bg-red-950/40"
+                                    title="Hapus Paket"
                                 >
-                                    <Trash2 className="size-3.5" />
+                                    <Trash2 className="size-3.5 shrink-0" />
                                 </Button>
-                            </div>
+                            </CardFooter>
                         </Card>
                     ))}
                 </div>
