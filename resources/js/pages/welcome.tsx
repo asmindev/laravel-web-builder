@@ -23,7 +23,7 @@ import {
     Wand2,
     X,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface FiturItem {
     tag: string;
