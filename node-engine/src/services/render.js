@@ -220,20 +220,34 @@ class RenderService {
                             hash: async (pwd, saltOrRounds) => realBcrypt ? realBcrypt.hash(pwd, saltOrRounds || 10) : pwd,
                             hashSync: (pwd, saltOrRounds) => realBcrypt ? realBcrypt.hashSync(pwd, saltOrRounds || 10) : pwd,
                             compare: async (pwd, hash) => {
-                                if (!hash || !pwd) return false;
-                                if (pwd === hash) return true;
-                                if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
-                                    try { return await realBcrypt.compare(pwd, hash); } catch {}
+                                if (!hash || !pwd) {
+                                    console.log(`[Auth:Bcrypt][${slug}] ⚠️ Bcrypt compare: missing password or hash input`);
+                                    return false;
                                 }
-                                return false;
+                                let match = false;
+                                if (pwd === hash) match = true;
+                                else if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                    try { match = await realBcrypt.compare(pwd, hash); } catch (e) {
+                                        console.error(`[Auth:Bcrypt][${slug}] 💥 Bcrypt compare error:`, e.message);
+                                    }
+                                }
+                                console.log(`[Auth:Bcrypt][${slug}] 🔐 Password verification: ${match ? 'MATCH (200 OK)' : 'MISMATCH (Wrong Password)'}`);
+                                return match;
                             },
                             compareSync: (pwd, hash) => {
-                                if (!hash || !pwd) return false;
-                                if (pwd === hash) return true;
-                                if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
-                                    try { return realBcrypt.compareSync(pwd, hash); } catch {}
+                                if (!hash || !pwd) {
+                                    console.log(`[Auth:Bcrypt][${slug}] ⚠️ Bcrypt compareSync: missing password or hash input`);
+                                    return false;
                                 }
-                                return false;
+                                let match = false;
+                                if (pwd === hash) match = true;
+                                else if (realBcrypt && (hash.startsWith('$2a$') || hash.startsWith('$2b$'))) {
+                                    try { match = realBcrypt.compareSync(pwd, hash); } catch (e) {
+                                        console.error(`[Auth:Bcrypt][${slug}] 💥 Bcrypt compareSync error:`, e.message);
+                                    }
+                                }
+                                console.log(`[Auth:Bcrypt][${slug}] 🔐 Password verification: ${match ? 'MATCH (200 OK)' : 'MISMATCH (Wrong Password)'}`);
+                                return match;
                             },
                         };
                     }
@@ -405,7 +419,6 @@ class RenderService {
             const fallback = () => { if (!done) { done = true; resolve(false); } };
             const timeout = setTimeout(fallback, TIMEOUT_MS);
 
-            res.on('finish', finish);
             if (Buffer.isBuffer(req.body)) {
                 try {
                     req.body = JSON.parse(req.body.toString('utf-8'));
@@ -413,6 +426,54 @@ class RenderService {
                     req.body = req.body.toString('utf-8');
                 }
             }
+
+            const isAuthRoute = req.url.includes('/login') || req.url.includes('/auth') || req.url.includes('/me') || req.url.includes('/logout');
+            const usernameAttempt = req.body?.username || req.body?.email || req.body?.user || req.body?.name || '(unknown)';
+
+            if (isAuthRoute) {
+                if (req.method === 'POST' && (req.url.includes('/login') || req.url.includes('/auth'))) {
+                    console.log(`[Auth][${slug}] 🔑 User '${usernameAttempt}' trying to login [POST ${req.url}]`);
+                } else {
+                    console.log(`[Auth][${slug}] 🔄 Auth check: ${req.method} ${req.url}`);
+                }
+            }
+
+            let responseBody = null;
+            const originalSend = res.send;
+            const originalJson = res.json;
+
+            res.send = function (data) {
+                responseBody = data;
+                return originalSend.apply(this, arguments);
+            };
+
+            res.json = function (data) {
+                responseBody = data;
+                return originalJson.apply(this, arguments);
+            };
+
+            res.on('finish', () => {
+                const status = res.statusCode;
+                if (isAuthRoute) {
+                    if (status >= 200 && status < 300) {
+                        console.log(`[Auth][${slug}] ✅ [${status} OK] User '${usernameAttempt}' login/auth SUCCESS!`);
+                    } else {
+                        let reason = '';
+                        if (typeof responseBody === 'object' && responseBody !== null) {
+                            reason = responseBody.message || responseBody.error || JSON.stringify(responseBody);
+                        } else if (typeof responseBody === 'string') {
+                            try {
+                                const parsed = JSON.parse(responseBody);
+                                reason = parsed.message || parsed.error || responseBody.slice(0, 150);
+                            } catch {
+                                reason = responseBody.slice(0, 150);
+                            }
+                        }
+                        console.log(`[Auth][${slug}] ❌ [${status} ERROR] User '${usernameAttempt}' login/auth FAILED! Error reason: ${reason || 'Unauthorized / Invalid credentials'}`);
+                    }
+                }
+                finish();
+            });
 
             subApp(req, res, () => {
                 clearTimeout(timeout);

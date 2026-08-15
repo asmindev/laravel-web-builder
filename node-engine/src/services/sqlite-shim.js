@@ -39,8 +39,9 @@ function getDbPathForSlug(slug = 'default') {
  * using node:sqlite or better-sqlite3.
  */
 class UniversalSQLite {
-    constructor(dbPath) {
+    constructor(dbPath, slug = 'default') {
         this.dbPath = dbPath;
+        this.slug = slug;
         if (sqliteDriverType === 'node:sqlite') {
             this.raw = new NativeSQLite(dbPath);
             try {
@@ -218,8 +219,13 @@ class UniversalSQLite {
             get: (...args) => {
                 const p = normalizeArgs(args);
                 try {
-                    return formatRow(stmt.get(...p));
+                    const res = formatRow(stmt.get(...p));
+                    if (sql.toUpperCase().includes('FROM USERS') || sql.toUpperCase().includes('FROM `USERS`') || sql.toUpperCase().includes('FROM "USERS"')) {
+                        console.log(`[DB:UserLookup][${this.slug}] 👤 SQL: ${sql} | Params: ${JSON.stringify(p)} => Result: ${res ? `Found user '${res.username || res.email || res.name}' (Role: ${res.role || 'user'})` : 'NULL (User Not Found)'}`);
+                    }
+                    return res;
                 } catch (err) {
+                    console.error(`[DB:Error][${this.slug}] 💥 Query get error: ${sql} | Error: ${err.message}`);
                     if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(this._normalizeSql(sql));
                         return formatRow(newStmt.get(...p));
@@ -231,8 +237,12 @@ class UniversalSQLite {
                 const p = normalizeArgs(args);
                 try {
                     const res = stmt.all(...p) || [];
+                    if (sql.toUpperCase().includes('FROM USERS') || sql.toUpperCase().includes('FROM `USERS`') || sql.toUpperCase().includes('FROM "USERS"')) {
+                        console.log(`[DB:UserLookup][${this.slug}] 👤 SQL: ${sql} | Params: ${JSON.stringify(p)} => Found ${res.length} users`);
+                    }
                     return res.map(formatRow);
                 } catch (err) {
+                    console.error(`[DB:Error][${this.slug}] 💥 Query all error: ${sql} | Error: ${err.message}`);
                     if (this._tryAutoHeal(sql, err.message)) {
                         const newStmt = this.raw.prepare(this._normalizeSql(sql));
                         const res = newStmt.all(...p) || [];
@@ -268,7 +278,7 @@ function getBetterSqliteForSlug(slug = 'default', customPath = null) {
 
     const key = `${slug}:${dbPath}`;
     if (!dbInstances.has(key)) {
-        const db = new UniversalSQLite(dbPath);
+        const db = new UniversalSQLite(dbPath, slug);
         dbInstances.set(key, db);
     }
     return dbInstances.get(key);

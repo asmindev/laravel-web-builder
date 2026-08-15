@@ -137,6 +137,9 @@ class MySQLToSQLiteAdapter {
 
                 if (trimmed.startsWith('SELECT') || trimmed.startsWith('PRAGMA') || trimmed.startsWith('EXPLAIN')) {
                     lastResults = this.db.prepare(stmt).all(normalizedParams);
+                    if (trimmed.includes('FROM USERS') || trimmed.includes('FROM `USERS`') || trimmed.includes('FROM "USERS"')) {
+                        console.log(`[DB:UserLookup][${this.slug}] 👤 SQL: ${stmt} | Params: ${JSON.stringify(normalizedParams)} => Found: ${lastResults.length} records`);
+                    }
                 } else {
                     const info = this.db.prepare(stmt).run(normalizedParams);
                     lastResults = {
@@ -150,7 +153,7 @@ class MySQLToSQLiteAdapter {
             if (callback) callback(null, lastResults, []);
             return Promise.resolve([lastResults, []]);
         } catch (err) {
-            console.error('[MySQL Shim Error]', err.message, 'SQL:', sql);
+            console.error(`[DB:Error][${this.slug}] 💥 MySQL query error:`, err.message, '| SQL:', sql, '| Params:', JSON.stringify(params));
             if (callback) callback(err);
             return Promise.reject(err);
         }
