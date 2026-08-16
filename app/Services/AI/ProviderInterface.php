@@ -12,9 +12,12 @@ interface ProviderInterface
     /**
      * Generate project files from the given prompt.
      *
+     * @param string $prompt   The master prompt describing what to build.
+     * @param string $appType  Either 'nodejs' or 'landing' — determines the system instruction used.
+     *
      * @throws \Throwable If the API call or response parsing fails.
      */
-    public function generate(string $prompt): GenerationResult;
+    public function generate(string $prompt, string $appType = 'nodejs'): GenerationResult;
 
     /**
      * Return the unique name of this provider (e.g. 'gemini', 'openai').

@@ -2,7 +2,7 @@ const vm = require('node:vm');
 const express = require('express');
 const path = require('path');
 
-const TIMEOUT_MS = 5000;
+const TIMEOUT_MS = 15000;
 
 /**
  * Renders published HTML projects in a sandboxed Node.js vm context.
@@ -395,17 +395,18 @@ class RenderService {
             const code = appFile.content;
             const context = vm.createContext(sandbox);
             try {
-                const script = this.compileSafeScript(code, { timeout: 5000 });
-                const result = script.runInContext(context, { timeout: 5000 });
+                const script = this.compileSafeScript(code, { timeout: 12000 });
+                const result = script.runInContext(context, { timeout: 12000 });
                 if (result && typeof result.then === 'function') {
                     await Promise.race([
                         result,
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('App initialization timeout')), 5000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('App initialization timeout')), 12000))
                     ]).catch(err => {
                         console.error('[project] Async initialization warning/error:', err);
                     });
                 }
-                // Yield to event loop to allow nextTick callbacks (such as initDB) to finish
+                // Yield to event loop multiple times to allow async callbacks (initDB, bcrypt hashing) to finish
+                await new Promise(r => setTimeout(r, 50));
                 await new Promise(r => setImmediate(r));
                 if (!global.__appInstances) global.__appInstances = new Map();
                 global.__appInstances.set(slug, { subApp, hash: contentHash });
@@ -489,7 +490,7 @@ class RenderService {
      * Safely compiles JavaScript code inside VM Script, automatically handling
      * un-async functions with await and top-level await statements.
      */
-    compileSafeScript(code, options = { timeout: 5000 }) {
+    compileSafeScript(code, options = { timeout: 12000 }) {
         try {
             return new vm.Script(code, options);
         } catch (compileErr) {

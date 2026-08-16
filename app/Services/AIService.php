@@ -38,13 +38,15 @@ class AIService
     /**
      * Generate a project template from a prompt using the specified AI provider.
      *
+     * @param string $appType Either 'nodejs' or 'landing' — routes to the correct system instruction.
+     *
      * @return array{files: array<string, string>, config: array<string, string>, provider: string}
      */
-    public function generateTemplate(array|string $prompt, string $provider = 'gemini'): array
+    public function generateTemplate(array|string $prompt, string $provider = 'gemini', string $appType = 'nodejs'): array
     {
         $promptString = is_array($prompt) ? json_encode($prompt) : $prompt;
 
-        return $this->resolveProvider($provider)->generate($promptString)->toArray();
+        return $this->resolveProvider($provider)->generate($promptString, $appType)->toArray();
     }
 
     /**

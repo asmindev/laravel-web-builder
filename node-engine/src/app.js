@@ -167,13 +167,38 @@ app.use('/:slug', async (req, res, next) => {
             res.status(404).send('Project is not published');
         } else {
             console.error('Render error:', err);
-            res.status(500).send('Internal error');
+            // Ensure we always send a response so the Guzzle stream is not left hanging (EOF)
+            if (!res.headersSent) {
+                res.status(500).send('Internal error: ' + (err.message || 'Unknown render error'));
+            }
         }
+    }
+});
+
+// Global Express error handler — catches synchronous errors thrown in middleware/routes.
+// Without this, Express would crash the connection mid-stream causing
+// "stream reading error: unexpected EOF" on the Laravel/Guzzle proxy side.
+app.use((err, req, res, _next) => {
+    console.error('[Engine] Unhandled Express error:', err?.message || err);
+    if (!res.headersSent) {
+        res.status(500).send('Engine error: ' + (err?.message || 'Unknown error'));
     }
 });
 
 app.listen(PORT, () => {
     console.log(`Engine running on http://127.0.0.1:${PORT}`);
+});
+
+// Prevent the Node.js process from crashing on unhandled async errors inside sandbox VM.
+// A crash would abruptly close the TCP connection and cause Guzzle to throw
+// "stream reading error: unexpected EOF" on the Laravel proxy side.
+process.on('unhandledRejection', (reason) => {
+    console.error('[Engine] Unhandled promise rejection (connection protected):', reason?.message || reason);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('[Engine] Uncaught exception (connection protected):', err?.message || err);
+    // Do NOT call process.exit() — keep the engine alive so in-flight responses finish
 });
 
 module.exports = app;

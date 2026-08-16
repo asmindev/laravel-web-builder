@@ -24,10 +24,12 @@ final class OpenAIProvider implements ProviderInterface
     ) {}
 
     /** {@inheritDoc} */
-    public function generate(string $prompt): GenerationResult
+    public function generate(string $prompt, string $appType = 'nodejs'): GenerationResult
     {
         try {
-            $systemInstruction = SystemInstruction::forCodeGenerator();
+            $systemInstruction = $appType === 'landing'
+                ? SystemInstruction::forLandingPageGenerator()
+                : SystemInstruction::forCodeGenerator();
 
             $response = Http::withToken($this->apiKey)
                 ->timeout(self::TIMEOUT_SECONDS)
@@ -48,8 +50,9 @@ final class OpenAIProvider implements ProviderInterface
             return GenerationResult::fromDecodedJson($decoded, $this->name());
         } catch (\Throwable $e) {
             Log::error('OpenAI generation failed', [
-                'error' => $e->getMessage(),
-                'model' => self::MODEL,
+                'error'    => $e->getMessage(),
+                'model'    => self::MODEL,
+                'app_type' => $appType,
             ]);
             throw $e;
         }

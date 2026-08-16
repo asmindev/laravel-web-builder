@@ -27,7 +27,7 @@ final class GeminiProvider implements ProviderInterface
     }
 
     /** {@inheritDoc} */
-    public function generate(string $prompt): GenerationResult
+    public function generate(string $prompt, string $appType = 'nodejs'): GenerationResult
     {
         try {
             $url = sprintf(
@@ -36,7 +36,9 @@ final class GeminiProvider implements ProviderInterface
                 $this->model
             );
 
-            $systemInstruction = SystemInstruction::forCodeGenerator();
+            $systemInstruction = $appType === 'landing'
+                ? SystemInstruction::forLandingPageGenerator()
+                : SystemInstruction::forCodeGenerator();
 
             $response = Http::withHeaders(['x-goog-api-key' => $this->apiKey])
                 ->timeout(self::TIMEOUT_SECONDS)
@@ -60,8 +62,9 @@ final class GeminiProvider implements ProviderInterface
             return GenerationResult::fromDecodedJson($decoded, $this->name());
         } catch (\Throwable $e) {
             Log::error('Gemini generation failed', [
-                'error' => $e->getMessage(),
-                'model' => $this->model,
+                'error'    => $e->getMessage(),
+                'model'    => $this->model,
+                'app_type' => $appType,
             ]);
             throw $e;
         }

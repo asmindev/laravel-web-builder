@@ -36,14 +36,16 @@ class AIController extends Controller
     public function generate(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'prompt' => 'required|string|max:10000',
+            'prompt'   => 'required|string|max:10000',
             'provider' => 'nullable|string|in:openai,gemini',
+            'app_type' => 'nullable|string|in:nodejs,landing',
         ]);
 
         try {
             $result = $this->aiService->generateTemplate(
                 $validated['prompt'],
                 $validated['provider'] ?? 'gemini',
+                $validated['app_type']  ?? 'nodejs',
             );
 
             return response()->json($result);

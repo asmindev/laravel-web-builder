@@ -35,7 +35,7 @@ export default function ProjectShow({ project }: ShowProps) {
     const [showPromptModal, setShowPromptModal] = useState(false);
     const [appName, setAppName] = useState(project.name);
     const [appDesc, setAppDesc] = useState(project.description || '');
-    const [appType, setAppType] = useState('nodejs');
+    const [appType, setAppType] = useState(project.template === 'landing' ? 'landing' : 'nodejs');
     const [enhancing, setEnhancing] = useState(false);
     const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);

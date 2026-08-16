@@ -464,9 +464,20 @@ export default function ProjectIndex({ projects }: IndexProps) {
                                 )}
 
                                 <div className="flex items-center justify-between border-t pt-2 text-xs text-muted-foreground">
-                                    <span className="flex items-center gap-1">
-                                        <FileCode className="size-3" /> {project.files_count ?? 0} files
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="flex items-center gap-1">
+                                            <FileCode className="size-3" /> {project.files_count ?? 0} files
+                                        </span>
+                                        {project.template === 'landing' ? (
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-sky-500 dark:text-sky-400">
+                                                <Layout className="size-2.5" /> Landing Page
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-violet-500/30 bg-violet-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-violet-500 dark:text-violet-400">
+                                                <Terminal className="size-2.5" /> Node.js App
+                                            </span>
+                                        )}
+                                    </div>
                                     <span className="flex items-center gap-1">
                                         <Globe className="size-3" />
                                         <Badge

@@ -54,12 +54,12 @@ class PreviewProxyController extends Controller
             // Two-step: preload project data via POST body (avoids 431 header overflow),
             // then dispatch the original request method
             $project->load('files', 'assets');
-            Http::timeout(15)->post("$engineUrl/internal/preload", [
+            Http::timeout(30)->post("$engineUrl/internal/preload", [
                 'slug' => $slug,
                 'projectData' => $project->toArray(),
             ]);
 
-            $httpRequest = Http::timeout(15)->withoutRedirecting();
+            $httpRequest = Http::timeout(30)->withoutRedirecting();
             
             $rawCookieHeader = $_SERVER['HTTP_COOKIE'] ?? $request->server('HTTP_COOKIE') ?? $request->header('Cookie');
             
@@ -176,10 +176,22 @@ HTML;
 
             return $laravelResponse;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('PreviewProxyController error: ' . $e->getMessage(), [
+            $msg = $e->getMessage();
+            \Illuminate\Support\Facades\Log::error('PreviewProxyController error: ' . $msg, [
                 'exception' => $e,
             ]);
-            abort(502, 'Engine unavailable: ' . $e->getMessage());
+
+            // Distinguish between "engine is down" and "engine crashed mid-response (EOF)"
+            $isEof     = str_contains($msg, 'EOF') || str_contains($msg, 'stream reading') || str_contains($msg, 'ECONNRESET');
+            $isDown    = str_contains($msg, 'Connection refused') || str_contains($msg, 'cURL error 7') || str_contains($msg, 'Could not connect');
+
+            if ($isEof) {
+                abort(502, 'Engine closed the connection unexpectedly. The app may have crashed during initialization. Please retry — it usually works on the second request once the DB is seeded.');
+            } elseif ($isDown) {
+                abort(502, 'Node Engine is not running. Start it with: cd node-engine && npm run dev');
+            }
+
+            abort(502, 'Engine unavailable: ' . $msg);
         }
     }
 }
