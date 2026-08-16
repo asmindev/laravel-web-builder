@@ -26,7 +26,7 @@ final class PromptEnhancer
         $type = AppType::tryFrom($appType) ?? AppType::NodeJs;
 
         if ($type === AppType::Landing) {
-            return $this->buildLandingPrompt($appName, $appDescription);
+            return $this->enhanceLandingViaGemini($appName, $appDescription);
         }
 
         return $this->enhanceViaGemini($appName, $appDescription);
@@ -171,6 +171,61 @@ The output must be a self-contained masterpiece with ZERO placeholder code, ZERO
 
 Write the ENTIRE `index.html` file completely with all CSS, HTML, and JavaScript. DO NOT truncate any sections.
 PROMPT;
+    }
+
+    /**
+     * Call Gemini to generate a UNIQUE, product-specific master prompt for a landing page.
+     * Falls back to the static buildLandingPrompt() if API key is missing or request fails.
+     */
+    private function enhanceLandingViaGemini(string $appName, string $appDescription): string
+    {
+        $apiKey = (string) config('services.gemini.key');
+        $model  = (string) config('services.gemini.model', 'gemini-2.5-flash');
+
+        Log::info('Enhancing landing page prompt via Gemini', [
+            'app_name'       => $appName,
+            'api_key_present' => $apiKey !== '',
+            'model'          => $model,
+        ]);
+
+        if ($apiKey === '') {
+            return $this->buildLandingPrompt($appName, $appDescription);
+        }
+
+        try {
+            $url = sprintf('%s/%s:generateContent', self::API_BASE_URL, $model);
+
+            $response = Http::withHeaders(['x-goog-api-key' => $apiKey])
+                ->timeout(self::TIMEOUT_SECONDS)
+                ->post($url, [
+                    'contents' => [
+                        [
+                            'role'  => 'user',
+                            'parts' => [['text' => SystemInstruction::forLandingPageEnhancer($appName, $appDescription)]],
+                        ],
+                    ],
+                    'generationConfig' => ['temperature' => 1.0],
+                ])
+                ->throw()
+                ->json();
+
+            $text = trim($response['candidates'][0]['content']['parts'][0]['text'] ?? '');
+
+            if (empty($text)) {
+                return $this->buildLandingPrompt($appName, $appDescription);
+            }
+
+            Log::info('Landing page prompt enhanced successfully via Gemini', ['app_name' => $appName]);
+
+            return $text;
+        } catch (\Throwable $e) {
+            Log::warning('Gemini landing page enhancer failed, using static fallback', [
+                'error'    => $e->getMessage(),
+                'app_name' => $appName,
+            ]);
+
+            return $this->buildLandingPrompt($appName, $appDescription);
+        }
     }
 
     /**
